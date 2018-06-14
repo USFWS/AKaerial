@@ -16,9 +16,12 @@ library(zoo)
 library(ggspatial)
 library(outliers)
 
-DataSelect <- function(area, year, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE){
+DataSelect <- function(area, year, path=NA, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE){
 
 
+  if(is.na(path)){year=1}
+
+  if(is.na(path)){
   if(area=="ykd"){path = system.file("external/YKD8516dat.csv", package="AKaerial")}
   else{
     if (area=="ykg"){path = system.file("external/YKG8516dat.csv", package="AKaerial")}
@@ -28,8 +31,12 @@ DataSelect <- function(area, year, observer="all", seat="all", strata="all", spe
     print("Area not specified or incorrect.")
     break
           }}}
+  }
+
 
   data=read.csv(path, header=TRUE)
+
+  if(year==1){year=as.numeric(unique(data$yr))}
 
   print("check year")
   if (length(year)==1){year= rep(year, 2)}
