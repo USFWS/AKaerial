@@ -15,11 +15,12 @@ library(raster)
 library(zoo)
 library(ggspatial)
 library(outliers)
+library(rmarkdown)
 
 DataSelect <- function(area, year, path=NA, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE){
 
 
-  if(is.na(path)){year=1}
+  if(!is.na(path)){year=1}
 
   if(is.na(path)){
   if(area=="ykd"){path = system.file("external/YKD8516dat.csv", package="AKaerial")}
@@ -36,7 +37,7 @@ DataSelect <- function(area, year, path=NA, observer="all", seat="all", strata="
 
   data=read.csv(path, header=TRUE)
 
-  if(year==1){year=as.numeric(unique(data$yr))}
+  if(year==1){year=c(as.numeric(unique(data$yr[which.min(data$yr)])),as.numeric(unique(data$yr[which.max(data$yr)]))) }
 
   print("check year")
   if (length(year)==1){year= rep(year, 2)}
@@ -76,7 +77,7 @@ print("Filters")
     species2=c(species, "START", "ENDPT")
     data=data[data$sppn %in% species2,]
 
-    }
+  }
 
   print("CorrectTrans")
   data=CorrectTrans(data, area=area)

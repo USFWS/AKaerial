@@ -1,0 +1,48 @@
+---
+title: "AKaerial Data Quality"
+author: "Chuck Frost"
+date: "July 2, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (BPOP).
+
+All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/cfrost3/AKaerial>.
+
+
+You have chosen the file:
+```{r file}
+
+path.name
+
+```
+
+For the area:
+
+```{r area}
+
+area
+
+```
+
+
+## Spatial
+
+There were `r n.latlong` spatial coordinate warnings.  These are longitude or latitude values that fall outside the normal boundaries of the survey. 
+
+`r if(s.latlong != "green") {"\\begin{comment}"}`
+Status - GREEN
+`r if(s.latlong != "green") {"\\end{comment}"}`
+
+`r if(s.latlong != "yellow") {"\\begin{comment}"}`
+Status - YELLOW
+`r if(s.latlong != "yellow") {"\\end{comment}"}`
+
+
+

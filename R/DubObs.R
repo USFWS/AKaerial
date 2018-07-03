@@ -48,7 +48,6 @@ r=r[r$tran %in% common,]
                     crew=character(), stringsAsFactors = FALSE
                     )
 
- print(str(matches))
 
 for (i in 1:length(f$yr)){
 
