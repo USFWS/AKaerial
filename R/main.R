@@ -17,7 +17,13 @@ library(ggspatial)
 library(outliers)
 library(rmarkdown)
 
-DataSelect <- function(area, year, path=NA, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE){
+DataSelect <- function(area, year, path=NA, data=NA, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE){
+
+
+
+  #if no R object is passed as data
+  if(length(data)<1){
+
 
 
   if(!is.na(path)){year=1}
@@ -37,6 +43,12 @@ DataSelect <- function(area, year, path=NA, observer="all", seat="all", strata="
 
   data=read.csv(path, header=TRUE)
 
+  }
+
+  else{year=1}
+
+
+
   if(year==1){year=c(as.numeric(unique(data$yr[which.min(data$yr)])),as.numeric(unique(data$yr[which.max(data$yr)]))) }
 
   print("check year")
@@ -47,6 +59,7 @@ DataSelect <- function(area, year, path=NA, observer="all", seat="all", strata="
 
   print("SpatialNA")
   data=SpatialNA(data)
+
 
   print("PointsToStrata")
   data=PointsToStrata(data,area)
@@ -99,9 +112,14 @@ print("Filters")
   print("TransSummary")
   flight=TransSummary(data, area)
 
+
+
   if(zeroes==TRUE){data=MakeZeroes(data)}
 
   if(endpts==FALSE){data=data[data$sppn != "START" & data$sppn != "ENDPT", ]}
+
+
+  data=AdjustCounts(data)
 
   data=list("obs"=data, "flight"=flight)
 
@@ -159,7 +177,11 @@ TransData=function(selected.data){
 
       tran.list=unique(selected.data$flight$part.of[selected.data$flight$yr==year & selected.data$flight$obs==observer])
 
-      new.rows=expand.grid(year, NA, NA, NA, observer, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, sp.list, 0, unit.list, NA, NA, tran.list, NA, 0)
+      new.rows=expand.grid(year, NA, NA, NA, observer, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, sp.list, 0, unit.list, tran.list,0,0,0)
+
+      print(length(new.rows))
+
+      print(names(selected.data$obs))
 
       names(new.rows)=names(selected.data$obs)
       selected.data$obs=rbind(selected.data$obs,new.rows)
@@ -216,10 +238,10 @@ TransData=function(selected.data){
   selected.data$obs$grp=as.numeric(selected.data$obs$grp)
 
 
-  agg=aggregate(grp~yr+obs+sppn+unit+ctran, data=selected.data$obs, FUN=sum)
+  agg=aggregate(cbind(grp,itotal,total,ibb)~yr+obs+sppn+unit+ctran,data=selected.data$obs, FUN=sum)
 
 
-  colnames(agg)=c("yr", "obs", "sppn", "unit", "ctran", "grp")
+  colnames(agg)=c("yr", "obs", "sppn", "unit", "ctran", "grp", "itotal", "total", "ibb")
 
 
   agg$area=0
@@ -321,6 +343,13 @@ LoadMap <- function(area, type="df") {
 
   }
 
+  if(area=="crd"){
+    map = system.file("external/CRD_2018_AnalysisStrata.shp", package="AKaerial")
+    #map="D:/CharlesFrost/AKaerial/data/CRD_2018_AnalysisStrata.shp"
+    lay="CRD_2018_AnalysisStrata"
+
+  }
+
 
   maptools::gpclibPermit()
   strata <- readOGR(map, lay, verbose=FALSE)
@@ -342,7 +371,7 @@ ViewStrata <- function(area, year=NULL, ViewTrans=FALSE, strata="all", numbers=F
   GIS.obj = LoadMap(area)
 if(strata=="all"){
 
-  if(area=="acp"){
+  if(area=="acp" || area=="crd"){
     strata.plot <- ggplot() +
       geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
       geom_path(color="black") +
@@ -369,7 +398,7 @@ if(strata=="all"){
     data=GIS.obj[as.character(GIS.obj$STRATNAME) %in% strata,]
 
 
-    if(area=="acp"){
+    if(area=="acp" || area=="crd"){
       strata.plot <- ggplot() +
         geom_path(data=data, aes(long,lat,group=group)  ) +
         geom_path(color="black", lwd=1.5) +
@@ -411,7 +440,7 @@ if(strata=="all"){
     trans.labels=trans.df[trans.df$order==1,]
 
     strata.plot = strata.plot +
-      geom_path(data=fortify(trans.obj), aes(x=long, y=lat, group=group))
+      geom_path(data=trans.df, aes(x=long, y=lat, group=group))
 
     if(numbers==TRUE){
     strata.plot = strata.plot +
@@ -490,12 +519,12 @@ AdjustCounts <- function(full.data){
 
 sppn=unique(full.data$sppn)
 
-  for (i in 1:length(sppn)){
+#  for (i in 1:length(sppn)){
 
-      itot=sppntable$itot[as.character(sppntable$sppn)==as.character(sppn[i])]
-      full.data$itotal[full.data$sppn==as.character(sppn[i])]=itot*full.data$itotal[full.data$sppn==as.character(sppn[i])]
+#      itot=sppntable$itot[as.character(sppntable$sppn)==as.character(sppn[i])]
+#      full.data$itotal[full.data$sppn==as.character(sppn[i])]=itot*full.data$itotal[full.data$sppn==as.character(sppn[i])]
 
-    }
+#    }
 
 
 
@@ -526,6 +555,7 @@ CountsTable=function(adj.counts) {
 
 PointsToStrata=function(full.data, area){
 
+
   #full.data=SpatialNA(full.data)
 
   x=na.approx(full.data$long)
@@ -542,11 +572,15 @@ PointsToStrata=function(full.data, area){
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
 
   map=LoadMap(area, type="proj")
+
   map=spTransform(map, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
 
 
   full.data$strat=over(sp,map)$STRAT
+
+
+  if(area != "crd"){
 
   for(a in 1:length(full.data$strat)){
     #print(a)
@@ -566,6 +600,8 @@ PointsToStrata=function(full.data, area){
     }
 
   }
+}
+
 
 
   return(full.data)
@@ -576,6 +612,12 @@ PointsToStrata=function(full.data, area){
 TranSelect = function(year, area){
 
   if(area=="ykg"){area="ykd"}
+
+  if(area=="crd"){
+
+    trans=list("file"="CRD_2018_Transects.shp", "layer"="CRD_2018_Transects")
+    return(trans)
+    }
 
   area=toupper(area)
 
@@ -639,15 +681,15 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #}
 
   #Compute the total/indicated total for the group sizes indicated in the data
-  adj.counts=AdjustCounts(data)
+  #adj.counts=AdjustCounts(data)
 
   #Sum the counts by combinations of species/transect
-  counts.t=CountsTable(adj.counts)
+  counts.t=CountsTable(data)
   counts.t$area=0
 
   for (i in 1:length(counts.t$area)){
 
-    counts.t$area[i]=adj.counts$area[adj.counts$yr==counts.t$yr[i] & adj.counts$obs==counts.t$obs[i] & adj.counts$ctran==counts.t$ctran[i]][1]
+    counts.t$area[i]=data$area[data$yr==counts.t$yr[i] & data$obs==counts.t$obs[i] & data$ctran==counts.t$ctran[i]][1]
 
   }
 
@@ -872,8 +914,6 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
     counts.final$var.Nib[j]=(M^2)*prop.m*(counts.final$ibb.v[j]+(counts.final$density.ibb[j]^2)*(counts.final$total.area.var[j])-(2*counts.final$density.ibb[j]*counts.final$ibb.cov[j]))
 
   }
-
-  print(counts.final[counts.final$sppn=="SPEI",])
 
 
   var.est=aggregate(counts.final$var.N~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
@@ -1240,7 +1280,11 @@ years=unique(full.data$yr)
 coordinates(full.data)=~long+lat
 proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
 
+if(area=="crd"){
 
+  full.data$ctran=full.data$tran
+
+}
 
 
 if(area=="acp"){
@@ -1343,7 +1387,9 @@ if(area=="acp"){
 
 
 
-}
+}  #end acp
+
+
 
 return(as.data.frame(full.data))
 
@@ -1421,6 +1467,26 @@ TransSummary=function(full.data, area){
 
 
     } #end acp
+
+    if(area=="crd"){
+
+
+      trans=TranSelect(year=years[i], area="crd")
+      trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
+      trans.layer=trans$layer
+
+
+      trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
+      trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+
+      GIS.obj = LoadMap(area, type="proj")
+
+      trans.obj=intersect(trans.obj, GIS.obj)  #trim the excess lines
+
+
+    } #end crd
+
+
 
     trans.obj@data$len=SpatialLinesLengths(trans.obj, longlat=TRUE)
 
