@@ -5,26 +5,53 @@ DubMatch = function(front.data=NA, rear.data=NA, combined.data=NA, front.obs, re
 
 #check if combined data was given, if not, read in each file
 
-if(is.na(combined.data)){
+if(class(front.data)=="data.frame"){
 
-  f=read.csv(front.data, header=TRUE, stringsAsFactors = FALSE)
-  r=read.csv(rear.data, header=TRUE, stringsAsFactors = FALSE)
+  f=front.data[front.data$obs==front.obs, ]
+
+}
+
+if(class(rear.data)=="data.frame"){
+
+  r=rear.data[rear.data$obs==rear.obs, ]
 
 
-  f$matched=0
-  r$matched=0
+}
 
-} else {
+if(class(front.data)=="character"){
 
-  data=read.csv(combined.data, header=TRUE, stringsAsFactors = FALSE)
-
+  data=read.csv(front.data, header=TRUE, stringsAsFactors = FALSE)
   f=data[data$obs==front.obs, ]
+
+
+}
+
+if(class(rear.data)=="character"){
+
+  data=read.csv(rear.data, header=TRUE, stringsAsFactors = FALSE)
   r=data[data$obs==rear.obs, ]
 
 
+}
+
+  if(class(combined.data)=="character"){
+
+    data=read.csv(combined.data, header=TRUE, stringsAsFactors = FALSE)
+    f=data[data$obs==front.obs, ]
+    r=data[data$obs==rear.obs, ]
+
+  }
+
+  if(class(combined.data)=="data.frame"){
+
+    f=combined.data[combined.data$obs==front.obs, ]
+    r=combined.data[combined.data$obs==rear.obs, ]
+
+
+  }
+
   f$matched=0
   r$matched=0
-}
 
 
 f.tran=unique(f$tran)
