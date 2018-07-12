@@ -37,3 +37,10 @@ GreenLight=function(path.name, area){
 
 
 
+
+ColMatch=function(data){
+
+  necessary=c("yr", "se", "obs", "strat", "tran", "lat", "long", "sppn", "grp", "unit")
+  return(all(necessary %in% colnames(data)))
+
+}

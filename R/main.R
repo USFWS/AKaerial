@@ -337,9 +337,9 @@ LoadMap <- function(area, type="df") {
   }
 
   if(area=="ykg"){
-  map = system.file("external/StratificationForHodgesAnalysis2.shp", package="AKaerial")
+  map = system.file("external/YKG__2018_MemoAnalysisStrata.shp", package="AKaerial")
   #map="D:/CharlesFrost/AKaerial/data/StratificationForHodgesAnalysis2.shp"
-  lay="StratificationForHodgesAnalysis2"
+  lay="YKG__2018_MemoAnalysisStrata"
 
   }
 
@@ -611,7 +611,10 @@ PointsToStrata=function(full.data, area){
 
 TranSelect = function(year, area){
 
-  if(area=="ykg"){area="ykd"}
+  if(area=="ykg"){area="ykd"
+
+  trans=list("file"="YKG_2018_MemoTrans.shp", "layer"="YKG_2018_MemoTrans")
+  }
 
   if(area=="crd"){
 
@@ -619,19 +622,20 @@ TranSelect = function(year, area){
     return(trans)
     }
 
-  area=toupper(area)
 
-  year=as.numeric(year)
+  #area=toupper(area)
 
-  if((year %% 4)==1){letter="B"}
-  if((year %% 4)==2){letter="C"}
-  if((year %% 4)==3){letter="D"}
-  if((year %% 4)==0){letter="A"}
+  #year=as.numeric(year)
 
-  trans.layer=paste(area, "trans", letter, sep="_")
-  trans.file=paste(trans.layer,".shp", sep="")
+  #if((year %% 4)==1){letter="B"}
+  #if((year %% 4)==2){letter="C"}
+  #if((year %% 4)==3){letter="D"}
+  #if((year %% 4)==0){letter="A"}
 
-  trans=list("file"=trans.file, "layer"=trans.layer)
+  #trans.layer=paste(area, "trans", letter, sep="_")
+  #trans.file=paste(trans.layer,".shp", sep="")
+
+  #trans=list("file"=trans.file, "layer"=trans.layer)
 
   return(trans)
 }
