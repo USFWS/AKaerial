@@ -2,6 +2,7 @@
 
 GreenLight=function(path.name, area){
 
+  necessary=c("year", "month", "day", "seat", "obs", "strata", "tran", "seg", "dir", "wind", "wspd", "sky", "wavfile", "lat", "long", "ctime", "lag", "species", "group", "unit", "code", "notes")
 
 
   type <- file_ext(path.name)
@@ -27,7 +28,15 @@ GreenLight=function(path.name, area){
   s.latlong="yellow"
   }
 
-  test.colmatch=ColMatch(data)
+  test.switchmatch=SwitchMatch(data)
+
+  if(test.switchmatch==TRUE){
+    s.switchmatch="green"
+  }
+  else{s.switchmatch="red"}
+
+
+  test.colmatch=ColMatch(data, necessary=necessary)
 
   if(test.colmatch==TRUE){s.colmatch="green"}
   else{s.colmatch="red"}
@@ -45,19 +54,41 @@ GreenLight=function(path.name, area){
 
 
 
+SwitchMatch=function(data){
 
-ColMatch=function(data){
-
-  necessary=c("yr", "se", "obs", "strat", "tran", "lat", "long", "sppn", "grp", "unit")
+  necessary=c("yr", "se", "mo", "strat", "da", "grp", "sppn")
   return(all(necessary %in% colnames(data)))
 
 }
 
 
-ShouldBeNumeric=function(data){
+ColSwitch=function(data){
+
+  colnames(data)[which(colnames(data)=="yr")]="year"
+  colnames(data)[which(colnames(data)=="mo")]="month"
+  colnames(data)[which(colnames(data)=="da")]="day"
+  colnames(data)[which(colnames(data)=="se")]="seat"
+  colnames(data)[which(colnames(data)=="strat")]="strata"
+  colnames(data)[which(colnames(data)=="grp")]="group"
+  colnames(data)[which(colnames(data)=="sppn")]="species"
+
+  return(data)
+}
 
 
+ColMatch=function(data, necessary){
 
+  return(all(necessary %in% colnames(data)))
+
+}
+
+
+ShouldBeNumeric=function(col.data){
+
+bad=which(is.na(as.numeric(col.data)))
+
+
+return(list("fail"=any(bad),"bad"=bad))
 
 }
 
