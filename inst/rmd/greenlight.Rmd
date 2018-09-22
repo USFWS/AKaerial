@@ -2,7 +2,7 @@
 title: "AKaerial Data Quality"
 author: "Chuck Frost"
 date: "July 2, 2018"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}

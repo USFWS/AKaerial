@@ -27,6 +27,14 @@ GreenLight=function(path.name, area){
   s.latlong="yellow"
   }
 
+  test.colmatch=ColMatch(data)
+
+  if(test.colmatch==TRUE){s.colmatch="green"}
+  else{s.colmatch="red"}
+
+
+
+
 
 
   rmd.path=system.file("rmd/greenlight.Rmd", package="AKaerial")
@@ -44,3 +52,48 @@ ColMatch=function(data){
   return(all(necessary %in% colnames(data)))
 
 }
+
+
+ShouldBeNumeric=function(data){
+
+
+
+
+}
+
+
+
+ObsByYear=function(path.name){
+
+  type <- file_ext(path.name)
+
+  if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE)}
+  if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE)}
+
+  yr.list=unique(data$yr)
+
+  data$obs=toupper(data$obs)
+
+  for(year in seq_along(yr.list)){
+
+    temp.data=data[data$yr==yr.list[year],]
+    obs.list=unique(temp.data$obs)
+
+    print(obs.list)
+    print(length(obs.list))
+
+    for (i in 1:length(obs.list)){
+    write.csv(temp.data[temp.data$obs==obs.list[i],],
+              file=paste("Q:/Waterfowl/Parsed/ACP_", yr.list[year], "_RawObs_", obs.list[i], ".csv", sep=""),
+              row.names=FALSE,
+              col.names=names(temp.data),
+              quote=FALSE
+              )
+    }
+
+  }
+
+
+}
+
+
