@@ -16,6 +16,8 @@ GreenLight=function(path.name, area){
     break
   }
 
+
+  #check for missing or outlier lat/longs
   latlong=SpatialNA(dat1,method="greenlight")
 
 
@@ -28,6 +30,8 @@ GreenLight=function(path.name, area){
   s.latlong="yellow"
   }
 
+
+  #are the columns there that need to be renamed?
   test.switchmatch=SwitchMatch(data)
 
   if(test.switchmatch==TRUE){
@@ -36,6 +40,8 @@ GreenLight=function(path.name, area){
   else{s.switchmatch="red"}
 
 
+
+  #are all of the required columns there (and named correctly)?
   test.colmatch=ColMatch(data, necessary=necessary)
 
   if(test.colmatch==TRUE){s.colmatch="green"}
@@ -91,6 +97,21 @@ bad=which(is.na(as.numeric(col.data)))
 return(list("fail"=any(bad),"bad"=bad))
 
 }
+
+
+SwanCheck=function(data){
+
+  nest=data[data$sppn=="TUNE" | data$sppn=="TRNE",]
+  swan=data[data$sppn=="TUSW" | data$sppn=="TRSW",]
+
+  bad=nest[which(nest$grp != "open"),]
+  missing=nest[which(nest$)]
+
+
+}
+
+
+
 
 
 
