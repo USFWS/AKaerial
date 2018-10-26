@@ -48,7 +48,37 @@ GreenLight=function(path.name, area){
   else{s.colmatch="red"}
 
 
+  #are there any swan nests without associated records (missing) or swan nests recorded as
+  #anything but open?
 
+  test.swan=SwanCheck(data)
+
+  if(test.swan$fail==TRUE){s.swan="red"}
+  else{s.swan="green"}
+
+
+  #are there only 4 possible unit types?
+
+  test.unit=UnitCheck(data)
+
+  if(test.unit$fail==TRUE){s.unit="red"}
+  else{s.unit="green"}
+
+
+  #are there only 4 possible seats recorded?
+
+  test.seat=SeatCheck(data)
+
+  if(test.seat$fail==TRUE){s.seat="red"}
+  else{s.seat="green"}
+
+  #are the species codes correct?
+
+  test.species=SpeciesCheck(data)
+
+  if(length(test.species$change)>0){s.species="yellow"}
+  if(length(test.species$bad)>0){s.species="red"}
+  if(test.species$fail==FALSE){s.species="green"}
 
 
 
@@ -99,14 +129,72 @@ return(list("fail"=any(bad),"bad"=bad))
 }
 
 
+UnitCheck=function(data){
+
+units=c("single", "pair", "flkdrake", "open")
+
+bad=data[which(!(data$unit %in% units)),]
+
+return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
+
+
+}
+
+SeatCheck=function(data){
+
+  seats=c("lf", "rf", "lr", "rr")
+
+
+  if("se" %in% colnames(data)){
+  bad=data[which(!(data$se %in% seats)),]
+  }
+
+  if("seat" %in% colnames(data)){
+    bad=data[which(!(data$seat %in% seats)),]
+    }
+
+  return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
+
+
+}
+
+
+SpeciesCheck=function(data){
+
+
+
+  if("sppn" %in% colnames(data)){
+    bad=data[which(!(data$sppn %in% sppntable$should.be) & !(data$sppn %in% sppntable$sppn)),]
+
+    change=data[which(data$sppn %in% sppntable$sppn & (!(data$sppn %in% sppntable$should.be))),]
+
+  }
+
+  if("species" %in% colnames(data)){
+    bad=data[which(!(data$species %in% sppntable$should.be) & !(data$species %in% sppntable$sppn)),]
+
+    change=data[which(data$species %in% sppntable$sppn & (!(data$species %in% sppntable$should.be))),]
+    }
+
+
+  return(list("fail"=(length(bad[,1])!=0), "bad"=bad, "change"=change))
+
+
+
+}
+
+
 SwanCheck=function(data){
 
   nest=data[data$sppn=="TUNE" | data$sppn=="TRNE",]
   swan=data[data$sppn=="TUSW" | data$sppn=="TRSW",]
 
-  bad=nest[which(nest$grp != "open"),]
-  missing=nest[which(nest$)]
 
+
+  bad=nest[which(nest$unit != "open"),]
+  missing=nest[which(!(nest$lat %in% swan$lat & nest$long %in% swan$long)),]
+
+  return(list("fail"=(length(bad[,1])!=0 | length(missing[,1])!=0), "bad"=bad, "missing"=missing))
 
 }
 

@@ -15,30 +15,30 @@ CheckData <- function (file.name, out.path=getwd()) {
 }
 
 
-ShouldBe <- function (sppn) {
+ShouldBe <- function (data) {
 
 
-for (i in 1:length(sppn)){
+for (i in 1:length(data$sppn)){
 
-  if (sppn[i] %in% sppntable$should.be){
+  if (data$sppn[i] %in% sppntable$should.be){
 
     next}
-  if (sppn[i] %in% sppntable$sppn){
+  if (data$sppn[i] %in% sppntable$sppn){
 
-    should.be=sppntable$should.be[sppntable$sppn==sppn[i]]
+    should.be=sppntable$should.be[sppntable$sppn==data$sppn[i]]
 
     #print(paste("Changed species code", i, "from", sppn[i], "to", should.be))
-    sppn[i] = as.character(should.be)
+    data$sppn[i] = as.character(should.be)
 
   }
   else {
 
-    print(paste("Entry", i, sppn[i], "was not handled."))
+    print(paste("Entry", i, data$sppn[i], "was not handled."))
   }
 
 }
 
-invisible(sppn)
+invisible(data)
 
 }
 
