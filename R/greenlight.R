@@ -2,13 +2,37 @@
 
 GreenLight=function(path.name, area){
 
-  necessary=c("year", "month", "day", "seat", "obs", "strata", "tran", "seg", "dir", "wind", "wspd", "sky", "wavfile", "lat", "long", "ctime", "lag", "species", "group", "unit", "code", "notes")
+  necessary=c("Year",
+              "Month",
+              "Day",
+              "Seat",
+              "Observer",
+              "Stratum",
+              "Transect",
+              "Segment",
+              "Flight_Dir",
+              "A_G_Name",
+              "Wind_Dir",
+              "Wind_Vel",
+              "Sky",
+              "Filename",
+              "Lat",
+              "Lon",
+              "Time",
+              "Delay",
+              "Species",
+              "Num",
+              "Obs_Type",
+              "Behavior",
+              "Distance",
+              "Code",
+              "Notes")
 
 
   type <- file_ext(path.name)
 
-  if(type == "txt") {data <- read.table(path.name, header=TRUE)}
-  if(type == "csv") {data <- read.csv(path.name, header=TRUE)}
+  if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE)}
+  if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE)}
 
   if(!area %in% c("ACP", "YKD", "YKG", "CRD", "BPOP")){
 
@@ -18,14 +42,13 @@ GreenLight=function(path.name, area){
 
 
   #check for missing or outlier lat/longs
-  latlong=SpatialNA(dat1,method="greenlight")
+  latlong=SpatialNA(data,method="greenlight")
 
 
-  if(is.na(latlong)){
+  if(is.na(latlong[1])){
   n.latlong=0
   s.latlong="green"
-  }
-  else {
+  }else {
   n.latlong=length(latlong[,1])
   s.latlong="yellow"
   }
@@ -44,8 +67,7 @@ GreenLight=function(path.name, area){
   #are all of the required columns there (and named correctly)?
   test.colmatch=ColMatch(data, necessary=necessary)
 
-  if(test.colmatch==TRUE){s.colmatch="green"}
-  else{s.colmatch="red"}
+  if(test.colmatch==TRUE){s.colmatch="green"}else{s.colmatch="red"}
 
 
   #are there any swan nests without associated records (missing) or swan nests recorded as
@@ -53,24 +75,21 @@ GreenLight=function(path.name, area){
 
   test.swan=SwanCheck(data)
 
-  if(test.swan$fail==TRUE){s.swan="red"}
-  else{s.swan="green"}
+  if(test.swan$fail==TRUE){s.swan="red"}else{s.swan="green"}
 
 
   #are there only 4 possible unit types?
 
   test.unit=UnitCheck(data)
 
-  if(test.unit$fail==TRUE){s.unit="red"}
-  else{s.unit="green"}
+  if(test.unit$fail==TRUE){s.unit="red"}else{s.unit="green"}
 
 
   #are there only 4 possible seats recorded?
 
   test.seat=SeatCheck(data)
 
-  if(test.seat$fail==TRUE){s.seat="red"}
-  else{s.seat="green"}
+  if(test.seat$fail==TRUE){s.seat="red"}else{s.seat="green"}
 
   #are the species codes correct?
 
@@ -81,10 +100,50 @@ GreenLight=function(path.name, area){
   if(test.species$fail==FALSE){s.species="green"}
 
 
+  #are the observer initials all uppercase?
+
+  test.observer=ObserverCheck(data)
+
+  if(test.observer==TRUE){s.observer="green"}else{s.observer="red"}
+
+  #Numeric tests- Year, Month, Day, Wind_Vel, Lat, Lon, Time, Delay, Num, Code
+
+  test.year=ShouldBeNumeric(data$Year)
+  if(test.year$fail==TRUE){s.year="red"}else{s.year="green"}
+
+  test.month=ShouldBeNumeric(data$Month)
+  if(test.month$fail==TRUE){s.month="red"}else{s.month="green"}
+
+  test.day=ShouldBeNumeric(data$Day)
+  if(test.day$fail==TRUE){s.day="red"}else{s.day="green"}
+
+  test.wind=ShouldBeNumeric(data$Wind_Vel)
+  if(test.wind$fail==TRUE){s.wind="red"}else{s.wind="green"}
+
+  test.lat=ShouldBeNumeric(data$Lat)
+  if(test.lat$fail==TRUE){s.lat="red"}else{s.lat="green"}
+
+  test.lon=ShouldBeNumeric(data$Lon)
+  if(test.lon$fail==TRUE){s.lon="red"}else{s.lon="green"}
+
+  test.time=ShouldBeNumeric(data$Time)
+  if(test.time$fail==TRUE){s.time="red"}else{s.time="green"}
+
+  test.delay=ShouldBeNumeric(data$Delay)
+  if(test.delay$fail==TRUE){s.delay="red"}else{s.delay="green"}
+
+  test.num=ShouldBeNumeric(data$Num)
+  if(test.num$fail==TRUE){s.num="red"}else{s.num="green"}
+
+  test.code=ShouldBeNumeric(data$Code)
+  if(test.code$fail==TRUE){s.code="red"}else{s.code="green"}
+
 
   rmd.path=system.file("rmd/greenlight.Rmd", package="AKaerial")
 
-  render(rmd.path, output_dir=getwd())
+
+
+ render(rmd.path, output_dir=getwd())
 
 }
 
@@ -94,6 +153,13 @@ SwitchMatch=function(data){
 
   necessary=c("yr", "se", "mo", "strat", "da", "grp", "sppn")
   return(all(necessary %in% colnames(data)))
+
+}
+
+
+ObserverCheck=function(data){
+
+  return(all(data$Observer==toupper(data$Observer)))
 
 }
 
@@ -121,8 +187,8 @@ ColMatch=function(data, necessary){
 
 ShouldBeNumeric=function(col.data){
 
-bad=which(is.na(as.numeric(col.data)))
-
+bad=suppressWarnings(which(is.na(as.numeric(col.data))))
+#bad=which(is.na(as.numeric(col.data)))
 
 return(list("fail"=any(bad),"bad"=bad))
 
@@ -133,7 +199,7 @@ UnitCheck=function(data){
 
 units=c("single", "pair", "flkdrake", "open")
 
-bad=data[which(!(data$unit %in% units)),]
+bad=data[which(!(data$Obs_Type %in% units)),]
 
 return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
 
@@ -142,15 +208,15 @@ return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
 
 SeatCheck=function(data){
 
-  seats=c("lf", "rf", "lr", "rr")
+  seats=c("LF", "RF", "LR", "RR")
 
 
   if("se" %in% colnames(data)){
   bad=data[which(!(data$se %in% seats)),]
   }
 
-  if("seat" %in% colnames(data)){
-    bad=data[which(!(data$seat %in% seats)),]
+  if("Seat" %in% colnames(data)){
+    bad=data[which(!(data$Seat %in% seats)),]
     }
 
   return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
@@ -170,10 +236,10 @@ SpeciesCheck=function(data){
 
   }
 
-  if("species" %in% colnames(data)){
-    bad=data[which(!(data$species %in% sppntable$should.be) & !(data$species %in% sppntable$sppn)),]
+  if("Species" %in% colnames(data)){
+    bad=data[which(!(data$Species %in% sppntable$should.be) & !(data$Species %in% sppntable$sppn)),]
 
-    change=data[which(data$species %in% sppntable$sppn & (!(data$species %in% sppntable$should.be))),]
+    change=data[which(data$Species %in% sppntable$sppn & (!(data$Species %in% sppntable$should.be))),]
     }
 
 
@@ -186,13 +252,13 @@ SpeciesCheck=function(data){
 
 SwanCheck=function(data){
 
-  nest=data[data$sppn=="TUNE" | data$sppn=="TRNE",]
-  swan=data[data$sppn=="TUSW" | data$sppn=="TRSW",]
+  nest=data[data$Species=="TUNE" | data$Species=="TRNE",]
+  swan=data[data$Species=="TUSW" | data$Species=="TRSW",]
 
 
 
-  bad=nest[which(nest$unit != "open"),]
-  missing=nest[which(!(nest$lat %in% swan$lat & nest$long %in% swan$long)),]
+  bad=nest[which(nest$Unit != "open"),]
+  missing=nest[which(!(nest$Lat %in% swan$Lat & nest$Lon %in% swan$Lon)),]
 
   return(list("fail"=(length(bad[,1])!=0 | length(missing[,1])!=0), "bad"=bad, "missing"=missing))
 
