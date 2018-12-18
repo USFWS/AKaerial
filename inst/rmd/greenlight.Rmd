@@ -62,7 +62,13 @@ Status - YELLOW
 
 This indicates a potential error in `r n.latlong` of the latitude/longitude values, specified below:
 
-`r latlong`
+```{r latlong}
+head(latlong) %>%
+  kable() %>%
+  kable_styling()
+
+
+```
 
 `r if(s.latlong != "yellow") {"\\end{comment}"}`
 
@@ -79,7 +85,11 @@ Status - GREEN
 `r if(length(test.swan$bad[,1]) == 0) {"\\begin{comment}"}`
 The following nests are not recorded as open, 1:
 
-`r print(test.swan$bad)`
+```{r swan_bad}
+test.swan$bad %>%
+  kable() %>%
+  kable_styling()
+```
 
 Status - RED
 `r if(length(test.swan$bad[,1]) == 0) {"\\end{comment}"}`
@@ -87,13 +97,320 @@ Status - RED
 `r if(length(test.swan$missing[,1]) == 0) {"\\begin{comment}"}`
 The following nests do not have associated swan records:
 
-`r print(test.swan$missing)`
+```{r swan_miss}
+test.swan$missing %>%
+  kable() %>%
+  kable_styling()
+```
 
 Status - RED
 `r if(length(test.swan$missing[,1]) == 0) {"\\end{comment}"}`
 
 
+## Obs_Type (Unit) Codes
+
+The following Obs_Type codes are acceptable- single, pair, open, flkdrake.
+
+`r if(s.unit != "green") {"\\begin{comment}"}`
+All Obs_Type codes appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.unit != "green") {"\\end{comment}"}`
+
+`r if(length(test.unit$bad[,1]) == 0) {"\\begin{comment}"}`
+The following Obs_Type values are not acceptable:
+
+```{r obs_type}
+test.unit$bad %>%
+  kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(length(test.unit$bad[,1]) == 0) {"\\end{comment}"}`
+
+## Seat Codes
+
+Seat codes must be either LF, RF, LR, or RR, and are case-sensitive.  
+
+`r if(s.seat != "green") {"\\begin{comment}"}`
+All seat codes appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.seat != "green") {"\\end{comment}"}`
+
+`r if(length(test.seat$bad[,1]) == 0) {"\\begin{comment}"}`
+The following seat values are not acceptable (first 6 shown):
+
+```{r seat}
+head(test.seat$bad) %>%
+  kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(length(test.seat$bad[,1]) == 0) {"\\end{comment}"}`
+
+## Species Codes
+The current list of acceptable species codes can be found at:
+<https://github.com/cfrost3/AKaerial/blob/master/inst/external/sppntable.csv>
+
+`r if(s.species != "green") {"\\begin{comment}"}`
+All species codes appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.species != "green") {"\\end{comment}"}`
+
+`r if(length(test.species$change[,1]) == 0) {"\\begin{comment}"}`
+The following species codes are not acceptable and will be updated:
+
+```{r spec_missing}
+test.species$change %>%
+  kable() %>%
+  kable_styling()
+```
+
+Status - YELLOW
+`r if(length(test.species$change[,1]) == 0) {"\\end{comment}"}`
 
 
+`r if(length(test.species$bad[,1]) == 0) {"\\begin{comment}"}`
+The following species codes are not acceptable and no replacement is available:
+
+```{r spec_bad}
+test.species$bad %>%
+  kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(length(test.species$bad[,1]) == 0) {"\\end{comment}"}`
+
+## Observer Initials
+
+Observer intials must be input as 3 characters, all uppercase.  
+
+`r if(s.observer != "green") {"\\begin{comment}"}`
+All observers appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.observer != "green") {"\\end{comment}"}`
+
+`r if(s.observer != "red") {"\\begin{comment}"}`
+Some observer initials have been entered incorrectly.
+
+```{r observer}
+print(unique(data$Observer))
+```
+
+Status - RED
+`r if(s.observer != "red") {"\\end{comment}"}`
+
+## Year, Month, Day
+
+Must be numeric.
+
+`r if(s.year != "green") {"\\begin{comment}"}`
+All years appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.year != "green") {"\\end{comment}"}`
+
+`r if(s.year != "red") {"\\begin{comment}"}`
+There are non-numeric values in Year.
+
+```{r year}
+data[test.year$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.year != "red") {"\\end{comment}"}`
 
 
+`r if(s.month != "green") {"\\begin{comment}"}`
+All months appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.month != "green") {"\\end{comment}"}`
+
+`r if(s.month != "red") {"\\begin{comment}"}`
+There are non-numeric values in Month.
+
+```{r month}
+data[test.month$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.month != "red") {"\\end{comment}"}`
+
+`r if(s.day != "green") {"\\begin{comment}"}`
+All days appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.day != "green") {"\\end{comment}"}`
+
+`r if(s.day != "red") {"\\begin{comment}"}`
+There are non-numeric values in Day.
+
+```{r day}
+data[test.day$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.day != "red") {"\\end{comment}"}`
+
+
+## Other numeric values: Wind_Vel, Lat, Lon, Time, Delay, Num, Code
+
+Must all be numeric (or NA).
+
+`r if(s.wind != "green") {"\\begin{comment}"}`
+All Wind_Vel values appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.wind != "green") {"\\end{comment}"}`
+
+`r if(s.wind != "red") {"\\begin{comment}"}`
+There are non-numeric values in Wind_Vel.
+
+```{r wind}
+head(data[test.wind$bad, ]) %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.wind != "red") {"\\end{comment}"}`
+
+
+`r if(s.lat != "green") {"\\begin{comment}"}`
+All Latitude values appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.lat != "green") {"\\end{comment}"}`
+
+`r if(s.lat != "red") {"\\begin{comment}"}`
+There are non-numeric values in Lat.
+
+```{r lat}
+data[test.lat$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.lat != "red") {"\\end{comment}"}`
+
+`r if(s.lon != "green") {"\\begin{comment}"}`
+All Longitude values appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.lon != "green") {"\\end{comment}"}`
+
+`r if(s.lon != "red") {"\\begin{comment}"}`
+There are non-numeric values in Lon.
+
+```{r lon}
+data[test.lon$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.lon != "red") {"\\end{comment}"}`
+
+`r if(s.time != "green") {"\\begin{comment}"}`
+All times appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.time != "green") {"\\end{comment}"}`
+
+`r if(s.time != "red") {"\\begin{comment}"}`
+There are non-numeric values in Time.
+
+```{r time}
+data[test.time$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.time != "red") {"\\end{comment}"}`
+
+`r if(s.delay != "green") {"\\begin{comment}"}`
+All delays appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.delay != "green") {"\\end{comment}"}`
+
+`r if(s.delay != "red") {"\\begin{comment}"}`
+There are non-numeric values in Delay.
+
+```{r delay}
+data[test.delay$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.delay != "red") {"\\end{comment}"}`
+
+`r if(s.num != "green") {"\\begin{comment}"}`
+All group sizes (Num) appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.num != "green") {"\\end{comment}"}`
+
+`r if(s.num != "red") {"\\begin{comment}"}`
+There are non-numeric values in Num.
+
+```{r num}
+data[test.num$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.num != "red") {"\\end{comment}"}`
+
+`r if(s.code != "green") {"\\begin{comment}"}`
+All data codes appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.code != "green") {"\\end{comment}"}`
+
+`r if(s.code != "red") {"\\begin{comment}"}`
+There are non-numeric values in Code.
+
+```{r code}
+data[test.code$bad, ] %>%
+kable() %>%
+  kable_styling()
+```
+
+Status - RED
+`r if(s.code != "red") {"\\end{comment}"}`
+
+## Visualization
+
+```{r plots}
+
+obs_plot= ggplot(data, aes(Obs_Type)) +
+  geom_bar(fill = "#0073C2FF") 
+
+
+sp_plot= ggplot(data, aes(Species)) +
+  geom_bar(fill = "#0073C2FF") 
+
+
+print(obs_plot)
+
+print(sp_plot)
+
+```

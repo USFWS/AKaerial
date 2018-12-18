@@ -16,6 +16,8 @@ library(zoo)
 library(ggspatial)
 library(outliers)
 library(rmarkdown)
+library(kableExtra)
+
 
 DataSelect <- function(area, year, path=NA, data=NA, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE, show.data=TRUE){
 

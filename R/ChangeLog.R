@@ -49,8 +49,8 @@ invisible(data)
 
 SpatialNA <- function (na.data, method="standard") {
 
-  lon.na <- which(scores(na.data$Lon, type="z", prob=0.998))
-  lat.na <- which(scores(na.data$Lat, type="z", prob=0.998))
+  lon.na <- which(scores(na.data$Lon, type="z", prob=0.99999))
+  lat.na <- which(scores(na.data$Lat, type="z", prob=0.99999))
 
 
   problems=data.frame(record=c(lon.na, lat.na), value=c(na.data$Lon[lon.na], na.data$Lat[lat.na]), type=c(rep("Lon", length(lon.na)), rep("Lat", length(lat.na))))
