@@ -1,12 +1,13 @@
 ---
 title: "AKaerial Data Quality"
 author: "Chuck Frost"
-date: "December, 2018"
+date: "March, 2019"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(plyr)
 ```
 
 ## Introduction
@@ -51,26 +52,9 @@ Status - RED
 
 ## Spatial
 
-There were `r n.latlong` spatial coordinate warnings.  These are longitude or latitude values that fall outside the normal boundaries of the survey. If these values are attributed to a transect used in the ratio estimate and cannot be interpolated, they may be removed.
-
-`r if(s.latlong != "green") {"\\begin{comment}"}`
-Status - GREEN
-`r if(s.latlong != "green") {"\\end{comment}"}`
-
-`r if(s.latlong != "yellow") {"\\begin{comment}"}`
-Status - YELLOW
-
-This indicates a potential error in `r n.latlong` of the latitude/longitude values, specified below:
-
-```{r latlong}
-head(latlong) %>%
-  kable() %>%
-  kable_styling()
+There are no spatial checks provided here.  Spatial checks will be unique to the analysis.
 
 
-```
-
-`r if(s.latlong != "yellow") {"\\end{comment}"}`
 
 ## Swans
 
@@ -83,25 +67,16 @@ Status - GREEN
 `r if(s.swan != "green") {"\\end{comment}"}`
 
 `r if(length(test.swan$bad[,1]) == 0) {"\\begin{comment}"}`
-The following nests are not recorded as open, 1:
+There are `r length(test.swan$bad[,1])` not recorded as open, 1.
 
-```{r swan_bad}
-test.swan$bad %>%
-  kable() %>%
-  kable_styling()
-```
 
 Status - RED
 `r if(length(test.swan$bad[,1]) == 0) {"\\end{comment}"}`
 
 `r if(length(test.swan$missing[,1]) == 0) {"\\begin{comment}"}`
-The following nests do not have associated swan records:
+There are `r length(test.swan$missing[,1])` nests without associated swan records.
 
-```{r swan_miss}
-test.swan$missing %>%
-  kable() %>%
-  kable_styling()
-```
+
 
 Status - RED
 `r if(length(test.swan$missing[,1]) == 0) {"\\end{comment}"}`
@@ -109,7 +84,7 @@ Status - RED
 
 ## Obs_Type (Unit) Codes
 
-The following Obs_Type codes are acceptable- single, pair, open, flkdrake.
+The following Obs_Type codes are acceptable- single, pair, open, flkdrake.  Leading or trailing spaces are not acceptable.
 
 `r if(s.unit != "green") {"\\begin{comment}"}`
 All Obs_Type codes appear to be recorded correctly.
@@ -121,9 +96,8 @@ Status - GREEN
 The following Obs_Type values are not acceptable:
 
 ```{r obs_type}
-test.unit$bad %>%
-  kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(test.unit$bad))
+
 ```
 
 Status - RED
@@ -143,9 +117,8 @@ Status - GREEN
 The following seat values are not acceptable (first 6 shown):
 
 ```{r seat}
-head(test.seat$bad) %>%
-  kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(head(test.seat$bad)))
+  
 ```
 
 Status - RED
@@ -153,10 +126,10 @@ Status - RED
 
 ## Species Codes
 The current list of acceptable species codes can be found at:
-<https://github.com/cfrost3/AKaerial/blob/master/inst/external/sppntable.csv>
+<https://github.com/cfrost3/AKaerial/tree/master/data/AK%20Aerial%20Species%20AOU%20Codes02122019.csv>
 
 `r if(s.species != "green") {"\\begin{comment}"}`
-All species codes appear to be recorded correctly.
+All species codes appear to be recorded correctly, or at least an acceptable substitute is known (for any YELLOW status codes entered).
 
 Status - GREEN
 `r if(s.species != "green") {"\\end{comment}"}`
@@ -165,9 +138,7 @@ Status - GREEN
 The following species codes are not acceptable and will be updated:
 
 ```{r spec_missing}
-test.species$change %>%
-  kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(table(test.species$change$Species)))
 ```
 
 Status - YELLOW
@@ -178,15 +149,13 @@ Status - YELLOW
 The following species codes are not acceptable and no replacement is available:
 
 ```{r spec_bad}
-test.species$bad %>%
-  kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(table(test.species$bad$Species)))
 ```
 
 Status - RED
 `r if(length(test.species$bad[,1]) == 0) {"\\end{comment}"}`
 
-## Observer Initials
+## Observers 
 
 Observer intials must be input as 3 characters, all uppercase.  
 
@@ -220,9 +189,8 @@ Status - GREEN
 There are non-numeric values in Year.
 
 ```{r year}
-data[test.year$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.year$bad, ]))
+
 ```
 
 Status - RED
@@ -239,9 +207,8 @@ Status - GREEN
 There are non-numeric values in Month.
 
 ```{r month}
-data[test.month$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.month$bad, ]))
+
 ```
 
 Status - RED
@@ -257,9 +224,7 @@ Status - GREEN
 There are non-numeric values in Day.
 
 ```{r day}
-data[test.day$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.day$bad, ]))
 ```
 
 Status - RED
@@ -280,9 +245,7 @@ Status - GREEN
 There are non-numeric values in Wind_Vel.
 
 ```{r wind}
-head(data[test.wind$bad, ]) %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(head(data[test.wind$bad, ])))
 ```
 
 Status - RED
@@ -299,9 +262,7 @@ Status - GREEN
 There are non-numeric values in Lat.
 
 ```{r lat}
-data[test.lat$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.lat$bad, ]))
 ```
 
 Status - RED
@@ -317,9 +278,7 @@ Status - GREEN
 There are non-numeric values in Lon.
 
 ```{r lon}
-data[test.lon$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.lon$bad, ])) 
 ```
 
 Status - RED
@@ -335,9 +294,7 @@ Status - GREEN
 There are non-numeric values in Time.
 
 ```{r time}
-data[test.time$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.time$bad, ])) 
 ```
 
 Status - RED
@@ -353,9 +310,7 @@ Status - GREEN
 There are non-numeric values in Delay.
 
 ```{r delay}
-data[test.delay$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.delay$bad, ])) 
 ```
 
 Status - RED
@@ -371,9 +326,7 @@ Status - GREEN
 There are non-numeric values in Num.
 
 ```{r num}
-data[test.num$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.num$bad, ])) 
 ```
 
 Status - RED
@@ -389,9 +342,7 @@ Status - GREEN
 There are non-numeric values in Code.
 
 ```{r code}
-data[test.code$bad, ] %>%
-kable() %>%
-  kable_styling()
+kableExtra::kable_styling(kableExtra::kable(data[test.code$bad, ])) 
 ```
 
 Status - RED
@@ -401,12 +352,12 @@ Status - RED
 
 ```{r plots}
 
-obs_plot= ggplot(data, aes(Obs_Type)) +
-  geom_bar(fill = "#0073C2FF") 
+obs_plot= ggplot2::ggplot(data, ggplot2::aes(Obs_Type)) +
+  ggplot2::geom_bar(fill = "#0073C2FF") 
 
 
-sp_plot= ggplot(data, aes(Species)) +
-  geom_bar(fill = "#0073C2FF") 
+sp_plot= ggplot2::ggplot(data, ggplot2::aes(Species)) +
+  ggplot2::geom_bar(fill = "#0073C2FF") 
 
 
 print(obs_plot)
