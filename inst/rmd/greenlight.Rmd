@@ -93,10 +93,10 @@ Status - GREEN
 `r if(s.unit != "green") {"\\end{comment}"}`
 
 `r if(length(test.unit$bad[,1]) == 0) {"\\begin{comment}"}`
-The following Obs_Type values are not acceptable:
+The following Obs_Type values are not acceptable (if more than 6, only the first 6 shown):
 
 ```{r obs_type}
-kableExtra::kable_styling(kableExtra::kable(test.unit$bad))
+kableExtra::kable_styling(kableExtra::kable(head(test.unit$bad)))
 
 ```
 
@@ -186,10 +186,10 @@ Status - GREEN
 `r if(s.year != "green") {"\\end{comment}"}`
 
 `r if(s.year != "red") {"\\begin{comment}"}`
-There are non-numeric values in Year.
+There are non-numeric values in Year.  If more than 6, only the first 6 shown. 
 
 ```{r year}
-kableExtra::kable_styling(kableExtra::kable(data[test.year$bad, ]))
+kableExtra::kable_styling(kableExtra::kable(head(data[test.year$bad, ])))
 
 ```
 
@@ -204,10 +204,10 @@ Status - GREEN
 `r if(s.month != "green") {"\\end{comment}"}`
 
 `r if(s.month != "red") {"\\begin{comment}"}`
-There are non-numeric values in Month.
+There are non-numeric values in Month.  If more than 6, only the first 6 shown.
 
 ```{r month}
-kableExtra::kable_styling(kableExtra::kable(data[test.month$bad, ]))
+kableExtra::kable_styling(kableExtra::kable(head(data[test.month$bad, ])))
 
 ```
 
@@ -221,10 +221,10 @@ Status - GREEN
 `r if(s.day != "green") {"\\end{comment}"}`
 
 `r if(s.day != "red") {"\\begin{comment}"}`
-There are non-numeric values in Day.
+There are non-numeric values in Day.  If more than 6, only the first 6 shown.
 
 ```{r day}
-kableExtra::kable_styling(kableExtra::kable(data[test.day$bad, ]))
+kableExtra::kable_styling(kableExtra::kable(head(data[test.day$bad, ])))
 ```
 
 Status - RED
@@ -242,7 +242,7 @@ Status - GREEN
 `r if(s.wind != "green") {"\\end{comment}"}`
 
 `r if(s.wind != "red") {"\\begin{comment}"}`
-There are non-numeric values in Wind_Vel.
+There are non-numeric values in Wind_Vel.  If more than 6, only the first 6 shown.
 
 ```{r wind}
 kableExtra::kable_styling(kableExtra::kable(head(data[test.wind$bad, ])))
@@ -259,10 +259,10 @@ Status - GREEN
 `r if(s.lat != "green") {"\\end{comment}"}`
 
 `r if(s.lat != "red") {"\\begin{comment}"}`
-There are non-numeric values in Lat.
+There are non-numeric values in Lat.  If more than 6, only the first 6 shown.
 
 ```{r lat}
-kableExtra::kable_styling(kableExtra::kable(data[test.lat$bad, ]))
+kableExtra::kable_styling(kableExtra::kable(head(data[test.lat$bad, ])))
 ```
 
 Status - RED
@@ -275,10 +275,10 @@ Status - GREEN
 `r if(s.lon != "green") {"\\end{comment}"}`
 
 `r if(s.lon != "red") {"\\begin{comment}"}`
-There are non-numeric values in Lon.
+There are non-numeric values in Lon.  If more than 6, only the first 6 shown.
 
 ```{r lon}
-kableExtra::kable_styling(kableExtra::kable(data[test.lon$bad, ])) 
+kableExtra::kable_styling(kableExtra::kable(head(data[test.lon$bad, ]))) 
 ```
 
 Status - RED
@@ -291,10 +291,10 @@ Status - GREEN
 `r if(s.time != "green") {"\\end{comment}"}`
 
 `r if(s.time != "red") {"\\begin{comment}"}`
-There are non-numeric values in Time.
+There are non-numeric values in Time.  If more than 6, only the first 6 shown.
 
 ```{r time}
-kableExtra::kable_styling(kableExtra::kable(data[test.time$bad, ])) 
+kableExtra::kable_styling(kableExtra::kable(head(data[test.time$bad, ]))) 
 ```
 
 Status - RED
@@ -307,10 +307,10 @@ Status - GREEN
 `r if(s.delay != "green") {"\\end{comment}"}`
 
 `r if(s.delay != "red") {"\\begin{comment}"}`
-There are non-numeric values in Delay.
+There are non-numeric values in Delay.  If more than 6, only the first 6 shown.
 
 ```{r delay}
-kableExtra::kable_styling(kableExtra::kable(data[test.delay$bad, ])) 
+kableExtra::kable_styling(kableExtra::kable(head(data[test.delay$bad, ]))) 
 ```
 
 Status - RED
@@ -323,10 +323,10 @@ Status - GREEN
 `r if(s.num != "green") {"\\end{comment}"}`
 
 `r if(s.num != "red") {"\\begin{comment}"}`
-There are non-numeric values in Num.
-
+There are non-numeric values in Num.  If more than 6, only the first 6 shown.
+ 
 ```{r num}
-kableExtra::kable_styling(kableExtra::kable(data[test.num$bad, ])) 
+kableExtra::kable_styling(kableExtra::kable(head(data[test.num$bad, ]))) 
 ```
 
 Status - RED
@@ -339,10 +339,10 @@ Status - GREEN
 `r if(s.code != "green") {"\\end{comment}"}`
 
 `r if(s.code != "red") {"\\begin{comment}"}`
-There are non-numeric values in Code.
+There are non-numeric values in Code.  If more than 6, only the first 6 shown.
 
 ```{r code}
-kableExtra::kable_styling(kableExtra::kable(data[test.code$bad, ])) 
+kableExtra::kable_styling(kableExtra::kable(head(data[test.code$bad, ]))) 
 ```
 
 Status - RED
@@ -357,11 +357,16 @@ obs_plot= ggplot2::ggplot(data, ggplot2::aes(Obs_Type)) +
 
 
 sp_plot= ggplot2::ggplot(data, ggplot2::aes(Species)) +
-  ggplot2::geom_bar(fill = "#0073C2FF") 
+  ggplot2::geom_bar(fill = "#0073C2FF") +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
+num_plot= ggplot2::ggplot(data, ggplot2::aes(Num)) +
+  ggplot2::geom_bar(fill = "#0073C2FF") 
 
 print(obs_plot)
 
 print(sp_plot)
+
+print(num_plot)
 
 ```

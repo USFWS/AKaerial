@@ -195,8 +195,11 @@ ColMatch=function(data, necessary){
 
 ShouldBeNumeric=function(col.data){
 
+bad.na=suppressWarnings(which(is.na(col.data)))
 bad=suppressWarnings(which(is.na(as.numeric(col.data))))
 #bad=which(is.na(as.numeric(col.data)))
+
+bad=bad[!(bad %in% bad.na)]
 
 return(list("fail"=any(bad),"bad"=bad))
 
