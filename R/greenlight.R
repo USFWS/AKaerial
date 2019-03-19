@@ -34,7 +34,7 @@ GreenLight=function(path.name, area){
   if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE)}
   if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE)}
 
-  if(!area %in% c("ACP", "YKD", "YKG", "CRD", "BPOP")){
+  if(!area %in% c("ACP", "YKD", "YKG", "CRD", "BPOP", "BLSC")){
 
     print("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, BPOP.")
     break

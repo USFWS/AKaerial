@@ -333,34 +333,35 @@ SplitDesign <- function(area, SegCheck=FALSE, file.name, layer.name){
 
 
 
-LoadMap <- function(area, type="df") {
+LoadMap <- function(map, lay, type="df") {
 
-  if(area=="acp"){
+  # if(area=="acp"){
+  #
+  # map = system.file("external/ACP_2018_AnalysisStrata.shp", package="AKaerial")
+  # #map="D:/CharlesFrost/AKaerial/data/a483web7 polygon.shp"
+  # lay="ACP_2018_AnalysisStrata"
+  # }
+  #
+  # if(area=="ykd"){
+  # map = system.file("external/newaird3_polygon.shp", package="AKaerial")
+  # #map="D:/CharlesFrost/AKaerial/data/newaird3_polygon.shp"
+  # lay="newaird3_polygon"
+  # }
+  #
+  # if(area=="ykg"){
+  # map = system.file("external/YKG__2018_MemoAnalysisStrata.shp", package="AKaerial")
+  # #map="D:/CharlesFrost/AKaerial/data/StratificationForHodgesAnalysis2.shp"
+  # lay="YKG__2018_MemoAnalysisStrata"
+  #
+  # }
+  #
+  # if(area=="crd"){
+  #   map = system.file("external/CRD_2018_AnalysisStrata.shp", package="AKaerial")
+  #   #map="D:/CharlesFrost/AKaerial/data/CRD_2018_AnalysisStrata.shp"
+  #   lay="CRD_2018_AnalysisStrata"
+  #
+  # }
 
-  map = system.file("external/ACP_2018_AnalysisStrata.shp", package="AKaerial")
-  #map="D:/CharlesFrost/AKaerial/data/a483web7 polygon.shp"
-  lay="ACP_2018_AnalysisStrata"
-  }
-
-  if(area=="ykd"){
-  map = system.file("external/newaird3_polygon.shp", package="AKaerial")
-  #map="D:/CharlesFrost/AKaerial/data/newaird3_polygon.shp"
-  lay="newaird3_polygon"
-  }
-
-  if(area=="ykg"){
-  map = system.file("external/YKG__2018_MemoAnalysisStrata.shp", package="AKaerial")
-  #map="D:/CharlesFrost/AKaerial/data/StratificationForHodgesAnalysis2.shp"
-  lay="YKG__2018_MemoAnalysisStrata"
-
-  }
-
-  if(area=="crd"){
-    map = system.file("external/CRD_2018_AnalysisStrata.shp", package="AKaerial")
-    #map="D:/CharlesFrost/AKaerial/data/CRD_2018_AnalysisStrata.shp"
-    lay="CRD_2018_AnalysisStrata"
-
-  }
 
 
   maptools::gpclibPermit()
@@ -383,29 +384,44 @@ LoadMap <- function(area, type="df") {
 }
 
 
-ViewStrata <- function(area, year=NULL, ViewTrans=FALSE, strata="all", numbers=FALSE, print=TRUE) {
-  GIS.obj = LoadMap(area)
+ViewStrata <- function(map, year=NULL, ViewTrans="none", strata="all", numbers=FALSE, print=TRUE) {
+  GIS.obj = LoadMap(map)
 if(strata=="all"){
 
-  if(area=="acp" || area=="crd"){
-    strata.plot <- ggplot() +
-      geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
-      geom_path(color="black") +
-      coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-    #scale_fill_manual(name="Strata", values=c("red","green","yellow","grey", "orange"))
-  }
+  hulls= GIS.obj %>% group_by(STRATNAME) %>% do(.[chull(.[2:3]),])
 
-  if(area=="ykd"){
-    strata.plot <- ggplot() +
-      geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-      geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-  }
+  strata.plot <- ggplot(GIS.obj, aes(long, lat, fill=factor(STRATNAME))) +
+    geom_polygon(data=hulls, alpha=.3)
+    geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
+    geom_path(color="black") +
+    coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
 
-  if(area=="ykg"){
-    strata.plot <- ggplot() +
-      geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-      geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-  }
+
+  # strata.plot <- ggplot() +
+  #        geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
+  #        geom_path(color="black") +
+  #       coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
+  #
+  #
+  # if(area=="acp" || area=="crd"){
+  #   strata.plot <- ggplot() +
+  #     geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
+  #     geom_path(color="black") +
+  #     coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
+  #   #scale_fill_manual(name="Strata", values=c("red","green","yellow","grey", "orange"))
+  # }
+  #
+  # if(area=="ykd"){
+  #   strata.plot <- ggplot() +
+  #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
+  #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
+  # }
+  #
+  # if(area=="ykg"){
+  #   strata.plot <- ggplot() +
+  #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
+  #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
+  # }
 
 }
 
@@ -413,44 +429,54 @@ if(strata=="all"){
 
     data=GIS.obj[as.character(GIS.obj$STRATNAME) %in% strata,]
 
-
-    if(area=="acp" || area=="crd"){
-      strata.plot <- ggplot() +
-        geom_path(data=data, aes(long,lat,group=group)  ) +
-        geom_path(color="black", lwd=1.5) +
-        coord_map(xlim=c(min(data$long), max(data$long)), ylim=c(min(data$lat), max(data$lat))) +
+    strata.plot <- ggplot() +
+         geom_path(data=data, aes(long,lat,group=group)  ) +
+         geom_path(color="black", lwd=1.5) +
+         coord_map(xlim=c(min(data$long), max(data$long)), ylim=c(min(data$lat), max(data$lat))) +
         scale_x_continuous("Longitude (degrees)") + scale_y_continuous("Latitude (degrees)")
-      }
 
 
-
-    if(area=="ykd"){
-      strata.plot <- ggplot() +
-        geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-        geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-    }
-
-    if(area=="ykg"){
-      strata.plot <- ggplot() +
-        geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-        geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-    }
+    # if(area=="acp" || area=="crd"){
+    #   strata.plot <- ggplot() +
+    #     geom_path(data=data, aes(long,lat,group=group)  ) +
+    #     geom_path(color="black", lwd=1.5) +
+    #     coord_map(xlim=c(min(data$long), max(data$long)), ylim=c(min(data$lat), max(data$lat))) +
+    #     scale_x_continuous("Longitude (degrees)") + scale_y_continuous("Latitude (degrees)")
+    #   }
+    #
+    #
+    #
+    # if(area=="ykd"){
+    #   strata.plot <- ggplot() +
+    #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
+    #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
+    # }
+    #
+    # if(area=="ykg"){
+    #   strata.plot <- ggplot() +
+    #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
+    #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
+    # }
 
   }
 
 
 
-  if(ViewTrans){
-    trans=TranSelect(year=year, area=area)
-    trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-    trans.layer=trans$layer
+  if(ViewTrans != "none"){
+    # trans=TranSelect(year=year, area=area)
+    # trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
+    # trans.layer=trans$layer
+
+    trans.file=ViewTrans
+
+    trans.layer=file_path_sans_ext(basename(trans.file))
 
     trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
     trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
 
-    GIS.proj = LoadMap(area, type="proj")
+    GIS.proj = LoadMap(map, type="proj")
 
-    if(area=="crd"){trans.proj=raster::intersect(trans.proj, GIS.proj)}  #trim the excess lines
+    trans.proj=raster::intersect(trans.proj, GIS.proj)  #trim the excess lines
 
 
     trans.proj@data$id = rownames(trans.proj@data)
@@ -470,7 +496,7 @@ if(strata=="all"){
 
     if(numbers==TRUE){
     strata.plot = strata.plot +
-      geom_text(data=trans.labels, aes(x=long, y=lat, label=OBJECTID), size=3, fontface="bold")
+      geom_text(data=trans.labels, aes(x=long, y=lat, label=ORIGID), size=3, fontface="bold")
     }
 
 
