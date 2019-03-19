@@ -6,6 +6,10 @@ BLSC_strata=LoadMap(map="Q:/Waterfowl/BLSC Survey/Design Files/Design Strata/BLS
 
 coordinates(BLSC_data) = ~Lon+Lat
 
+
+factpal=colorFactor(brewer.pal(n=length(unique(BLSC$STRATNAME)), name="Spectral"), as.factor(BLSC$STRATNAME))
+
+
 leaflet() %>%
   addTiles() %>%
   addPolygons(data=BLSC,

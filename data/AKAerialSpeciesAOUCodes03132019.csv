@@ -11,6 +11,7 @@ ARTEN,Arctic Tern,Sterna paradisaea,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RHAU,Rhinoceros Auklet,Cerorhinca monocerata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 WHAU,Whiskered Auklet,Aethia pygmaea,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BAEA,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0,BAEA,0,BAEA,0,BAEA,1,BAEA,0
+BAEAA,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0,BAEA,0,BAEA,0,BAEA,1,BAEA,0
 BAEAI,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0,BAEA,0,BAEA,0,BAEA,1,BAEA,0
 BAEAIM,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0,BAEA,0,BAEA,0,BAEA,1,BAEA,0
 BEAD,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0,BAEA,0,BAEA,0,BAEA,1,BAEA,0
@@ -24,10 +25,13 @@ BASW,Barn Swallow,Hirundo rustica,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BEKI,Belted Kingfisher,Megaceryle alcyon,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BLBN,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BLBR,Black Brant,Branta bernicula nigricans,BRAN,BRAN,1,BRAN,0,BRAN,0,BRAN,1,BRAN,1
-BLNE,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+blbr,Black Brant,Branta bernicula nigricans,BRAN,BRAN,1,BRAN,0,BRAN,0,BRAN,1,BRAN,1
+BLNE,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,BRAN,1
+blne,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,BRAN,1
 BR.N,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BRAN,Black Brant,Branta bernicula nigricans,BRAN,BRAN,1,BRAN,0,BRAN,0,BRAN,1,BRAN,1
-BRNE,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+BRNE,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,BRAN,1
+brne,Black Brant,Branta bernicula nigricans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,BRAN,1
 BLGU,Black Guillemot,Cepphus grylle,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BLKI,Black-legged Kittiwake,Rissa tridactyla,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 KITI,Unidentified Kittiwake,Rissa spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -53,14 +57,19 @@ ACGO,Aleutian Cackling Goose,Branta hutchinsii leucopareia,CCGO,CCGO,1,CCGO,0,CC
 CA.N,Canada Goose,Branta canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CAGN,Canada Goose,Branta canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CAGO,Canada Goose,Branta canadensis,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
+cago,Canada Goose,Branta canadensis,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 CAGON,Canada Goose,Branta canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+CANE,Canada Goose,Branta canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
+cane,Canada Goose,Branta canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
 SCGO,Small Canada Goose,Branta canadensis parvipes,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 SCGON,Small Canada Goose,Branta canadensis parvipes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CACG,Cackling Goose,Branta hutchinsii,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 CANG,Canada Goose,Branta canadensis,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 CC.N,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CCGO,Cackling/Canada Goose,Branta hutchinsii/canadensis,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
-CCNE,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+ccgo,Cackling/Canada Goose,Branta hutchinsii/canadensis,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
+CCNE,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
+ccne,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
 MCGO,Minima Cackling Goose,Branta hutchinsii minima,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 DCGO,Dusky Canada Goose,Branta canadensis occidentalis,DCGO,DCGO,0,DCGO,0,DCGO,1,DCGO,1,DCGO,0
 DCNE,Dusky Canada Goose,Branta canadensis occidentalis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -70,6 +79,7 @@ CEIH,Common Eider,Somateria mollissima,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CEJV,Common Eider,Somateria mollissima,COEI,COEI,1,COEI,0,COEI,0,COEI,1,COEI,1
 COEH,Common Eider,Somateria mollissima,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 COEI,Common Eider,Somateria mollissima,COEI,COEI,1,COEI,0,COEI,0,COEI,1,COEI,1
+coei,Common Eider,Somateria mollissima,COEI,COEI,1,COEI,0,COEI,0,COEI,1,COEI,1
 COEIH,Common Eider,Somateria mollissima,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 COEIY,Common Eider,Somateria mollissima,COEI,COEI,1,COEI,0,COEI,0,COEI,1,COEI,1
 COHE,Common Eider,Somateria mollissima,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -93,9 +103,13 @@ UNCO,Unidentified Cormorant,Phalacrocorax spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,
 CRAU,Crested Auklet,Aethia cristatella,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CROW,Northwestern Crow,Corvus caurinus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EM.N,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-EMGN,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+EMGN,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
+emgn,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
 EMGO,Emperor Goose,Anser canagicus,EMGO,EMGO,1,EMGO,0,EMGO,0,EMGO,1,EMGO,1
-EMNE,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+emgo,Emperor Goose,Anser canagicus,EMGO,EMGO,1,EMGO,0,EMGO,0,EMGO,1,EMGO,1
+EMNE,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
+emne,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
+EMGON,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 end,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
 END,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
 ENDCOUNT,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
@@ -111,10 +125,12 @@ PAFA,Peregrine Falcon,Falco peregrinus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 PEFA,Peregrine Falcon,Falco peregrinus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 AFOX,Arctic Fox,Vulpes lagopus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ARFO,Arctic Fox,Vulpes lagopus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+arfo,Arctic Fox,Vulpes lagopus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 FOX,Unidentified Fox,Vulpes sp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 FOXA,Unidentified Fox,Vulpes sp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 FOXD,Unidentified Fox,Vulpes sp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 REFO,Red Fox,Vulpes vulpes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+refo,Red Fox,Vulpes vulpes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RFOX,Red Fox,Vulpes vulpes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GADW,Gadwall,Mareca strepera,GADW,GADW,1,GADW,0,GADW,0,GADW,1,GADW,1
 GG.N,Glaucous Gull,Larus hyperboreus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -123,8 +139,7 @@ GGIM,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
 GLGU,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
 GLGUI,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
 GLGUN,Glaucous Gull,Larus hyperboreus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-GULL,"Unidentified Larus Gull
-",Larus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+GULL,Unidentified Gull,Larus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GWGU,Glaucous-winged gull,Larus glaucescens,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EAGL,Unidentified Eagle,Aquila or Haliaeetus spp.,UNEA,UNEA,1,UNEA,0,UNEA,0,UNEA,0,UNEA,0
 GOEA,Golden Eagle,Aquila chrysaetos,GOEA,GOEA,1,GOEA,0,GOEA,0,GOEA,0,GOEA,0
@@ -135,6 +150,7 @@ BAGO,Barrow's Goldeneye,Bucephala islandica,GOLD,GOLD,1,GOLD,0,GOLD,0,GOLD,1,GOL
 COGO,Common Goldeneye,Bucephala clangula,GOLD,GOLD,1,GOLD,0,GOLD,0,GOLD,1,GOLD,1
 GOLD,Unidentified Goldeneye,Bucephala spp.,GOLD,GOLD,1,GOLD,0,GOLD,0,GOLD,1,GOLD,1
 GOSP,Unidentified Goldeneye,Bucephala spp.,GOLD,GOLD,1,GOLD,0,GOLD,0,GOLD,1,GOLD,1
+UNGO,Unidentified Goldeneye,Bucephala spp.,GOLD,GOLD,1,GOLD,0,GOLD,0,GOLD,1,GOLD,1
 GRAJ,Canada Jay,Perisoreus canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 HEGU,Herring Gull,Larus argentatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNGU,Unidentified Larus Gull,Larus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -200,9 +216,16 @@ DCARI,Caribou,Rangifer tarandus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GRIZ,Brown Bear,Ursus arctos,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MAMM,Mammal,mammal spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MOOS,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+moos,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MOOSC,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+moose,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MOOSE,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MOOSECALF,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+MOOSECalf,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+MOOSECOW,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+MOOSECow,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+MOOSCALF,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+MOOSCOW,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MOOSO,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MUOX,Musk Ox,Ovibos moschatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MUSK,Musk Ox,Ovibos moschatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -219,6 +242,7 @@ SASQ,Sasquatch,Yeti spp.,SASQ,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BARR,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BLUF,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BOAT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+boat,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CAMP,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 DELE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EBKR,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -233,24 +257,35 @@ ERER,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ERR,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ESOL,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 FIXX,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+HAZD,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 HUNT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+hunt,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 LAKE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MARK,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+mark,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 NONE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 PEOP,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+peop,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 PHOT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 PHOTO,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+POWERLINE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+PWRL,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RIVE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ROAD,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SEXX,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SHORE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+SHORELINE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+SHORELINE-9.4,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 snowline,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SSBI,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 STRM,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+SWAMPED,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 TEST,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 TOUT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+tout,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UKAK,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 VEG,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+veg,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 VEGE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 VEGT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 WBHB,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -271,7 +306,7 @@ POBE,Polar Bear,Ursus maritimus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RISE,Ribbon Seal,Histriophoca fasciata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SEAL,Unidentified Seal,Seal spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SEOT,Sea Otter,Enhydra lutris,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-STSE,Steller's Sea Lion,Eumetopias jubatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,
+STSE,Steller's Sea Lion,Eumetopias jubatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 STSL,Steller's Sea Lion,Eumetopias jubatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 WALR,Walrus,Odobenus rosmarus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ANMU,Ancient Murrelet,Synthliboramphus antiquus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -323,6 +358,7 @@ RUBL,Rusty Blackbird,Euphagus carolinus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RUDU,Ruddy Duck,Oxyura jamaicensis,RUDU,RUDU,1,RUDU,0,RUDU,0,RUDU,1,RUDU,1
 LSCR,Sandhill Crane,Antigone canadensis,SACR,SACR,1,SACR,0,SACR,0,SACR,1,SACR,1
 SACR,Sandhill Crane,Antigone canadensis,SACR,SACR,1,SACR,0,SACR,0,SACR,1,SACR,1
+sacr,Sandhill Crane,Antigone canadensis,SACR,SACR,1,SACR,0,SACR,0,SACR,1,SACR,1
 SH.N,Sandhill Crane,Antigone canadensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SHCR,Sandhill Crane,Antigone canadensis,SACR,SACR,1,SACR,0,SACR,0,SACR,1,SACR,1
 BOGU,Bonaparte's Gull,Chroicocephalus philadelphia,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -360,9 +396,11 @@ SNBU,Snow Bunting,Plectrophenax nivalis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 LSGO,Snow Goose,Anser caerulescens,SNGO,SNGO,1,SNGO,0,SNGO,0,SNGO,1,SNGO,1
 LSGON,Snow Goose,Anser caerulescens,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SNGO,Snow Goose,Anser caerulescens,SNGO,SNGO,1,SNGO,0,SNGO,0,SNGO,1,SNGO,1
+sngo,Snow Goose,Anser caerulescens,SNGO,SNGO,1,SNGO,0,SNGO,0,SNGO,1,SNGO,1
 SNOW,Snowy Owl,Bubo scandiacus,SNOW,SNOW,1,SNOW,0,SNOW,0,SNOW,1,SNOW,0
 SPEH,Spectacled Eider,Somateria fischeri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SPEI,Spectacled Eider,Somateria fischeri,SPEI,SPEI,1,SPEI,0,SPEI,0,SPEI,1,SPEI,1
+spei,Spectacled Eider,Somateria fischeri,SPEI,SPEI,1,SPEI,0,SPEI,0,SPEI,1,SPEI,1
 SPEIH,Spectacled Eider,Somateria fischeri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SPEIY,Spectacled Eider,Somateria fischeri,SPEI,SPEI,1,SPEI,0,SPEI,0,SPEI,1,SPEI,1
 SPJV,Spectacled Eider,Somateria fischeri,SPEI,SPEI,1,SPEI,0,SPEI,0,SPEI,1,SPEI,1
@@ -372,6 +410,7 @@ BEGCOUNT,Start transect,Start transect,START,START,0,START,0,START,0,START,0,STA
 BEGT,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 start,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 START,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
+START-9.4,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 TBEG,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 STEH,Steller's Eider,Polysticta stelleri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 STEI,Steller's Eider,Polysticta stelleri,STEI,STEI,1,STEI,0,STEI,0,STEI,1,STEI,1
@@ -387,6 +426,8 @@ SWAN,Unidentified Swan,Cygnus spp.,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
 TRSW,Trumpeter Swan,Cygnus buccinator,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
 TRUS,Trumpeter Swan,Cygnus buccinator,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
 TUSW,Tundra swan,Cygnus columbianus,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
+Tusw,Tundra swan,Cygnus columbianus,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
+tusw,Tundra swan,Cygnus columbianus,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
 SW.N,Unidentified Swan,Cygnus spp.,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 SWANN,Unidentified Swan,Cygnus spp.,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 SWNE,Unidentified Swan,Cygnus spp.,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
@@ -394,10 +435,12 @@ TRNE,Trumpeter Swan,Cygnus buccinator,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWAN
 TS.N,Tundra swan,Cygnus columbianus,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 TSNE,Tundra swan,Cygnus columbianus,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 TUNE,Tundra swan,Cygnus columbianus,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
+tune,Tundra swan,Cygnus columbianus,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 TUSWN,Tundra swan,Cygnus columbianus,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 TC.N,Taverner's Cackling Goose,Branta hutchinsii taverneri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 TCGO,Taverner's Cackling Goose,Branta hutchinsii taverneri,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
-TCNE,Taverner's Cackling Goose,Branta hutchinsii taverneri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+TCNE,Taverner's Cackling Goose,Branta hutchinsii taverneri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
+tcne,Taverner's Cackling Goose,Branta hutchinsii taverneri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
 TDC,Taverner's Cackling Goose,Branta hutchinsii taverneri,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 EIDE,Unidentified Eider,Somateria spp.,UNEI,UNEI,1,UNEI,0,UNEI,0,UNEI,0,UNEI,0
 EIDH,Unidentified Eider,Somateria spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -450,6 +493,7 @@ ULSB,Unidentified large shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,
 ULSH,Unidentified large shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ULUS,Unidentified large shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UMSH,Unidentified mid-sized shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+UNKN,Unidentified Species,,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNPA,Unidentified Passerine,Passeriner spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNPH,Unidentified Phalarope,Phalaropus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNSA,Unidentified Shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -465,11 +509,15 @@ YELG,Unidentified Yellowlegs,Tringa spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 YESP,Unidentified Yellowlegs,Tringa spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 WEGR,Western Grebe,Aechmophorus occidentalis,WEGR,WEGR,0,WEGR,0,WEGR,0,WEGR,1,WEGR,0
 GWFG,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1,GWFG,0,GWFG,0,GWFG,1,GWFG,1
-GWFGN,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+GWFGN,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
+gwfgn,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
 WF.N,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-WFGN,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+WFGN,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
+wfgn,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
 WFGO,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1,GWFG,0,GWFG,0,GWFG,1,GWFG,1
-WFNE,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+wfgo,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1,GWFG,0,GWFG,0,GWFG,1,GWFG,1
+WFNE,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
+wfne,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
 PTAR,Unidentified Ptarmigan,Lagopus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 ROPT,Rock Ptarmigan,Lagopus muta,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNPT,Unidentified Ptarmigan,Lagopus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
