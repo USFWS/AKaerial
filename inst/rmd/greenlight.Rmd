@@ -126,7 +126,7 @@ Status - RED
 
 ## Species Codes
 The current list of acceptable species codes can be found at:
-<https://github.com/cfrost3/AKaerial/tree/master/data/AKAerialSpeciesAOUCodes03132019.csv>
+<https://github.com/cfrost3/AKaerial/tree/master/data/AKAerialSpeciesAOUCodes.csv>
 
 `r if(s.species != "green") {"\\begin{comment}"}`
 All species codes appear to be recorded correctly, or at least an acceptable substitute is known (for any YELLOW status codes entered).

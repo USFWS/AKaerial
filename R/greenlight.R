@@ -1,6 +1,8 @@
 
 
-GreenLight=function(path.name, area){
+GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
+
+  can.fix=TRUE
 
   necessary=c("Year",
               "Month",
@@ -31,8 +33,8 @@ GreenLight=function(path.name, area){
 
   type <- tools::file_ext(path.name)
 
-  if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE)}
-  if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE)}
+  if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE, na.strings=c("NA", "na", "N/A"))}
+  if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE, na.strings=c("NA", "na", "N/A"))}
 
   if(!area %in% c("ACP", "YKD", "YKG", "CRD", "BPOP", "BLSC")){
 
@@ -150,8 +152,16 @@ GreenLight=function(path.name, area){
 
   rmd.path=system.file("rmd/greenlight.Rmd", package="AKaerial")
 
-
+ if(report == TRUE){
  rmarkdown::render(rmd.path, output_dir=dirname(path.name), output_file=paste(basename(tools::file_path_sans_ext(path.name)), "_QAQC_", Sys.Date(), ".html", sep=''))
+ }
+
+  if(any("red" %in% c(s.code, s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))){can.fix=FALSE}
+
+  if(can.fix==TRUE & raw2analysis==TRUE){
+    data.new=Raw2Analysis(data)
+  }
+
 
 }
 
@@ -342,4 +352,23 @@ CommonFix=function(data, fix){
 
 
 }
+
+
+Raw2Analysis=function(data){
+  fix=c("Species")
+
+  if(length(unique(data$Unit[!is.na(data$Unit)])) <= 1){fix=c(fix, "Unit")}
+
+  seat.test=SeatCheck(data)
+  if(seat.test$fail==TRUE){fix=c(fix, "Seat")}
+
+  obs.test=ObserverCheck(data)
+  if(obs.test==FALSE){fix=c(fix, "Observer")}
+
+
+
+
+
+}
+
 
