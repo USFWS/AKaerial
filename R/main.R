@@ -17,126 +17,112 @@ library(ggspatial)
 library(outliers)
 library(rmarkdown)
 library(kableExtra)
+library(leaflet)
+library(RColorBrewer)
+library(smoothr)
+library(lwgeom)
+library(dplyr)
+library(tidyr)
 
-
-DataSelect <- function(area, year, path=NA, data=NA, observer="all", seat="all", strata="all", species="all", method="other", zeroes=FALSE, endpts=TRUE, show.data=TRUE){
-
-
-
-  #if no R object is passed as data
-  if(length(data)<1){
-
-
-
-  if(!is.na(path)){year=1}
-
-  if(is.na(path)){
-  if(area=="ykd"){path = system.file("external/YKD8516dat.csv", package="AKaerial")}
-  else{
-    if (area=="ykg"){path = system.file("external/YKG8516dat.csv", package="AKaerial")}
-      else{
-        if (area=="acp"){path = system.file("external/ACP9717dat.csv", package="AKaerial")}
-          else{
-    print("Area not specified or incorrect.")
-    break
-          }}}
-  }
-
-
-  data=read.csv(path, header=TRUE)
-
-  }
-
-  else{year=1}
+DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
 
 
-  if(year==1){year=c(as.numeric(unique(data$yr[which.min(data$yr)])),as.numeric(unique(data$yr[which.max(data$yr)]))) }
-
-  #print("check year")
-  if (length(year)==1){year= rep(year, 2)}
-
-  data$yr=zoo::na.approx(data$yr)
-  data=data[data$yr>=year[1] & data$yr<=year[2],]
-
-  #print("SpatialNA")
-  data=SpatialNA(data)
 
 
-  #print("PointsToStrata")
-  data=PointsToStrata(data,area)
+  data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
+
+  data=data[data$Code==1,]
+
+  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = TRUE)
+
+  data=CorrectTrans(full.data=data, area=area, split.design=split.design)
+
+  flight=TransSummary(full.data=data, split.design=split.design, area=area)
+  #flight=flight[flight$len>0,]
 
 
-  #print("Filters")
-  if(strata != "all"){data=data[data$strat %in% strata,]}
-
-  data$obs=sapply(data$obs, toupper)
-
-  data$obs[data$obs=="WL"]="WWL"
-  data$obs[data$obs=="RM"]="RDM"
-
-  if(observer != "all"){data=data[data$obs==observer,]}
-
-  data$se=sapply(data$se, toupper)
-
-  if(seat != "all"){data=data[data$se %in% seat,]}
-
-  data$sppn=sapply(data$sppn, toupper)
-
-  data$sppn=ShouldBe(data$sppn)
-
-  data$grp=as.numeric(as.character(data$grp))
-
-  if(species != "all"){
-
-    species2=c(species, "START", "ENDPT")
-    data=data[data$sppn %in% species2,]
-
-  }
-
-  #print("CorrectTrans")
-  data=CorrectTrans(data, area=area)
-
-  #print("CorrectUnit")
-  data=CorrectUnit(data)
-
-  data=droplevels(data)
-
-  if(species != "all"){
-
-  obs.data=data[data$sppn %in% species,]
-
-  }
-
-  #print(unique(data$ctran))
-  #print("TransSummary")
-  flight=TransSummary(data, area)
-  flight=flight[flight$len>0,]
-
-  data$sppn=as.character(data$sppn)
-  data=TrimData(data, area)
-
-
-
-  show.plot=ViewStrata(area=area, year=year[1], ViewTrans=TRUE, numbers=TRUE, print=FALSE)
-  show.points=show.plot+geom_point(data=data, aes(x=long, y=lat, shape=unit)) + theme(legend.position="top") + scale_shape_discrete(name="Unit", solid=F)
-  if(show.data==TRUE){print(show.points)}
-
-  if(zeroes==TRUE){data=MakeZeroes(data)}
-
-  if(endpts==FALSE){data=data[data$sppn != "START" & data$sppn != "ENDPT", ]}
-
+  data=SpeciesByProject(full.data=data, area=area)
 
   data=AdjustCounts(data)
 
-  data=list("obs"=data, "flight"=flight)
 
-  if(method=="transect"){data=TransData(data)}
+
+  data=list("obs"=data, "flight"=flight, "design"=split.design)
+
+  transect.summary=TransData(data)
+
+  data$transect=transect.summary
 
 
   return(data)
 
 }
+
+
+SpeciesByProject=function(full.data, area){
+
+  if(area=="YKD" || area=="YKG"){
+
+    for(i in 1:length(full.data$Species)){
+
+      full.data$Species[i]=sppntable$YKD[sppntable$QAQC==full.data$Species[i]][1]
+
+    }
+
+    keepers=unique(sppntable$YKD[sppntable$YKD_EST==1])
+    full.data=full.data[full.data$Species %in% keepers,]
+  }
+
+  if(area=="ACP"){
+    for(i in 1:length(full.data$Species)){
+
+      full.data$Species[i]=sppntable$ACP[sppntable$QAQC==full.data$Species[i]][1]
+
+    }
+
+    keepers=unique(sppntable$ACP[sppntable$ACP_EST==1])
+    full.data=full.data[full.data$Species %in% keepers,]}
+
+  if(area=="BLSC"){
+    for(i in 1:length(full.data$Species)){
+
+      full.data$Species[i]=sppntable$BLSC[sppntable$QAQC==full.data$Species[i]][1]
+
+    }
+
+    keepers=unique(sppntable$BLSC[sppntable$BLSC_EST==1])
+    full.data=full.data[full.data$Species %in% keepers,]
+    }
+
+  if(area=="CRD"){
+    for(i in 1:length(full.data$Species)){
+
+      full.data$Species[i]=sppntable$CRD[sppntable$QAQC==full.data$Species[i]][1]
+
+    }
+
+    keepers=unique(sppntable$CRD[sppntable$CRD_EST==1])
+    full.data=full.data[full.data$Species %in% keepers,]
+    }
+
+  if(area=="WBPHS"){
+    for(i in 1:length(full.data$Species)){
+
+      full.data$Species[i]=sppntable$WBPHS[sppntable$QAQC==full.data$Species[i]][1]
+
+    }
+
+    keepers=unique(sppntable$WBPHS[sppntable$WBPHS_EST==1])
+    full.data=full.data[full.data$Species %in% keepers,]
+    }
+
+  return(full.data)
+
+}
+
+
+
 
 
 CorrectUnit=function(full.data){
@@ -165,165 +151,115 @@ CorrectUnit=function(full.data){
 
 TransData=function(selected.data){
 
-  #groupings list
-  unit.list=c("single", "pair","open", "flkdrake")
-  #list of years
-  yr.list=as.character(unique(selected.data$flight$yr))
-  #list of species
-  sp.list=as.character(unique(selected.data$obs$sppn))
-
-  if("closest" %in% names(selected.data$obs)){selected.data$obs=selected.data$obs[,!(names(selected.data$obs) %in% "closest")]}
-  if("dist" %in% names(selected.data$obs)){selected.data$obs=selected.data$obs[,!(names(selected.data$obs) %in% "dist")]}
+  agg=aggregate(cbind(Num,itotal,total,ibb, sing1pair2)~Year+Observer+Species+Obs_Type+ctran,data=selected.data$obs, FUN=sum)
 
 
-  #grid method
+  colnames(agg)=c("Year", "Observer", "Species", "Obs_Type", "ctran", "Num", "itotal", "total", "ibb", "sing1pair2")
 
-  for (observer in unique(selected.data$flight$obs)){
-
-    #print(observer)
-
-    yr.list=unique(selected.data$flight$yr[selected.data$flight$obs==observer])
-
-    for (year in yr.list){
-
-      tran.list=unique(selected.data$flight$part.of[selected.data$flight$yr==year & selected.data$flight$obs==observer])
-
-      new.rows=expand.grid(year, NA, NA, NA, observer, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, sp.list, 0, unit.list, NA, tran.list,0,0,0,0)
-
-      #print(length(new.rows))
-
-      #print(names(selected.data$obs))
-
-      names(new.rows)=names(selected.data$obs)
-      selected.data$obs=rbind(selected.data$obs,new.rows)
-      #print(year)
-    }
-  }
-
-
-
-  #cycle through, check each transect/observer combo for each species
-  #for (h in 1:length(yr.list)){
-  #  sub.data=selected.data$obs[selected.data$obs$yr==yr.list[h],]
-
-  #  obs.list=unique(as.character(selected.data$flight$obs[selected.data$flight$yr==yr.list[h]]))
-
-  #  print(paste("Making zeroes for year ", yr.list[h]))
-  #  for (i in 1:length(sp.list)){
-
-  #    sub.data=sub.data[sub.data$sppn==sp.list[i],]
-
-  #   for (j in 1:length(obs.list)){
-  #      print(paste("Observer ", obs.list[j]))
-  #      tran.list=unique(selected.data$flight$part.of[selected.data$flight$yr==yr.list[h] & selected.data$flight$obs==obs.list[j]])
-
-  #      sub.data=sub.data[as.character(sub.data$obs)==obs.list[j],]
-
-  #      for (k in 1:length(tran.list)){
-
-  #        sub.data=sub.data[as.character(sub.data$ctran)==tran.list[k],]
-
-  #        for (m in 1:length(unit.list)){
-
-          #skip if count exists
-
-
-            #if(any(as.character(selected.data$obs$sppn)==sp.list[i] & as.character(selected.data$obs$ctran)==tran.list[k] & as.character(selected.data$obs$obs)==obs.list[j] & selected.data$obs$yr==yr.list[h] & selected.data$obs$unit==unit.list[m]))
-  #          if(any(sub.data$unit==unit.list[m]))
-  #            {next}
-
-            #add the 0 row
-  #          new.row=c(yr.list[h], NA, NA, NA, obs.list[j], NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, sp.list[i], 0, unit.list[m], NA, NA, tran.list[k], NA, 0)
-  #          selected.data$obs=rbind(selected.data$obs,new.row)
-
-
-
-  #        } #end unit
-
-  #      } #end tran
-
-  #    } #end obs
-  #  } #end sp
-  #} #end yr
-
-  selected.data$obs$grp=as.numeric(selected.data$obs$grp)
-
-
-  agg=aggregate(cbind(grp,itotal,total,ibb, sing1pair2)~yr+obs+sppn+unit+ctran,data=selected.data$obs, FUN=sum)
-
-
-  colnames(agg)=c("yr", "obs", "sppn", "unit", "ctran", "grp", "itotal", "total", "ibb", "sing1pair2")
-
+  agg=as.data.frame(complete(data=agg, Year, Observer, Species, Obs_Type, ctran, fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0)))
 
   agg$area=0
 
   agg$strata="none"
 
 
+  selected.data$flight$Strata=as.character(selected.data$flight$Strata)
+
   for(g in 1:length(agg$area)){
 
-    agg$area[g]=sum(selected.data$flight$sampled.area[selected.data$flight$yr==agg$yr[g] & selected.data$flight$obs==agg$obs[g] & selected.data$flight$part.of==agg$ctran[g]])
-    agg$strata[g]=selected.data$flight$strata[selected.data$flight$yr==agg$yr[g] & selected.data$flight$obs==agg$obs[g] & selected.data$flight$part.of==agg$ctran[g]][1]
+    agg$area[g]=sum(selected.data$flight$SampledArea[selected.data$flight$Year==agg$Year[g] & selected.data$flight$Observer==agg$Observer[g] & selected.data$flight$PartOf==agg$ctran[g]])
+    agg$strata[g]=selected.data$flight$Strata[selected.data$flight$Year==agg$Year[g] & selected.data$flight$Observer==agg$Observer[g] & selected.data$flight$PartOf==agg$ctran[g]][1]
 
   }
 
 
 
-
-return(agg[order(agg$yr, agg$obs, agg$sppn, as.numeric(agg$ctran), agg$unit),])
+return(agg[order(agg$Year, agg$Observer, agg$Species, as.numeric(agg$ctran), agg$Obs_Type),])
 
 }
 
 
-SplitDesign <- function(area, SegCheck=FALSE, file.name, layer.name){
+SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE){
 
-  #design=readOGR("D:/CharlesFrost/AKaerial/data/TransectDesign/YKD_trans_B.shp", "YKD_trans_B")
-  #file.name = system.file("external/YKD_trans_B.shp", package="AKaerial")
 
-  design=readOGR(file.name, layer.name, verbose=FALSE)
+  #read and project transects
+  design=readOGR(transect.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
+  design.proj <- spTransform(design, "+proj=longlat +ellps=WGS84")
+  design.proj <- drop_crumbs(design.proj, threshold=.1)
+
+  #read projected (non-dataframe) strata
+  strata.proj=LoadMap(strata.file, type="proj")
   design.proj <- spTransform(design, "+proj=longlat +ellps=WGS84")
 
-  strata.proj=LoadMap(area, type="proj")
+  strata.proj <- suppressWarnings(gBuffer(strata.proj, byid=TRUE, width=0))
 
-  newlines = raster::intersect(design.proj, strata.proj)
+
+  # newlines = raster::intersect(design.proj, strata.proj)
+  # newlines@data$id=rownames(newlines@data)
+  # newlines.fort=fortify(newlines, region="STRAT")
+  # newlines.df=join(newlines.fort, newlines@data, by="id")
+
+  #intersect transects with strata, create new attribute SPLIT that is a unique
+  #numbering system for latitude/strata combos
+
+  newlines = suppressWarnings(raster::intersect(design.proj, strata.proj))
+  newlines@data$len=SpatialLinesLengths(newlines, longlat=TRUE)
+  newlines=drop_crumbs(newlines, threshold=.1)
   newlines@data$id=rownames(newlines@data)
   newlines.fort=fortify(newlines, region="STRAT")
   newlines.df=join(newlines.fort, newlines@data, by="id")
+  newlines.df$ROUNDED=round(newlines.df$lat, digits=2)
+  newlines.df$SPLIT=as.numeric(factor(interaction(newlines.df$STRATNAME, newlines.df$ROUNDED)))
 
-  if(area=="ykg"){
-  newlines.df=newlines.df[,c("long","lat", "order", "piece", "id", "OBJECTID", "STRAT")]
-}
-  if(area=="ykd"){
-  newlines.df=newlines.df[,c("long","lat", "order", "piece", "id", "OBJECTID", "STRAT")]
-}
+  newlines@data$SPLIT=0
 
-  #newlines.df$order[newlines.df$order==3]=1
-  #newlines.df$order[newlines.df$order==4]=2
-  #newlines.df$order[newlines.df$order==5]=1
-  #newlines.df$order[newlines.df$order==6]=2
+  for (i in 1:length(newlines)){
 
-  newlines.df$order[(newlines.df$order %% 2)==1]=1
-  newlines.df$order[(newlines.df$order %% 2)==0]=2
+    newlines@data$SPLIT[i]=newlines.df$SPLIT[newlines.df$OBJECTID==newlines@data$OBJECTID[i] & newlines@data$STRATNAME[i]==newlines.df$STRATNAME][1]
 
+  }
 
   if(SegCheck==TRUE){
 
-    temp=aggregate(newlines.df$order~newlines.df$OBJECTID+newlines.df$STRAT, FUN="length")
-    colnames(temp)=c("original", "strata", "segs")
-    temp$segs=temp$segs/2
-    temp=temp[order(temp$original, temp$strata),]
-    write.table(temp, file="segcheck.txt", quote=FALSE, row.names=FALSE)
+    factpal=colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+
+
+    map= leaflet() %>%
+      addTiles() %>%
+      addPolygons(data=strata.proj,
+                  fillColor=~factpal(strata.proj$STRATNAME),
+                  fillOpacity=.6,
+                  stroke=TRUE,
+                  color="black",
+                  opacity=1,
+                  weight=1,
+                  popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
+
+      addPolylines(data=newlines,
+                   color="black",
+                   weight=4,
+                   opacity=.9,
+                   label=~newlines$OBJECTID,
+                   popup = paste("Strata: ", newlines$STRATNAME, "<br>",
+                                 "Old Transect: ", newlines$ORIGID, "<br>",
+                                 "New Transect: ", newlines$OBJECTID, "<br>",
+                                 "Split Transect: ", newlines$SPLIT, "<br>",
+                                 "Length: ", newlines$len))  %>%
+
+      addScaleBar()
+
+    print(map)
+    # temp=aggregate(newlines.df$order~newlines.df$OBJECTID+newlines.df$STRAT, FUN="length")
+    # colnames(temp)=c("original", "strata", "segs")
+    # temp$segs=temp$segs/2
+    # temp=temp[order(temp$original, temp$strata),]
+    # write.table(temp, file="segcheck.txt", quote=FALSE, row.names=FALSE)
 
 
   }
 
 
-  colnames(newlines.df)[6]="original"
-
-  newlines.df$id=rep(1:(length(newlines.df$id)/2), each=2)
-
-
-  return(newlines.df)
+  return(newlines)
 
 
 
@@ -333,39 +269,12 @@ SplitDesign <- function(area, SegCheck=FALSE, file.name, layer.name){
 
 
 
-LoadMap <- function(map, lay, type="df") {
-
-  # if(area=="acp"){
-  #
-  # map = system.file("external/ACP_2018_AnalysisStrata.shp", package="AKaerial")
-  # #map="D:/CharlesFrost/AKaerial/data/a483web7 polygon.shp"
-  # lay="ACP_2018_AnalysisStrata"
-  # }
-  #
-  # if(area=="ykd"){
-  # map = system.file("external/newaird3_polygon.shp", package="AKaerial")
-  # #map="D:/CharlesFrost/AKaerial/data/newaird3_polygon.shp"
-  # lay="newaird3_polygon"
-  # }
-  #
-  # if(area=="ykg"){
-  # map = system.file("external/YKG__2018_MemoAnalysisStrata.shp", package="AKaerial")
-  # #map="D:/CharlesFrost/AKaerial/data/StratificationForHodgesAnalysis2.shp"
-  # lay="YKG__2018_MemoAnalysisStrata"
-  #
-  # }
-  #
-  # if(area=="crd"){
-  #   map = system.file("external/CRD_2018_AnalysisStrata.shp", package="AKaerial")
-  #   #map="D:/CharlesFrost/AKaerial/data/CRD_2018_AnalysisStrata.shp"
-  #   lay="CRD_2018_AnalysisStrata"
-  #
-  # }
+LoadMap <- function(map.file, type="df") {
 
 
 
   maptools::gpclibPermit()
-  strata <- readOGR(map, lay, verbose=FALSE)
+  strata <- readOGR(map.file, layer=tools::file_path_sans_ext(basename(map.file)), verbose=FALSE)
 
   strata.proj <- spTransform(strata, "+proj=longlat +ellps=WGS84")
   strata<- gBuffer(strata, byid=TRUE, width=0)
@@ -397,31 +306,7 @@ if(strata=="all"){
     coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
 
 
-  # strata.plot <- ggplot() +
-  #        geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
-  #        geom_path(color="black") +
-  #       coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-  #
-  #
-  # if(area=="acp" || area=="crd"){
-  #   strata.plot <- ggplot() +
-  #     geom_path(data=GIS.obj, aes(long,lat,group=group)  ) +
-  #     geom_path(color="black") +
-  #     coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-  #   #scale_fill_manual(name="Strata", values=c("red","green","yellow","grey", "orange"))
-  # }
-  #
-  # if(area=="ykd"){
-  #   strata.plot <- ggplot() +
-  #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-  #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-  # }
-  #
-  # if(area=="ykg"){
-  #   strata.plot <- ggplot() +
-  #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-  #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-  # }
+
 
 }
 
@@ -436,27 +321,7 @@ if(strata=="all"){
         scale_x_continuous("Longitude (degrees)") + scale_y_continuous("Latitude (degrees)")
 
 
-    # if(area=="acp" || area=="crd"){
-    #   strata.plot <- ggplot() +
-    #     geom_path(data=data, aes(long,lat,group=group)  ) +
-    #     geom_path(color="black", lwd=1.5) +
-    #     coord_map(xlim=c(min(data$long), max(data$long)), ylim=c(min(data$lat), max(data$lat))) +
-    #     scale_x_continuous("Longitude (degrees)") + scale_y_continuous("Latitude (degrees)")
-    #   }
-    #
-    #
-    #
-    # if(area=="ykd"){
-    #   strata.plot <- ggplot() +
-    #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-    #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-    # }
-    #
-    # if(area=="ykg"){
-    #   strata.plot <- ggplot() +
-    #     geom_polygon(data=GIS.obj, aes(long,lat,group=group,fill=id)  ) +
-    #     geom_path(color="black") + coord_map(xlim=c(min(GIS.obj$long), max(GIS.obj$long)), ylim=c(min(GIS.obj$lat), max(GIS.obj$lat)))
-    # }
+
 
   }
 
@@ -514,76 +379,57 @@ if(strata=="all"){
 
 AdjustCounts <- function(full.data){
 
+    full.data$itotal=0
+    full.data$ibb=0
+    full.data$total=0
+    full.data$sing1pair2=0
 
-  full.data$grp=as.numeric(as.character(full.data$grp))
-
-  for (i in 1:length(full.data$grp)){
-
-    #0 out the coded start and end points (codes are logged in the species column)
-    if(full.data$sppn[i]=="START" | full.data$sppn[i]=="ENDPT" | full.data$sppn[i]=="start" | full.data$sppn[i]=="end" | full.data$sppn[i]=="ENDT" | full.data$sppn[i]=="BEGT") {
-      full.data$itotal[i]=0
-      full.data$total[i]=0
-      full.data$ibb[i]=0
-      full.data$sing1pair2[i]=0
-    }
+    for(i in 1:length(full.data$Num)){
 
     #Double singles for indicated totals
-    else if(full.data$unit[i]=="single") {
-      full.data$itotal[i]=2*full.data$grp[i]
-      full.data$ibb[i]=2*full.data$grp[i]
-      full.data$total[i]=full.data$grp[i]
-      full.data$sing1pair2[i]=full.data$grp[i]
+    if(full.data$Obs_Type[i]=="single") {
+      full.data$itotal[i]=2*full.data$Num[i]
+      full.data$ibb[i]=2*full.data$Num[i]
+      full.data$total[i]=full.data$Num[i]
+      full.data$sing1pair2[i]=full.data$Num[i]
     }
 
     #Pairs are doubled for both total and indicated total
-    else if(full.data$unit[i]=="pair") {
-      full.data$itotal[i]=2*full.data$grp[i]
-      full.data$ibb[i]=2*full.data$grp[i]
-      full.data$total[i]=2*full.data$grp[i]
-      full.data$sing1pair2[i]=2*full.data$grp[i]
+    else if(full.data$Obs_Type[i]=="pair") {
+      full.data$itotal[i]=2*full.data$Num[i]
+      full.data$ibb[i]=2*full.data$Num[i]
+      full.data$total[i]=2*full.data$Num[i]
+      full.data$sing1pair2[i]=2*full.data$Num[i]
     }
 
     #Open indicates a flock, nothing doubled, zero for ibb
-    else if(full.data$unit[i]=="open"){
-      full.data$itotal[i]=full.data$grp[i]
-      full.data$total[i]=full.data$grp[i]
+    else if(full.data$Obs_Type[i]=="open"){
+      full.data$itotal[i]=full.data$Num[i]
+      full.data$total[i]=full.data$Num[i]
       full.data$ibb[i]=0
       full.data$sing1pair2[i]=0
 
     }
 
     #Flocked drakes are doubled for 1-4 seen for indicated bb/totals.  Reference would be useful.
-    else if(full.data$unit[i]=="flkdrake" & full.data$grp[i]<5){
-      full.data$itotal[i]=2*full.data$grp[i]
-      full.data$total[i]=full.data$grp[i]
-      full.data$ibb[i]=2*full.data$grp[i]
+    else if(full.data$Obs_Type[i]=="flkdrake" & full.data$Num[i]<5){
+      full.data$itotal[i]=2*full.data$Num[i]
+      full.data$total[i]=full.data$Num[i]
+      full.data$ibb[i]=2*full.data$Num[i]
       full.data$sing1pair2[i]=0
 
     }
 
     #Flocked drakes 5 and above aren't doubled because of science stuff, 0 for ibb.
-    else if(full.data$unit[i]=="flkdrake" & full.data$grp[i]>4){
-      full.data$itotal[i]=full.data$grp[i]
-      full.data$total[i]=full.data$grp[i]
+    else if(full.data$Obs_Type[i]=="flkdrake" & full.data$Num[i]>4){
+      full.data$itotal[i]=full.data$Num[i]
+      full.data$total[i]=full.data$Num[i]
       full.data$ibb[i]=0
       full.data$sing1pair2[i]=0
 
     }
 
-
-  }
-
-
-sppn=unique(full.data$sppn)
-
-#  for (i in 1:length(sppn)){
-
-#      itot=sppntable$itot[as.character(sppntable$sppn)==as.character(sppn[i])]
-#      full.data$itotal[full.data$sppn==as.character(sppn[i])]=itot*full.data$itotal[full.data$sppn==as.character(sppn[i])]
-
-#    }
-
-
+}
 
   return(full.data)
 }
@@ -689,19 +535,6 @@ TranSelect = function(year, area){
   }
 
 
-  #area=toupper(area)
-
-  #year=as.numeric(year)
-
-  #if((year %% 4)==1){letter="B"}
-  #if((year %% 4)==2){letter="C"}
-  #if((year %% 4)==3){letter="D"}
-  #if((year %% 4)==0){letter="A"}
-
-  #trans.layer=paste(area, "trans", letter, sep="_")
-  #trans.file=paste(trans.layer,".shp", sep="")
-
-  #trans=list("file"=trans.file, "layer"=trans.layer)
 
   return(trans)
 }
@@ -1269,28 +1102,6 @@ TransectTable <- function(trans.file, trans.layer, obs=1, method, area) {
   output=output[output$d>0.25,]
 
 
-  #if(method=="gis"){
-  #  id=unique(id)
-
-  #  for(i in seq(1,length(trans.points$lat),2)) {
-
-  #    for(j in seq(1,length(trans.points$lat),2)){
-
-  #     if(i != j){
-
-  #      if(trans.points$STRAT[i]==trans.points$STRAT[j]){
-
-  #          if(var(trans.points$lat[c(i,i+1,j,j+1)])*10000 < .2){
-  #            trans.points$original[j]=trans.points$original[i]
-  #            trans.points$original[j+1]=trans.points$original[i]
-
-  #          }
-  #        }
-  #      }
-  #    }}
-  #  output=unique(merge(output, trans.points[,5:6], by="id"))
-#}
-
 
   if(method=="text"){output$original=output$id}
 
@@ -1383,160 +1194,44 @@ TransectLevel=function(data, n.obs=2, trans.method="gis", trans.width=.2, area) 
 }
 
 
-CorrectTrans=function(full.data, area){
+CorrectTrans=function(full.data, threshold=.5, split.design, area){
 
-years=unique(full.data$yr)
+  split.design=spTransform(split.design, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 
-coordinates(full.data)=~long+lat
+coordinates(full.data)=~Lon+Lat
 proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
+full.data=spTransform(full.data, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 
-if(area=="crd"){
+
+if(area=="CRD"){
 
   full.data$ctran=full.data$tran
 
 }
 
 
-if(area=="old acp"){
+if(area != "CRD"){
 
-  full.data$ctran=full.data$tran
-  full.data$closest=full.data$tran
+  full.data$ctran=full.data$Transect
+  full.data$closest=full.data$Transect
   full.data$dist=0
 
-  for (i in 1:length(years)){
-    #print(years[i])
-
-    trans=TranSelect(year=years[i], area=area)
-    trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-    trans.layer=trans$layer
-
-
-    trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-    trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
-
-
-    temp.data=full.data[full.data$yr==years[i],]
-
-    for (j in seq_along(temp.data$closest)){
-      temp.data$closest[j]=as.numeric(as.character(trans.proj$OBJECTID[which.min(suppressWarnings(gDistance(temp.data[j,],trans.proj,byid=TRUE)))]))
-      temp.data$dist[j]=min(suppressWarnings(gDistance(temp.data[j,],trans.proj,byid=TRUE)))
+    for (j in seq_along(full.data$closest)){
+      full.data$closest[j]=as.numeric(as.character(split.design$SPLIT[which.min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))]))
+      full.data$dist[j]=min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))
        }
-
-    full.data$closest[full.data$yr==years[i]]=temp.data$closest
-    full.data$dist[full.data$yr==years[i]]=temp.data$dist
-
-
-    #m=gDistance(full.data[full.data$yr==years[i],], trans.proj, byid=TRUE)
-    #full.data$closest[full.data$yr==years[i]]=apply(m, 2, function(X) order(X)[1])
-    #full.data$dist[full.data$yr==years[i]]=apply(m, 2, function(X) min(X)[1]) * 111
-
-
-    trans.proj@data$id = rownames(trans.proj@data)
-    trans.df=fortify(trans.proj, region=OBJECTID)
-
-    trans.df=join(trans.df,trans.proj@data, by="id")
-
-    trans.df$OBJECTID=as.numeric(as.character(trans.df$OBJECTID))
-
-    old=unique(trans.df$ORIGID)
-    new=array(NA,length(old))
-
-    for (j in 1:length(old)){
-      new[j]=trans.df$OBJECTID[trans.df$ORIGID==old[j]][1]
-
-    }
-    renum=data.frame(old=old, new=new)
-
-
-    if(years[i]>2011){
-
-
-    for (k in 1:length(full.data$ctran)){
-
-      if(full.data$yr[k]==years[i]){
-
-      full.data$ctran[k]=renum$new[renum$old==full.data$ctran[k]]
-
-      }
-
-    }
-
-}
-
-
-    if(years[i]<=2011){
-
-      for (k in 1:length(full.data$ctran)){
-
-        if(full.data$yr[k]==years[i]){
-
-          full.data$ctran[k]=full.data$closest[k]
-
-          #if(any(renum$old==full.data$closest[k])){
-
-          #full.data$ctran[k]=renum$new[renum$old==full.data$closest[k]]
-
-          }
-
-          #else{full.data$ctran[k]==NA}
-
-      }
-  }
-
-}
-
-}  #end acp / ykd
-
-
-if(area=="ykg" || area=="acp"){
-
-  full.data$ctran=full.data$tran
-  full.data$closest=full.data$tran
-  full.data$dist=0
-
-  for (i in 1:length(years)){
-    #print(years[i])
-
-    trans=TranSelect(year=years[i], area=area)
-    trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-    trans.layer=trans$layer
-
-
-    trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-    trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
-
-
-    temp.data=full.data[full.data$yr==years[i],]
-
-    for (j in seq_along(temp.data$closest)){
-      temp.data$closest[j]=as.numeric(as.character(trans.proj$OBJECTID[which.min(suppressWarnings(gDistance(temp.data[j,],trans.proj,byid=TRUE)))]))
-      temp.data$dist[j]=min(suppressWarnings(gDistance(temp.data[j,],trans.proj,byid=TRUE)))
-    }
-
-    full.data$closest[full.data$yr==years[i]]=temp.data$closest
-    full.data$dist[full.data$yr==years[i]]=temp.data$dist
-
-
-    #m=gDistance(full.data[full.data$yr==years[i],], trans.proj, byid=TRUE)
-    #full.data$closest[full.data$yr==years[i]]=apply(m, 2, function(X) order(X)[1])
-    #full.data$dist[full.data$yr==years[i]]=apply(m, 2, function(X) min(X)[1]) * 111
-
-
-
-
-    }
 
   full.data$ctran=full.data$closest
 
-  }
+  #convert from meters to km, then re-project to lat/lon
+  full.data$dist = full.data$dist/1000
+  full.data=spTransform(full.data, "+proj=longlat +ellps=WGS84")
 
+}
 
+full.data$ctran[full.data$dist>threshold]=NA
 
-
-
-
-
-
+full.data=full.data[!(is.na(full.data$ctran)), ]
 
 return(as.data.frame(full.data))
 
@@ -1583,10 +1278,10 @@ return(strata.plot)
 
 
 
-TransSummary=function(full.data, area){
+TransSummary=function(full.data, split.design, area){
 
-  observers=unique(as.character(full.data$obs))
-  years=unique(full.data$yr)
+  observers=unique(as.character(full.data$Observer))
+  #years=unique(full.data$yr)
 
   #print(observers)
   #print(years)
@@ -1594,54 +1289,54 @@ TransSummary=function(full.data, area){
   #tsum=data.frame(yr=NULL,obs=NULL, orig=NULL, len=NULL, part.of=NULL)
   tsum=NULL
 
-  for (i in 1:length(years)){
+  #for (i in 1:length(years)){
 
 
-    if(area=="acp" || area=="ykg"){
+    #if(area=="acp" || area=="ykg"){
 
 
-      trans=TranSelect(year=years[i], area=area)
-      trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-      trans.layer=trans$layer
+     # trans=TranSelect(year=years[i], area=area)
+      #trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
+      #trans.layer=trans$layer
 
 
-      trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-      trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+     # trans.obj=readOGR(trans.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
+    #  trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
 
-      GIS.obj = LoadMap(area, type="proj")
-
-
-
-
-    } #end acp/ykg
-
-    if(area=="crd"){
-
-
-      trans=TranSelect(year=years[i], area="crd")
-      trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-      trans.layer=trans$layer
-
-
-      trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-      trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
-
-      GIS.obj = LoadMap(area, type="proj")
-
-      trans.obj=raster::intersect(trans.obj, GIS.obj)  #trim the excess lines
-
-
-    } #end crd
+     # GIS.obj = LoadMap(area, type="proj")
 
 
 
-    trans.obj@data$len=SpatialLinesLengths(trans.obj, longlat=TRUE)
+
+    #} #end acp/ykg
+
+    #if(area=="crd"){
+
+
+     # trans=TranSelect(year=years[i], area="crd")
+    #  trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
+     # trans.layer=trans$layer
+
+
+      #trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
+      #trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+
+     #GIS.obj = LoadMap(area, type="proj")
+
+      #trans.obj=raster::intersect(trans.obj, GIS.obj)  #trim the excess lines
+
+
+    #} #end crd
 
 
 
-    tpoints=as(trans.obj, "SpatialPointsDataFrame")
-    tpoints=spTransform(tpoints, "+proj=longlat +ellps=WGS84")
-    tpoints$strata=over(tpoints,GIS.obj)$STRATNAME
+    #trans.obj@data$len=SpatialLinesLengths(trans.obj, longlat=TRUE)
+
+
+
+    #tpoints=as(trans.obj, "SpatialPointsDataFrame")
+    #tpoints=spTransform(tpoints, "+proj=longlat +ellps=WGS84")
+    #tpoints$strata=over(tpoints,GIS.obj)$STRATNAME
 
 
 
@@ -1653,118 +1348,119 @@ TransSummary=function(full.data, area){
     for (j in 1:length(observers)){
 
 
-      if(area=="ykg"){
+      if(area=="YKG" || area=="YKD"){
 
 
-        if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
+        #if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
 
 
-          obs.flown=full.data[!duplicated(full.data[c("yr","obs", "tran", "ctran")]),]
+          obs.flown=full.data[!duplicated(full.data[c("Year","Observer", "Transect", "ctran")]),]
 
-          obs.flown=obs.flown[obs.flown$yr==years[i] & obs.flown$obs==observers[j],]
+          obs.flown=obs.flown[obs.flown$Observer==observers[j],]
 
 
-          yr=obs.flown$yr
-          obs=as.character(obs.flown$obs)
+          yr=obs.flown$Year
+          obs=as.character(obs.flown$Observer)
           renum=as.numeric(as.character(obs.flown$ctran))
-          #print(renum)
-          orig=as.numeric(as.character(obs.flown$tran))
+
+          orig=as.numeric(as.character(obs.flown$Transect))
           len=array(0,length(orig))
-          strata=array(0,length(orig))
+          strata=vector("character",length(orig))
 
 
           for (k in 1:length(renum)){
 
-            len[k]=sum(trans.obj@data$len[trans.obj@data$OBJECTID==renum[k]])
+            len[k]=sum(split.design@data$len[split.design@data$SPLIT==renum[k] & split.design@data$ORIGID==orig[k]])
 
 
-            strata[k]=names(which.max(table(full.data$strat[full.data$yr==years[i] & full.data$ctran==renum[k]])))
-
+            #strata[k]=names(which.max(table(full.data$strat[full.data$yr==years[i] & full.data$ctran==renum[k]])))
+            split.design@data$STRATNAME=as.character(split.design@data$STRATNAME)
+            strata[k]=split.design@data$STRATNAME[split.design@data$SPLIT==renum[k]][1]
 
           } #end k
 
 
-          temp.frame=data.frame(yr=yr, obs=obs, orig=orig, len=len, part.of=renum, strata=strata)
+          tsum=data.frame(Year=yr, Observer=obs, Original=orig, Length=len, PartOf=renum, Strata=strata)
 
           #temp.frame=temp.frame[order(part.of),]
 
-          tsum=rbind(tsum, temp.frame)
+          #tsum=rbind(tsum, temp.frame)
 
-        } # end year loop
+        #} # end year loop
 
-      } # end ykg loop
-
-
+      } # end ykg/ykd loop
 
 
 
-      if(area == "crd" || area=="acp"){
 
-
-        if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
-
-          obs.flown=full.data[!duplicated(full.data[c("yr","obs","tran","ctran")]),]
-
-          obs.flown=obs.flown[obs.flown$yr==years[i] & obs.flown$obs==observers[j],]
-
-
-          yr=obs.flown$yr
-          obs=obs.flown$obs
-          orig=as.numeric(as.character(obs.flown$tran))
-          len=array(0,length(orig))
-          strata=array(0,length(orig))
-          part.of=as.numeric(as.character(obs.flown$ctran))
-
-          for (k in 1:length(orig)){
-
-            if (years[i]>2011){
-              len[k]=sum(trans.obj@data$len[trans.obj@data$ORIGID==orig[k] & trans.obj@data$OBJECTID==part.of[k]])
-            }
-
-            if (years[i]<=2011){
-              len[k]=sum(trans.obj@data$len[trans.obj@data$OBJECTID==part.of[k]])
-            }
-
-            #strata[k]=names(sort(table(tpoints$strata[tpoints$OBJECTID==part.of[k]]),decreasing=TRUE)[1])
-            #strata[k]=names(which.max(table(tpoints$STRATNAME[tpoints$OBJECTID==part.of[k]])))
-            strata[k]=names(which.max(table(full.data$strat[full.data$yr==years[i] & full.data$ctran==part.of[k]])))
-
-
-          } #end k
-
-
-
-          temp.frame=data.frame(yr=yr, obs=obs, orig=orig, len=len, part.of=part.of, strata=strata)
-
-          temp.frame=temp.frame[order(orig),]
-
-          if (years[i]<=2011 & area=="acp"){
-
-            temp.frame=temp.frame[!duplicated(temp.frame[c("obs","len","part.of")]),]
-
-          }
-
-          tsum=rbind(tsum, temp.frame)
-
-
-        } #end if any obs/yr
-
-      } #end if not ykg
+#
+#       if(area == "crd" || area=="acp"){
+#
+#
+#         if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
+#
+#           obs.flown=full.data[!duplicated(full.data[c("yr","obs","tran","ctran")]),]
+#
+#           obs.flown=obs.flown[obs.flown$yr==years[i] & obs.flown$obs==observers[j],]
+#
+#
+#           yr=obs.flown$yr
+#           obs=obs.flown$obs
+#           orig=as.numeric(as.character(obs.flown$tran))
+#           len=array(0,length(orig))
+#           strata=array(0,length(orig))
+#           part.of=as.numeric(as.character(obs.flown$ctran))
+#
+#           for (k in 1:length(orig)){
+#
+#             if (years[i]>2011){
+#               len[k]=sum(trans.obj@data$len[trans.obj@data$ORIGID==orig[k] & trans.obj@data$OBJECTID==part.of[k]])
+#             }
+#
+#             if (years[i]<=2011){
+#               len[k]=sum(trans.obj@data$len[trans.obj@data$OBJECTID==part.of[k]])
+#             }
+#
+#             #strata[k]=names(sort(table(tpoints$strata[tpoints$OBJECTID==part.of[k]]),decreasing=TRUE)[1])
+#             #strata[k]=names(which.max(table(tpoints$STRATNAME[tpoints$OBJECTID==part.of[k]])))
+#             strata[k]=names(which.max(table(full.data$strat[full.data$yr==years[i] & full.data$ctran==part.of[k]])))
+#
+#
+#           } #end k
+#
+#
+#
+#           temp.frame=data.frame(yr=yr, obs=obs, orig=orig, len=len, part.of=part.of, strata=strata)
+#
+#           temp.frame=temp.frame[order(orig),]
+#
+#           if (years[i]<=2011 & area=="acp"){
+#
+#             temp.frame=temp.frame[!duplicated(temp.frame[c("obs","len","part.of")]),]
+#
+#           }
+#
+#           tsum=rbind(tsum, temp.frame)
+#
+#
+#         } #end if any obs/yr
+#
+#       } #end if not ykg
 
     } #end j observers
 
-  } #end i years
+  #} #end i years
 
-  tsum$sampled.area=.2*tsum$len
-
-  if(area=="ykg" || area=="crd"){tsum=tsum[!duplicated(tsum[,c("yr", "obs", "part.of")]),]}
-
-  if(area=="acp"){
-
-    tsum.agg=aggregate(list("len"=tsum$len,"sampled.area"=tsum$sampled.area), by=list("yr"=tsum$yr,"obs"=tsum$obs,"part.of"=tsum$part.of,"strata"=tsum$strata), FUN=sum)
-    return(tsum.agg)
-
-  }
+  tsum$SampledArea=.2*tsum$Length
+#
+#   if(area=="ykg" || area=="crd"){tsum=tsum[!duplicated(tsum[,c("yr", "obs", "part.of")]),]}
+#
+#   if(area=="acp"){
+#
+#     tsum.agg=aggregate(list("len"=tsum$len,"sampled.area"=tsum$sampled.area), by=list("yr"=tsum$yr,"obs"=tsum$obs,"part.of"=tsum$part.of,"strata"=tsum$strata), FUN=sum)
+#     return(tsum.agg)
+#
+# }
 
   return(tsum)
 

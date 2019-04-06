@@ -153,13 +153,36 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
   rmd.path=system.file("rmd/greenlight.Rmd", package="AKaerial")
 
  if(report == TRUE){
+ rmd.path=system.file("rmd/greenlight.Rmd", package="AKaerial")
+
  rmarkdown::render(rmd.path, output_dir=dirname(path.name), output_file=paste(basename(tools::file_path_sans_ext(path.name)), "_QAQC_", Sys.Date(), ".html", sep=''))
  }
 
-  if(any("red" %in% c(s.code, s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))){can.fix=FALSE}
+  if(any("red" %in% c(s.code, s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))){
+    can.fix=FALSE
+    print("can't fix")
+    print(c(s.code, s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))}
 
   if(can.fix==TRUE & raw2analysis==TRUE){
-    data.new=Raw2Analysis(data)
+
+    rmd.path=system.file("rmd/raw2analysis.Rmd", package="AKaerial")
+
+    data.obj=Raw2Analysis(data)
+
+    data.new=data.obj$newdata
+    data.new=data.new[data.new$Species != "XXXX",]
+    fix=data.obj$fix
+
+    proj=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][1]
+    yr=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][2]
+    type="QCObs"
+    name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
+
+    write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
+    print(write.path)
+    write.csv(data.new, write.path, quote=FALSE, row.names=FALSE )
+    rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))
+
   }
 
 
@@ -218,7 +241,7 @@ return(list("fail"=any(bad),"bad"=bad))
 
 UnitCheck=function(data){
 
-units=c("single", "pair", "flkdrake", "open")
+units=c("single", "pair", "flkdrake", "open", NA)
 
 bad=data[which(!(data$Obs_Type %in% units)),]
 
@@ -276,15 +299,32 @@ SpeciesCheck=function(data){
 
 SwanCheck=function(data){
 
-  nest=data[data$Species=="TUNE" | data$Species=="TRNE",]
-  swan=data[data$Species=="TUSW" | data$Species=="TRSW",]
+  nest=data[data$Species=="TUNE" |
+              data$Species=="TRNE" |
+              data$Species=="SWANN" |
+              data$Species=="SWNE" |
+              data$Species=="SW.N" |
+              data$Species=="TS.N" |
+              data$Species == "TSNE" |
+              data$Species == "tune" |
+              data$Species == "TUSWN",]
 
+  swan=data[data$Species=="TUSW" |
+              data$Species=="TRSW" |
+              data$Species=="SWAN" |
+              data$Species=="TRUS" |
+              data$Species=="Tusw" |
+              data$Species=="TUsw" |
+              data$Species=="tusw",]
 
+  bad=nest[which(nest$Obs_Type != "open" | nest$Num != 1),]
+  bad.index=as.numeric(rownames(bad))
 
-  bad=nest[which(nest$Obs_Type != "open"),]
   missing=nest[which(!(nest$Lat %in% swan$Lat & nest$Lon %in% swan$Lon)),]
+  missing.index=as.numeric(rownames(missing))
 
-  return(list("fail"=(length(bad[,1])!=0 | length(missing[,1])!=0), "bad"=bad, "missing"=missing))
+
+  return(list("fail"=(length(bad[,1])!=0 | length(missing[,1])!=0), "bad"=bad, "missing"=missing, "bad.index"=bad.index, "missing.index"=missing.index))
 
 }
 
@@ -342,7 +382,7 @@ CommonFix=function(data, fix){
 
   }
 
-
+  #change Observer to uppercase
   if("Observer" %in% fix){
 
     data$Observer=toupper(data$Observer)
@@ -350,6 +390,84 @@ CommonFix=function(data, fix){
   }
 
 
+  if("Swan" %in% fix){
+
+    swan.probs=SwanCheck(data)
+
+    for(i in swan.probs$missing.index){
+
+      new.row=data[i,]
+
+      if(new.row$Num==1){new.row$Obs_Type="single"}
+      if(new.row$Num==2){new.row$Obs_Type="pair"}
+      new.row$Species="SWAN"
+      new.row$Num=1
+
+      data=rbind(data, new.row)
+
+    }
+
+    for(j in swan.probs$bad.index){
+      data$Obs_Type[j]="open"
+      data$Num[j]=1
+
+    }
+
+  }
+
+  if("Obs_Type" %in% fix){
+
+
+    for(k in 1:length(data$Obs_Type)){
+
+      if(data$Species[k] %in% c("TUNE", "TRNE", "SWANN", "SWNE", "SW.N", "TS.N", "TSNE", "tune", "TUSWN"))
+      {
+        data$Num[k]=1
+        data$Obs_Type[k]="open"
+        next
+        }
+
+      if(data$Num[k]==1){
+
+        data$Obs_Type[k]="single"
+
+      }
+
+
+      if(data$Num[k]==2){
+
+        data$Obs_Type[k]="pair"
+        data$Num[k]=1
+
+      }
+
+      if(data$Num[k] > 2){
+
+        data$Obs_Type[k]="open"
+
+      }
+
+    }
+
+
+  }
+
+  if("Species" %in% fix){
+
+  #data$OldSpecies=data$Species
+
+  for(n in 1:length(data$Species)){
+
+    data$Species[n]=sppntable$QAQC[sppntable$INPUT==data$Species[n]]
+
+
+
+  }
+
+    }
+
+
+  return(data)
 
 }
 
@@ -357,7 +475,7 @@ CommonFix=function(data, fix){
 Raw2Analysis=function(data){
   fix=c("Species")
 
-  if(length(unique(data$Unit[!is.na(data$Unit)])) <= 1){fix=c(fix, "Unit")}
+  if(length(unique(data$Obs_Type[!is.na(data$Obs_Type)])) <= 1){fix=c(fix, "Obs_Type")}
 
   seat.test=SeatCheck(data)
   if(seat.test$fail==TRUE){fix=c(fix, "Seat")}
@@ -365,9 +483,12 @@ Raw2Analysis=function(data){
   obs.test=ObserverCheck(data)
   if(obs.test==FALSE){fix=c(fix, "Observer")}
 
+  swan.test=SwanCheck(data)
+  if(swan.test$fail==TRUE){fix=c(fix, "Swan")}
 
+  data=CommonFix(data=data, fix=fix)
 
-
+  return(list("newdata"=data, "fix"=fix))
 
 }
 

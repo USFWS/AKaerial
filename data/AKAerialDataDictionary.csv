@@ -1,0 +1,26 @@
+Field_Number,Field_Name,Field_Type,Data_Format,Field_Length,Description,Example
+1,Year,Integer,YYYY,4,Year (YYYY),2018
+2,Month,Integer,MM,2,Month (MM),6
+3,Day,Integer,DD,2,Day (DD),"1, 12"
+4,Seat,StrIng,,2,"Seat ('RF'=right front, 'LF'=left front, 'RR'=right rear, 'LR'=left rear)","LF, RR"
+5,Observer,StrIng,,3,"Observer initials (first, middle, last name). If no middle initial, substitute with '_'","DJG, C_D"
+6,Stratum,StrIng,,2,Stratum (number) or 'NA'=undefined,"10, NA"
+7,Transect,StrIng,,5,Transect (number) ,"1, 21"
+8,Segment,StrIng,,3,Segment (number) or 'NA'=undefined,"1, 10, 110, NA"
+9,Flight_Dir,StrIng,,3,"Flight direction (degrees or cardinal direction: 'N'=north, 'NE'=northeast, 'E'=east, 'SE'=southeast, 'S'=south, 'SW'=southwest, 'W'=west, 'NW'=northwest, 'NA'=undefined)","0, 180, SW, NA"
+10,A_G_Name,StrIng,,2,Air-to-ground segment ID or 'NA'=undefined,"X, 0, NA"
+11,Wind_Dir,StrIng,,3,"Wind direction based on 8-pt cardinal compass: 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', or 'NA'=undefined","S, NW, NA"
+12,Wind_Vel,Integer,NN,2,Wind speed (knots) or 'NA'=undefined,"10, NA"
+13,Sky,StrIng,,3,"Sky condition:  '0'=CLR (clear), '1'=SCT (scattered), '2'=BKN (broken), '3'=OVC (overcast), '4'=FG (fog), 'NA'=undefined","CLR, NA"
+14,Filename,StrIng,XXXYYNNN,9,"Wave file ID: Record Program files combining survey ID ('XXX'), year ('YY'), wave file number ('NNN') ","YKD18001, NA"
+15,Lat,Float,NN.NNNNNN,10,"Latitude (decimal degrees, WGS84 datum) ",69.5992
+16,Lon,Float,NNN.NNNNN,10,"Longitude (decimal degrees, WGS84 datum) ",-151.0375
+17,Time,Float,NNNNN.NN,8,"Computer clock time (seconds past midnight), 'NA'=undefined","67185.1, NA"
+18,Delay,Float,NNNNN.NN,8,"Delay between clock time and GPS signal (seconds), 'NA'=undefined","3.15, NA"
+19,Species,StrIng,,5,Species code,SWANN
+20,Num,Integer,NNNNN ,5,Group size (number),10
+21,Obs_Type,StrIng,,8,"Observation type: 'single', 'pair', 'open', 'flkdrake'",open
+22,Behavior,StrIng,,10,"Behavior: 'diving', 'flying', 'swimming', or 'NA'=undefined","flying, NA"
+23,Distance,StrIng,,5,"Distance bins: 'near', 'far', or 'NA'=undefined","near, NA"
+24,Code,Integer,N,1,"Analysis code: '1'=index estimate, '2'=double observer, '3'=additional data",1
+25,Notes,StrIng,,100,Notes ,Trans=31 not 32
