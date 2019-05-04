@@ -307,7 +307,8 @@ SwanCheck=function(data){
               data$Species=="TS.N" |
               data$Species == "TSNE" |
               data$Species == "tune" |
-              data$Species == "TUSWN",]
+              data$Species == "TUSWN" |
+              data$Species == "SWANNEST",]
 
   swan=data[data$Species=="TUSW" |
               data$Species=="TRSW" |

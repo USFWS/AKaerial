@@ -46,9 +46,9 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
   data=AdjustCounts(data)
 
+  strata=StrataSummary(strata.path)
 
-
-  data=list("obs"=data, "flight"=flight, "design"=split.design)
+  data=list("obs"=data, "flight"=flight, "design"=split.design, "strata"=strata)
 
   transect.summary=TransData(data)
 
@@ -183,15 +183,15 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE){
 
 
   #read and project transects
-  design=readOGR(transect.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
-  design.proj <- spTransform(design, "+proj=longlat +ellps=WGS84")
-  design.proj <- drop_crumbs(design.proj, threshold=.1)
+  design=rgdal::readOGR(transect.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
+  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84")
+  design.proj <- smoothr::drop_crumbs(design.proj, threshold=.1)
 
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.file, type="proj")
-  design.proj <- spTransform(design, "+proj=longlat +ellps=WGS84")
+  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84")
 
-  strata.proj <- suppressWarnings(gBuffer(strata.proj, byid=TRUE, width=0))
+  strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
 
   # newlines = raster::intersect(design.proj, strata.proj)
@@ -203,11 +203,11 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE){
   #numbering system for latitude/strata combos
 
   newlines = suppressWarnings(raster::intersect(design.proj, strata.proj))
-  newlines@data$len=SpatialLinesLengths(newlines, longlat=TRUE)
-  newlines=drop_crumbs(newlines, threshold=.1)
+  newlines@data$len=sp::SpatialLinesLengths(newlines, longlat=TRUE)
+  newlines=smoothr::drop_crumbs(newlines, threshold=.1)
   newlines@data$id=rownames(newlines@data)
-  newlines.fort=fortify(newlines, region="STRAT")
-  newlines.df=join(newlines.fort, newlines@data, by="id")
+  newlines.fort=ggplot2::fortify(newlines, region="STRAT")
+  newlines.df=plyr::join(newlines.fort, newlines@data, by="id")
   newlines.df$ROUNDED=round(newlines.df$lat, digits=2)
   newlines.df$SPLIT=as.numeric(factor(interaction(newlines.df$STRATNAME, newlines.df$ROUNDED)))
 
@@ -274,19 +274,19 @@ LoadMap <- function(map.file, type="df") {
 
 
   maptools::gpclibPermit()
-  strata <- readOGR(map.file, layer=tools::file_path_sans_ext(basename(map.file)), verbose=FALSE)
+  strata <- rgdal::readOGR(map.file, layer=tools::file_path_sans_ext(basename(map.file)), verbose=FALSE)
 
-  strata.proj <- spTransform(strata, "+proj=longlat +ellps=WGS84")
-  strata<- gBuffer(strata, byid=TRUE, width=0)
+  strata.proj <- sp::spTransform(strata, "+proj=longlat +ellps=WGS84")
+  strata<- rgeos::gBuffer(strata, byid=TRUE, width=0)
 
 
 
   strata.proj@data$id = rownames(strata.proj@data)
 
   #ifelse(area=="acp", strata.fort <- fortify(strata.proj, region="STRATNAME"), strata.fort <- fortify(strata.proj, region="STRAT"))
-  strata.fort <- fortify(strata.proj, region="id")
+  strata.fort <- ggplot2::fortify(strata.proj, region="id")
 
-  strata.df=join(strata.fort, strata.proj@data, by="id")
+  strata.df=plyr::join(strata.fort, strata.proj@data, by="id")
 
   if(type=="df") {return(strata.df)}
   if(type=="proj") {return(strata.proj)}
@@ -336,8 +336,8 @@ if(strata=="all"){
 
     trans.layer=file_path_sans_ext(basename(trans.file))
 
-    trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-    trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+    trans.obj=rgdal::readOGR(trans.file, trans.layer, verbose=FALSE)
+    trans.proj <- sp::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
 
     GIS.proj = LoadMap(map, type="proj")
 
@@ -346,9 +346,9 @@ if(strata=="all"){
 
     trans.proj@data$id = rownames(trans.proj@data)
 
-    trans.df=fortify(trans.proj, region=OBJECTID)
+    trans.df=ggplot2::fortify(trans.proj, region=OBJECTID)
 
-    trans.df=join(trans.df,trans.proj@data, by="id")
+    trans.df=plyr::join(trans.df,trans.proj@data, by="id")
 
     trans.labels=trans.df[trans.df$order==1,]
 
@@ -440,18 +440,18 @@ CountsTable=function(adj.counts) {
 
 
 
-    t1=(aggregate(adj.counts$total~adj.counts$yr+adj.counts$obs+adj.counts$ctran+adj.counts$sppn+adj.counts$strata, FUN=sum))
-    t2=(aggregate(adj.counts$itotal~adj.counts$yr+adj.counts$obs+adj.counts$ctran+adj.counts$sppn+adj.counts$strata, FUN=sum))
-    t2b=aggregate(adj.counts$ibb~adj.counts$yr+adj.counts$obs+adj.counts$ctran+adj.counts$sppn+adj.counts$strata, FUN=sum)
-    t4=aggregate(adj.counts$sing1pair2~adj.counts$yr+adj.counts$obs+adj.counts$ctran+adj.counts$sppn+adj.counts$strata, FUN=sum)
-    t3=merge(t1,t2,by=c("adj.counts$yr", "adj.counts$obs","adj.counts$ctran", "adj.counts$sppn", "adj.counts$strata"))
-    t3=merge(t3,t2b,by=c("adj.counts$yr", "adj.counts$obs","adj.counts$ctran", "adj.counts$sppn", "adj.counts$strata"))
-    t3=merge(t3,t4,by=c("adj.counts$yr", "adj.counts$obs","adj.counts$ctran", "adj.counts$sppn", "adj.counts$strata"))
+    t1=(aggregate(adj.counts$total~adj.counts$Year+adj.counts$Observer+adj.counts$ctran+adj.counts$Species+adj.counts$strata, FUN=sum))
+    t2=(aggregate(adj.counts$itotal~adj.counts$Year+adj.counts$Observer+adj.counts$ctran+adj.counts$Species+adj.counts$strata, FUN=sum))
+    t2b=aggregate(adj.counts$ibb~adj.counts$Year+adj.counts$Observer+adj.counts$ctran+adj.counts$Species+adj.counts$strata, FUN=sum)
+    t4=aggregate(adj.counts$sing1pair2~adj.counts$Year+adj.counts$Observer+adj.counts$ctran+adj.counts$Species+adj.counts$strata, FUN=sum)
+    t3=merge(t1,t2,by=c("adj.counts$Year", "adj.counts$Observer","adj.counts$ctran", "adj.counts$Species", "adj.counts$strata"))
+    t3=merge(t3,t2b,by=c("adj.counts$Year", "adj.counts$Observer","adj.counts$ctran", "adj.counts$Species", "adj.counts$strata"))
+    t3=merge(t3,t4,by=c("adj.counts$Year", "adj.counts$Observer","adj.counts$ctran", "adj.counts$Species", "adj.counts$strata"))
 
 
-    colnames(t3)=c("yr","obs","ctran", "sppn", "strata", "total", "itotal", "ibb", "sing1pair2")
+    colnames(t3)=c("Year","Observer","ctran", "Species", "strata", "total", "itotal", "ibb", "sing1pair2")
 
-    return(t3[order(t3$yr, t3$obs, t3$sppn, as.numeric(t3$ctran)),])
+    return(t3[order(t3$Year, t3$Observer, t3$Species, as.numeric(t3$ctran)),])
 
 
 
@@ -473,12 +473,12 @@ PointsToStrata=function(full.data, area){
 
   proj4string(sp)=CRS("+proj=longlat +ellps=WGS84")
 
-  sp=spTransform(sp, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
+  sp=sp::spTransform(sp, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
 
   map=LoadMap(area, type="proj")
 
-  map=spTransform(map, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
+  map=sp::spTransform(map, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
 
 
@@ -547,119 +547,60 @@ TranSelect = function(year, area){
 
 Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, output=TRUE) {
 
-  #data=read.csv(file=(system.file("external/YKG17_HMW_MAS.v7.5.17.csv", package="AKaerial")), header=TRUE)
-  #trans=TranSelect(year=data$yr[1], area=area)
-
-  #trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-  #trans.layer=trans$layer
-  shp=LoadMap(area=area, type="proj")
-
   #Save old warning settings to revert to before leaving function
   oldw <- getOption("warn")
   #Suppress spatial warnings inside function call
   options(warn=-1)
 
-  #Attach strata ownership to data points (moved to DataSelect)
-  #data=PointsToStrata(data,area=area)
-  #Change col type from factor to character
-  #data$strat=as.character(data$strat)
-
-  #Compile the length (d), strata (type), area covered (des.area), and original trans name in data (original)
-  #Splits transects by strata if needed
-  #transects=TransectTable(trans.file=trans.file, trans.layer=trans.layer, method=trans.method, area=area, obs=n.obs)
-  #transects=transects[,-1]
-
-  #Moved NA function to DataSelect
-  #Find any NA for strata ownership (caused by late/early click on receiver in plane)
-  #for(a in 1:length(data$strat)){
-
-    #If NA found, replace with strata type shared by entries on that transect
-    #This assumes the click/logging was actually over the strata and not ACTUALLY early/late
-  #  if(is.na(data$strat[a])){
-  #    temp=data[data$tran==data$tran[a],]
-  #    data$strat[a]=names(sort(table(temp$strat), decreasing=TRUE))[1]
-
-  #  }
-
-  #}
-
-  #Compute the total/indicated total for the group sizes indicated in the data
-  #adj.counts=AdjustCounts(data)
 
   #Sum the counts by combinations of species/transect
-  counts.t=CountsTable(data)
-  counts.t$area=0
+  counts.t=CountsTable(data$transect)
+  counts.t$SampledArea=0
 
-  for (i in 1:length(counts.t$area)){
+  for (i in 1:length(counts.t$SampledArea)){
 
-    counts.t$area[i]=data$area[data$yr==counts.t$yr[i] & data$obs==counts.t$obs[i] & data$ctran==counts.t$ctran[i]][1]
+    counts.t$SampledArea[i]=sum(data$flight$SampledArea[data$flight$PartOf==counts.t$ctran[i]])
+    #counts.t$area[i]=data$flight$SampledArea[data$flight$Year==counts.t$Year[i] & data$==counts.t$obs[i] & data$ctran==counts.t$ctran[i]][1]
 
   }
 
   #Add a row with a 0 count for every species counted somewhere in the data but not on a given transect
   #t3=MakeZeroes(data, counts.t)
    t3=counts.t
-  #t4=merge(t3, transects, by.x=c("tran", "strat"), by.y=c("original", "type"))
 
-  #Remove transect start and end from species list
-  t3=t3[t3$sppn != "ENDPT",]
-  t3=t3[t3$sppn != "START",]
-  #t3=t3[t3$sppn != "end",]
-  #t3=t3[t3$sppn != "start",]
-  #t3=t3[t3$sppn != "ENDT",]
-  #t3=t3[t3$sppn != "BEGT",]
 
   #Make sure totals are numeric
-  t3$total=as.numeric(t3$total)
-  t3$itotal=as.numeric(t3$itotal)
-  t3$ibb=as.numeric(t3$ibb)
-  t3$sing1pair2=as.numeric(t3$sing1pair2)
+  #t3$total=as.numeric(t3$total)
+  #t3$itotal=as.numeric(t3$itotal)
+  #t3$ibb=as.numeric(t3$ibb)
+  #t3$sing1pair2=as.numeric(t3$sing1pair2)
 
-  #t3$des.area=0
-
-
-  #Sum the sampled areas for segments of the same transect
-  #trans.area=aggregate(des.area~type+original, transects, sum)
-  #des.area.sum=aggregate(des.area~type, transects,sum)
-
-
-  #for (a in 1:length(t3$sppn)){
-
-  #  if(any(trans.area$des.area[trans.area$original==t3$tran[a] & trans.area$type==t3$strat[a]])){
-  #    t3$des.area[a]=trans.area$des.area[trans.area$original==t3$tran[a] & trans.area$type==t3$strat[a]]
-  #  }
-
-
-  #}
-
-  #Trim off nonsense pieces created by gis clipping
-  #t3=t3[t3$des.area>.5,]
 
   #Sum the counts of each species by strata type
-  sp.strat.total=aggregate(t3$total~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=sum)
-  colnames(sp.strat.total)=c("yr","obs", "sppn", "strata", "total")
+  sp.strat.total=aggregate(t3$total~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=sum)
+  colnames(sp.strat.total)=c("Year","Observer", "Species", "strata", "total")
 
-  sp.strat.itotal=aggregate(t3$itotal~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=sum)
-  colnames(sp.strat.itotal)=c("yr","obs", "sppn", "strata", "itotal")
+  sp.strat.itotal=aggregate(t3$itotal~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=sum)
+  colnames(sp.strat.itotal)=c("Year","Observer", "Species", "strata", "itotal")
 
-  sp.strat.ibb=aggregate(t3$ibb~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=sum)
-  colnames(sp.strat.ibb)=c("yr","obs", "sppn", "strata", "ibb")
+  sp.strat.ibb=aggregate(t3$ibb~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=sum)
+  colnames(sp.strat.ibb)=c("Year","Observer", "Species", "strata", "ibb")
 
-  sp.strat.sing1pair2=aggregate(t3$sing1pair2~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=sum)
-  colnames(sp.strat.sing1pair2)=c("yr","obs", "sppn", "strata", "sing1pair2")
+  sp.strat.sing1pair2=aggregate(t3$sing1pair2~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=sum)
+  colnames(sp.strat.sing1pair2)=c("Year","Observer", "Species", "strata", "sing1pair2")
 
   #Variance of the counts within each strata
-  sp.strat.total.v=aggregate(t3$total~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=var)
-  colnames(sp.strat.total.v)=c("yr", "obs", "sppn", "strata", "total.v")
+  sp.strat.total.v=aggregate(t3$total~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=var)
+  colnames(sp.strat.total.v)=c("Year", "Observer", "Species", "strata", "total.v")
 
-  sp.strat.itotal.v=aggregate(t3$itotal~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=var)
-  colnames(sp.strat.itotal.v)=c("yr", "obs", "sppn", "strata", "itotal.v")
+  sp.strat.itotal.v=aggregate(t3$itotal~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=var)
+  colnames(sp.strat.itotal.v)=c("Year", "Observer", "Species", "strata", "itotal.v")
 
-  sp.strat.ibb.v=aggregate(t3$ibb~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=var)
-  colnames(sp.strat.ibb.v)=c("yr","obs", "sppn", "strata", "ibb.v")
+  sp.strat.ibb.v=aggregate(t3$ibb~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=var)
+  colnames(sp.strat.ibb.v)=c("Year","Observer", "Species", "strata", "ibb.v")
 
-  sp.strat.sing1pair2.v=aggregate(t3$sing1pair2~t3$yr+t3$obs+t3$sppn+t3$strata, FUN=var)
-  colnames(sp.strat.sing1pair2.v)=c("yr","obs", "sppn", "strata", "sing1pair2.v")
+  sp.strat.sing1pair2.v=aggregate(t3$sing1pair2~t3$Year+t3$Observer+t3$Species+t3$strata, FUN=var)
+  colnames(sp.strat.sing1pair2.v)=c("Year","Observer", "Species", "strata", "sing1pair2.v")
 
   sp.strat=merge(sp.strat.total, sp.strat.itotal)
   sp.strat=merge(sp.strat, sp.strat.ibb)
@@ -684,22 +625,22 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
 
   for (i in 1:length(sp.strat.final$strata)){
 
-    temp.t3=t3[t3$yr==sp.strat.final$yr[i] & t3$obs==sp.strat.final$obs[i] & t3$sppn==sp.strat.final$sppn[i] & t3$strata==sp.strat.final$strata[i],]
-    sp.strat.final$total.cov[i]=cov(temp.t3$total, temp.t3$area)
-    sp.strat.final$itotal.cov[i]=cov(temp.t3$itotal, temp.t3$area)
-    sp.strat.final$ibb.cov[i]=cov(temp.t3$ibb, temp.t3$area)
-    sp.strat.final$sing1pair2.cov[i]=cov(temp.t3$sing1pair2, temp.t3$area)
+    temp.t3=t3[t3$Year==sp.strat.final$Year[i] & t3$Observer==sp.strat.final$Observer[i] & t3$Species==sp.strat.final$Species[i] & t3$strata==sp.strat.final$strata[i],]
+    sp.strat.final$total.cov[i]=cov(temp.t3$total, temp.t3$SampledArea)
+    sp.strat.final$itotal.cov[i]=cov(temp.t3$itotal, temp.t3$SampledArea)
+    sp.strat.final$ibb.cov[i]=cov(temp.t3$ibb, temp.t3$SampledArea)
+    sp.strat.final$sing1pair2.cov[i]=cov(temp.t3$sing1pair2, temp.t3$SampledArea)
 
   }
 
 
   #Calculate the total area by type and the variance of the areas
 
-  area.strat=aggregate(t3$area~t3$yr+t3$obs+t3$strata+t3$sppn, FUN=sum)
-  area.strat.v=aggregate(t3$area~t3$yr+t3$obs+t3$strata+t3$sppn, FUN=var)
+  area.strat=aggregate(t3$SampledArea~t3$Year+t3$Observer+t3$strata+t3$Species, FUN=sum)
+  area.strat.v=aggregate(t3$SampledArea~t3$Year+t3$Observer+t3$strata+t3$Species, FUN=var)
 
-  colnames(area.strat)=c("yr", "obs", "strata", "sppn","total.area")
-  colnames(area.strat.v)=c("yr", "obs", "strata", "sppn", "total.area.var")
+  colnames(area.strat)=c("Year", "Observer", "strata", "Species","total.area")
+  colnames(area.strat.v)=c("Year", "Observer", "strata", "Species", "total.area.var")
 
   area.strat=area.strat[!duplicated(area.strat[1:3]),-4]
   area.strat.v=area.strat.v[!duplicated(area.strat.v[1:3]),-4]
@@ -710,7 +651,7 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #print(area.summary)
 
   #Merge the counts and spatial stats
-  counts.final=merge(sp.strat.final,area.summary, by=c("yr", "obs", "strata"))
+  counts.final=merge(sp.strat.final,area.summary, by=c("Year", "Observer", "strata"))
 
   #Calculate final densities for each strata layer
   density.total=counts.final$total/counts.final$total.area
@@ -723,15 +664,15 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #print(head(counts.final))
 
   #Get actual areas from gis layers
-  strata.area=aggregate(shp@data$AREA~shp@data$STRAT, FUN=sum)
-  colnames(strata.area)=c("strata", "layer.area")
+  #strata.area=aggregate(shp@data$AREA~shp@data$STRAT, FUN=sum)
+  #colnames(strata.area)=c("strata", "layer.area")
 
   #Convert from m^2 to km^2
-  strata.area$layer.area=strata.area$layer.area / 1000000
+  #strata.area$layer.area=strata.area$layer.area / 1000000
 
   #print(strata.area)
 
-  counts.final=merge(counts.final, strata.area, by="strata")
+  counts.final=merge(counts.final, data$strata, by="strata")
 
   #Extrapolate density estimates across area calculation
   total.est=counts.final$density.total * counts.final$layer.area
@@ -743,21 +684,21 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
 
 
   #Summarize in table
-  estimates=aggregate(counts.final$total.est~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(estimates)=c("yr", "obs", "sppn", "total.est")
+  estimates=aggregate(counts.final$total.est~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(estimates)=c("Year", "Observer", "Species", "total.est")
 
-  estimates.i=aggregate(counts.final$itotal.est~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(estimates.i)=c("yr", "obs", "sppn","itotal.est")
+  estimates.i=aggregate(counts.final$itotal.est~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(estimates.i)=c("Year", "Observer", "Species","itotal.est")
 
-  estimates.ibb=aggregate(counts.final$ibbtotal.est~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(estimates.ibb)=c("yr", "obs", "sppn","ibbtotal.est")
+  estimates.ibb=aggregate(counts.final$ibbtotal.est~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(estimates.ibb)=c("Year", "Observer", "Species","ibbtotal.est")
 
-  estimates.sing1pair2=aggregate(counts.final$sing1pair2.est~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(estimates.sing1pair2)=c("yr", "obs", "sppn","sing1pair2.est")
+  estimates.sing1pair2=aggregate(counts.final$sing1pair2.est~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(estimates.sing1pair2)=c("Year", "Observer", "Species","sing1pair2.est")
 
-  estimates=merge(estimates, estimates.i, by=c("yr", "obs", "sppn"))
-  estimates=merge(estimates, estimates.ibb, by=c("yr", "obs", "sppn"))
-  estimates=merge(estimates, estimates.sing1pair2, by=c("yr", "obs", "sppn"))
+  estimates=merge(estimates, estimates.i, by=c("Year", "Observer", "Species"))
+  estimates=merge(estimates, estimates.ibb, by=c("Year", "Observer", "Species"))
+  estimates=merge(estimates, estimates.sing1pair2, by=c("Year", "Observer", "Species"))
 
 
   #adj.counts=merge(adj.counts, transects, by.x="tran", by.y="original")
@@ -765,42 +706,42 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   ### Var(N) ###
 
   #Keep projection consistent
-  shp.proj <- spTransform(shp, "+proj=longlat +ellps=WGS84")
+  #shp.proj <- rgdal::spTransform(shp, "+proj=longlat +ellps=WGS84")
 
-  shp.proj@data$id = rownames(shp.proj@data)
-  shp.fort <- fortify(shp.proj, region="STRAT")
-  shp.df=join(shp.fort, shp.proj@data, by="id")
+  #shp.proj@data$id = rownames(shp.proj@data)
+  #shp.fort <- fortify(shp.proj, region="STRAT")
+  #shp.df=join(shp.fort, shp.proj@data, by="id")
 
   ##extract min and max lat from shp.df, calc gcd and / by sampled width
-  min.lat=aggregate(shp.df$lat~shp.df$id, FUN=min)
-  max.lat=aggregate(shp.df$lat~shp.df$id, FUN=max)
-  piece.min.lat=aggregate(shp.df$lat~shp.df$piece+shp.df$id, FUN=min)
-  colnames(piece.min.lat)=c("piece", "id", "min")
-  piece.max.lat=aggregate(shp.df$lat~shp.df$piece+shp.df$id, FUN=max)
-  colnames(piece.max.lat)=c("piece", "id", "max")
+  #min.lat=aggregate(shp.df$lat~shp.df$id, FUN=min)
+  #max.lat=aggregate(shp.df$lat~shp.df$id, FUN=max)
+  #piece.min.lat=aggregate(shp.df$lat~shp.df$piece+shp.df$id, FUN=min)
+  #colnames(piece.min.lat)=c("piece", "id", "min")
+  #piece.max.lat=aggregate(shp.df$lat~shp.df$piece+shp.df$id, FUN=max)
+  #colnames(piece.max.lat)=c("piece", "id", "max")
 
-  pieces=data.frame("id"=piece.max.lat$id, "min"=piece.min.lat$min, "max"=piece.max.lat$max)
-  pieces=pieces[order(pieces$id, -pieces$max),]
+  #pieces=data.frame("id"=piece.max.lat$id, "min"=piece.min.lat$min, "max"=piece.max.lat$max)
+  #pieces=pieces[order(pieces$id, -pieces$max),]
 
   #Find holes between shape polygons
-  voids=FindVoids(pieces=pieces)
+  #voids=FindVoids(pieces=pieces)
 
   #111.5 km in 1 deg lat
 
-  diff.lat=data.frame("strata"=min.lat[,1], "diff"=abs(max.lat[,2]-min.lat[,2])*111.5)
+  #diff.lat=data.frame("strata"=min.lat[,1], "diff"=abs(max.lat[,2]-min.lat[,2])*111.5)
 
   #If there are voids in strata, remove them from possible sample area
 
-  diff.lat$strata=as.character(diff.lat$strata)
+  #diff.lat$strata=as.character(diff.lat$strata)
 
-  for (i in 1:length(diff.lat$strata)){
-    if (diff.lat$strata[i] %in% voids$id){diff.lat$diff[i]=diff.lat$diff[i]-111.5*voids$d[voids$id==diff.lat$strata[i]]}
+  #for (i in 1:length(diff.lat$strata)){
+  #  if (diff.lat$strata[i] %in% voids$id){diff.lat$diff[i]=diff.lat$diff[i]-111.5*voids$d[voids$id==diff.lat$strata[i]]}
 
-  }
+  #}
 
 
   #Total possible transects available (M)
-  diff.lat$M=diff.lat$diff/(trans.width*n.obs)
+  #diff.lat$M=diff.lat$diff/(trans.width*n.obs)
 
   #print(transects)
   #Number of transects sampled (m of a possible M)
@@ -810,15 +751,15 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #reps=unique(reps)
 
   #print(reps)
-  reps2=aggregate(t3$ctran~t3$yr+t3$obs+t3$strata+t3$sppn, FUN=length)
-  colnames(reps2)=c("yr", "obs", "strata", "sppn","m")
+  reps2=aggregate(t3$ctran~t3$Year+t3$Observer+t3$strata+t3$Species, FUN=length)
+  colnames(reps2)=c("Year", "Observer", "strata", "Species","m")
 
   reps2=reps2[!duplicated(reps2[1:3]),-4]
 
 
-  diff.lat=merge(diff.lat, reps2, by="strata")
+  data$strata=merge(data$strata, reps2, by="strata")
 
-  diff.lat=merge(diff.lat, area.summary, by=c("yr", "obs", "strata"))
+  #diff.lat=merge(diff.lat, area.summary, by=c("yr", "obs", "strata"))
 
   #replace the Egg Island N/S facing transect M calculation
   if(area=="crd"){diff.lat$M[diff.lat$strata=="Egg Island"]=10/(trans.width*n.obs)}
@@ -829,10 +770,10 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #See equation 12.9, p. 249 in "Analysis and Management of Animal Populations"
   #Williams, Nichols, Conroy; 2002
 
-  for (j in 1:length(counts.final$sppn)){
+  for (j in 1:length(counts.final$Species)){
 
-    M=diff.lat$M[diff.lat$yr==counts.final$yr[j] & diff.lat$obs==counts.final$obs[j] & diff.lat$strata==counts.final$strata[j]]
-    m=diff.lat$m[diff.lat$yr==counts.final$yr[j] & diff.lat$obs==counts.final$obs[j] & diff.lat$strata==counts.final$strata[j]]
+    M=data$strata$M[data$strata$Year==counts.final$Year[j] & data$strata$Observer==counts.final$Observer[j] & data$strata$strata==counts.final$strata[j]]
+    m=data$strata$m[data$strata$Year==counts.final$Year[j] & data$strata$Observer==counts.final$Observer[j] & data$strata$strata==counts.final$strata[j]]
     prop.m=((1-(m/M))/m)
 
     #if(counts.final$sppn[j]=="SPEI"){print((counts.final$total.v[j]+(counts.final$density.total[j]^2)*(counts.final$total.area.var[j])-(2*counts.final$density.total[j]*counts.final$total.cov[j])))}
@@ -846,22 +787,22 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   }
 
 
-  var.est=aggregate(counts.final$var.N~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(var.est)=c("yr", "obs", "sppn","var.N")
+  var.est=aggregate(counts.final$var.N~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(var.est)=c("Year", "Observer", "Species","var.N")
 
-  var.est.i=aggregate(counts.final$var.Ni~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(var.est.i)=c("yr", "obs", "sppn","var.Ni")
+  var.est.i=aggregate(counts.final$var.Ni~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(var.est.i)=c("Year", "Observer", "Species","var.Ni")
 
-  var.est.ibb=aggregate(counts.final$var.Nib~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(var.est.ibb)=c("yr", "obs", "sppn","var.Nib")
+  var.est.ibb=aggregate(counts.final$var.Nib~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(var.est.ibb)=c("Year", "Observer", "Species","var.Nib")
 
-  var.est.sing1pair2=aggregate(counts.final$var.Nsing1pair2~counts.final$yr+counts.final$obs+counts.final$sppn, FUN=sum)
-  colnames(var.est.sing1pair2)=c("yr", "obs", "sppn","var.Nsing1pair2")
+  var.est.sing1pair2=aggregate(counts.final$var.Nsing1pair2~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
+  colnames(var.est.sing1pair2)=c("Year", "Observer", "Species","var.Nsing1pair2")
 
-  estimates=merge(estimates, var.est, by=c("yr", "obs", "sppn"), all=TRUE)
-  estimates=merge(estimates, var.est.i, by=c("yr", "obs", "sppn"), all=TRUE)
-  estimates=merge(estimates, var.est.ibb, by=c("yr", "obs", "sppn"), all=TRUE)
-  estimates=merge(estimates, var.est.sing1pair2, by=c("yr", "obs", "sppn"), all=TRUE)
+  estimates=merge(estimates, var.est, by=c("Year", "Observer", "Species"), all=TRUE)
+  estimates=merge(estimates, var.est.i, by=c("Year", "Observer", "Species"), all=TRUE)
+  estimates=merge(estimates, var.est.ibb, by=c("Year", "Observer", "Species"), all=TRUE)
+  estimates=merge(estimates, var.est.sing1pair2, by=c("Year", "Observer", "Species"), all=TRUE)
 
 
   estimates$SE=sqrt(estimates$var.N)
@@ -886,36 +827,36 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
 
   }
 
-  return(list("estimates"=estimates, "diff.lat"=diff.lat, "strata.area"=strata.area, "counts.final"=counts.final))
+  return(list("estimates"=estimates, "counts.final"=counts.final))
 }
 
 
 CombineEstimates=function(estimates){
 
-  yr.list=unique(estimates$yr)
-  sp.list=unique(estimates$sppn)
+  yr.list=unique(estimates$Year)
+  sp.list=unique(estimates$Species)
 
-  combined=data.frame(yr=rep(yr.list, each=length(unique(estimates$sppn))), sppn=rep(sp.list, length(yr.list)), total=0, total.var=0, total.se=0, itotal=0, itotal.var=0, itotal.se=0, ibb=0, ibb.var=0, ibb.se=0)
+  combined=data.frame(Year=rep(yr.list, each=length(unique(estimates$Species))), Species=rep(sp.list, length(yr.list)), total=0, total.var=0, total.se=0, itotal=0, itotal.var=0, itotal.se=0, ibb=0, ibb.var=0, ibb.se=0, sing1pair2=0, sing1pair2.var=0, sing1pair2.se=0)
 
-  for(i in 1:length(combined$yr)){
-
-
-      combined$total[i]=mean(estimates$total.est[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])
-
-      combined$itotal[i]=mean(estimates$itotal.est[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])
-
-      combined$ibb[i]=mean(estimates$ibbtotal.est[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])
-
-      combined$sing1pair2[i]=mean(estimates$sing1pair2.est[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])
+  for(i in 1:length(combined$Year)){
 
 
-       combined$total.var[i]=sum(estimates$var.N[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])/(length(estimates$var.N[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])^2)
+      combined$total[i]=mean(estimates$total.est[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])
 
-      combined$itotal.var[i]=sum(estimates$var.Ni[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])/(length(estimates$var.Ni[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])^2)
+      combined$itotal[i]=mean(estimates$itotal.est[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])
 
-      combined$ibb.var[i]=sum(estimates$var.Nib[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])/(length(estimates$var.Nib[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])^2)
+      combined$ibb[i]=mean(estimates$ibbtotal.est[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])
 
-      combined$sing1pair2.var[i]=sum(estimates$var.Nsing1pair2[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])/(length(estimates$var.Nsing1pair2[estimates$yr==combined$yr[i] & estimates$sppn==combined$sppn[i]])^2)
+      combined$sing1pair2[i]=mean(estimates$sing1pair2.est[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])
+
+
+       combined$total.var[i]=sum(estimates$var.N[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.N[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])^2)
+
+      combined$itotal.var[i]=sum(estimates$var.Ni[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Ni[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])^2)
+
+      combined$ibb.var[i]=sum(estimates$var.Nib[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Nib[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])^2)
+
+      combined$sing1pair2.var[i]=sum(estimates$var.Nsing1pair2[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Nsing1pair2[estimates$Year==combined$Year[i] & estimates$Species==combined$Species[i]])^2)
 
 
     }
@@ -1003,15 +944,15 @@ TransectTable <- function(trans.file, trans.layer, obs=1, method, area) {
   if(method=="gis" & area == "acp"){
 
 
-    trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-    trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+    trans.obj=rgdal::readOGR(trans.file, trans.layer, verbose=FALSE)
+    trans.proj <- sp::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
 
     strata.proj=LoadMap(area, type="proj")
 
     newlines = raster::intersect(trans.proj, strata.proj)
     newlines@data$id=rownames(newlines@data)
-    newlines.fort=fortify(newlines, region="STRAT")
-    trans.points=join(newlines.fort, newlines@data, by="id")
+    newlines.fort=ggplot2::fortify(newlines, region="STRAT")
+    trans.points=plyr::join(newlines.fort, newlines@data, by="id")
 
     id=trans.points$id
     x=vector("numeric",length=2*length(unique(trans.points$id)))
@@ -1196,11 +1137,11 @@ TransectLevel=function(data, n.obs=2, trans.method="gis", trans.width=.2, area) 
 
 CorrectTrans=function(full.data, threshold=.5, split.design, area){
 
-  split.design=spTransform(split.design, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+  split.design=sp::spTransform(split.design, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 
 coordinates(full.data)=~Lon+Lat
 proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
-full.data=spTransform(full.data, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+full.data=sp::spTransform(full.data, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 
 
 if(area=="CRD"){
@@ -1225,7 +1166,7 @@ if(area != "CRD"){
 
   #convert from meters to km, then re-project to lat/lon
   full.data$dist = full.data$dist/1000
-  full.data=spTransform(full.data, "+proj=longlat +ellps=WGS84")
+  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84")
 
 }
 
@@ -1300,8 +1241,8 @@ TransSummary=function(full.data, split.design, area){
       #trans.layer=trans$layer
 
 
-     # trans.obj=readOGR(trans.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
-    #  trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+     # trans.obj=rgdal::readOGR(trans.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
+    #  trans.obj <- rgdal::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
 
      # GIS.obj = LoadMap(area, type="proj")
 
@@ -1318,8 +1259,8 @@ TransSummary=function(full.data, split.design, area){
      # trans.layer=trans$layer
 
 
-      #trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-      #trans.obj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+      #trans.obj=rgdal::readOGR(trans.file, trans.layer, verbose=FALSE)
+      #trans.obj <- rgdal::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
 
      #GIS.obj = LoadMap(area, type="proj")
 
@@ -1335,7 +1276,7 @@ TransSummary=function(full.data, split.design, area){
 
 
     #tpoints=as(trans.obj, "SpatialPointsDataFrame")
-    #tpoints=spTransform(tpoints, "+proj=longlat +ellps=WGS84")
+    #tpoints=rgdal::spTransform(tpoints, "+proj=longlat +ellps=WGS84")
     #tpoints$strata=over(tpoints,GIS.obj)$STRATNAME
 
 
@@ -1348,7 +1289,7 @@ TransSummary=function(full.data, split.design, area){
     for (j in 1:length(observers)){
 
 
-      if(area=="YKG" || area=="YKD"){
+      if(area=="YKG" || area=="YKD" || area=="ACP"){
 
 
         #if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
@@ -1589,8 +1530,8 @@ TrimData=function(full.data, area){
 
     trimmed=subset(full.data, full.data$dist<.5)
 
-    trimmed$sppn[trimmed$strat=="8" & trimmed$sppn=="CAGO"]="TAVS"
-    trimmed$sppn[trimmed$lat>=63 & trimmed$sppn=="CAGO"]="TAVS"
+    trimmed$sppn[trimmed$strat=="8" & trimmed$sppn=="CCGO"]="TAVS"
+    trimmed$sppn[trimmed$lat>=63 & trimmed$sppn=="CCGO"]="TAVS"
 
 
 
@@ -1617,7 +1558,62 @@ TrimData=function(full.data, area){
 
 
 
+StrataSummary=function(strata.file){
 
+
+  #read projected (non-dataframe) strata
+  strata.proj=LoadMap(strata.file, type="proj")
+  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
+
+
+  #Get actual areas from gis layers
+  strata.area=aggregate(strata.proj@data$AREA~strata.proj@data$STRATNAME, FUN=sum)
+  colnames(strata.area)=c("strata", "layer.area")
+
+  #Convert from m^2 to km^2
+  strata.area$layer.area=strata.area$layer.area / 1000000
+
+
+  strata.proj@data$id = rownames(strata.proj@data)
+  strata.fort <- ggplot2::fortify(strata.proj, region="STRATNAME")
+  strata.df=plyr::join(strata.fort, strata.proj@data, by="id")
+
+  ##extract min and max lat from shp.df, calc gcd and / by sampled width
+  min.lat=aggregate(strata.df$lat~strata.df$id, FUN=min)
+  max.lat=aggregate(strata.df$lat~strata.df$id, FUN=max)
+  piece.min.lat=aggregate(strata.df$lat~strata.df$piece+strata.df$id, FUN=min)
+  colnames(piece.min.lat)=c("piece", "id", "min")
+  piece.max.lat=aggregate(strata.df$lat~strata.df$piece+strata.df$id, FUN=max)
+  colnames(piece.max.lat)=c("piece", "id", "max")
+
+  pieces=data.frame("id"=piece.max.lat$id, "min"=piece.min.lat$min, "max"=piece.max.lat$max)
+  pieces=pieces[order(pieces$id, -pieces$max),]
+
+  #Find holes between shape polygons
+  voids=FindVoids(pieces=pieces)
+
+  #111.5 km in 1 deg lat
+
+  diff.lat=data.frame("strata"=min.lat[,1], "diff"=abs(max.lat[,2]-min.lat[,2])*111.5)
+
+  #If there are voids in strata, remove them from possible sample area
+
+  diff.lat$strata=as.character(diff.lat$strata)
+
+  for (i in 1:length(diff.lat$strata)){
+    if (diff.lat$strata[i] %in% voids$id){diff.lat$diff[i]=diff.lat$diff[i]-111.5*voids$d[voids$id==diff.lat$strata[i]]}
+
+  }
+
+
+  #Total possible transects available (M)
+  diff.lat$M=diff.lat$diff/(.2)
+
+ strata.area=merge(strata.area, diff.lat)
+
+
+  return(strata.area)
+}
 
 
 

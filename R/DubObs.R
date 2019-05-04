@@ -1,6 +1,60 @@
 
 
 
+DoubleObsRandom=function(strata, transects, split=.4, options=5, tries=10000){
+
+  split.design=SplitDesign(strata.file = strata, transect.file = transects, SegCheck = FALSE)
+
+  trans.list=unique(split.design$SPLIT)
+
+  how.many=ceiling(length(trans.list)/2)
+
+  possible=vector(mode="list", length=options)
+  possible.t=vector(mode="list", length=options)
+
+  for(i in 1:options){
+
+    for(j in 1:tries){
+
+      #cat(paste("\r", j, " of ",tries, sep="" ))
+
+      split.design$newseat="LR"
+
+      sample=sample(split.design$SPLIT, how.many, replace=FALSE)
+
+      split.design$newseat[split.design$SPLIT %in% sample]="RR"
+
+      coverage=aggregate(len~STRATNAME+newseat,data=split.design, FUN=sum)
+
+      prop.coverage=aggregate(len~STRATNAME, data=coverage, FUN=function(x) x[1]/sum(x))
+
+      prop.coverage=prop.coverage[prop.coverage$STRATNAME != "nonhabitat",]
+
+      if(!any(prop.coverage$len > (1-split) | prop.coverage$len < split))
+      {
+        #print(paste("Solution ", i, " found.", sep=""))
+
+        possible[[i]]=split.design
+        possible.t[[i]]=prop.coverage
+
+        break
+
+      }
+
+    }
+
+
+
+  }
+
+
+
+  return(list("map"=possible,
+              "table"=possible.t))
+
+
+}
+
 DubMatch = function(front.data=NA, rear.data=NA, combined.data=NA, front.obs, rear.obs, time=6, open=5){
 
 #check if combined data was given, if not, read in each file
