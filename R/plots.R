@@ -177,3 +177,100 @@ return(map)
 
 }
 
+
+
+
+ShowMeUncut=function(strata.path, transect.path, data.path="none"){
+
+
+  strata.proj=LoadMap(strata.path, type="proj")
+
+  strata.proj <- suppressWarnings(gBuffer(strata.proj, byid=TRUE, width=0))
+  design=rgdal::readOGR(transect.path, layer=tools::file_path_sans_ext(basename(transect.path)), verbose=FALSE)
+  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84")
+  design.proj <- smoothr::drop_crumbs(design.proj, threshold=.1)
+
+
+  factpal=colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+
+
+  map= leaflet() %>%
+    addTiles() %>%
+    addPolygons(data=strata.proj,
+                fillColor=~factpal(strata.proj$STRATNAME),
+                fillOpacity=.4,
+                stroke=TRUE,
+                color="black",
+                opacity=1,
+                weight=1,
+                popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
+
+    addPolylines(data=design.proj,
+                 color="white",
+                 weight=4,
+                 opacity=.9,
+                 label=~design.proj$OBJECTID,
+                 popup = paste("Strata: ", design.proj$STRATNAME, "<br>",
+                               "Old Transect: ", design.proj$ORIGID, "<br>",
+                               "New Transect: ", design.proj$OBJECTID, "<br>",
+                               "Split Transect: ", design.proj$SPLIT, "<br>",
+                               "Length: ", design.proj$len))  %>%
+
+    addScaleBar() %>%
+
+    addProviderTiles("Esri.WorldImagery")
+
+
+  if(data.path != "none"){
+
+  for(i in 1:length(data.path)){
+
+    temp.data=read.csv(data.path[i], header=TRUE, stringsAsFactors = FALSE)
+
+    if(i==1){
+      data=temp.data
+    }
+
+    if(i!=1){
+      data=rbind(data, temp.data)
+
+    }
+
+
+    data$Lat[is.na(data$Lat)]=1
+    data$Lon[is.na(data$Lon)]=1
+
+  }
+
+
+
+  coordinates(data)=~Lon+Lat
+
+  pal=colorFactor(palette = c("red", "blue", "yellow", "green","orange"), data$Observer)
+
+
+  map= map %>%
+
+    addCircleMarkers(data=data,
+                     radius = 3,
+                     color = ~pal(Observer),
+                     stroke = FALSE,
+                     fillOpacity = 0.9,
+                     popup= paste(data$Observer, "<br>", data$Species,
+                                  "<br>", data$Obs_Type, "<br>", data$Num)
+    ) %>%
+
+    addProviderTiles("Esri.WorldImagery")
+
+  }
+
+
+
+
+  print(map)
+
+
+
+}
+
+

@@ -1,6 +1,5 @@
 
 
-
 DoubleObsRandom=function(strata, transects, split=.4, options=5, tries=10000){
 
   split.design=SplitDesign(strata.file = strata, transect.file = transects, SegCheck = FALSE)

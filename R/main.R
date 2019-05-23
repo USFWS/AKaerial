@@ -36,13 +36,15 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
   split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = TRUE)
 
-  data=CorrectTrans(full.data=data, area=area, split.design=split.design)
+  data=CorrectTrans(full.data=data, area=area, split.design=split.design, strata.file=strata.path)
 
   flight=TransSummary(full.data=data, split.design=split.design, area=area)
   #flight=flight[flight$len>0,]
 
 
   data=SpeciesByProject(full.data=data, area=area)
+
+  if(area=="CRD"){data=TrimToStrata(full.data=data, strata.path=strata.path)}
 
   data=AdjustCounts(data)
 
@@ -151,12 +153,36 @@ CorrectUnit=function(full.data){
 
 TransData=function(selected.data){
 
+
   agg=aggregate(cbind(Num,itotal,total,ibb, sing1pair2)~Year+Observer+Species+Obs_Type+ctran,data=selected.data$obs, FUN=sum)
 
 
   colnames(agg)=c("Year", "Observer", "Species", "Obs_Type", "ctran", "Num", "itotal", "total", "ibb", "sing1pair2")
 
-  agg=as.data.frame(complete(data=agg, Year, Observer, Species, Obs_Type, ctran, fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0)))
+  flown.list=unique(selected.data$flight$PartOf)
+
+  for(i in 1:length(flown.list)){
+
+    if( !flown.list[i] %in% unique(agg$ctran)){
+
+      new.row=agg[1,]
+      new.row$ctran=flown.list[i]
+      new.row$Num=0
+      new.row$itotal=0
+      new.row$total=0
+      new.row$ibb=0
+      new.row$sing1pair2=0
+
+      agg=rbind(agg,new.row)
+    }
+
+
+
+  }
+
+
+
+    agg=as.data.frame(complete(data=agg, Year, Observer, Species, Obs_Type, ctran, fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0)))
 
   agg$area=0
 
@@ -179,7 +205,7 @@ return(agg[order(agg$Year, agg$Observer, agg$Species, as.numeric(agg$ctran), agg
 }
 
 
-SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE){
+SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"){
 
 
   #read and project transects
@@ -208,7 +234,16 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE){
   newlines@data$id=rownames(newlines@data)
   newlines.fort=ggplot2::fortify(newlines, region="STRAT")
   newlines.df=plyr::join(newlines.fort, newlines@data, by="id")
-  newlines.df$ROUNDED=round(newlines.df$lat, digits=2)
+  newlines.df$ROUNDED=round(newlines.df$lat, digits=3)
+
+  if(area=="CRD"){
+
+    for(i in 1:length(newlines.df$STRATNAME)){
+    if(newlines.df$STRATNAME[i]=="Egg Island"){newlines.df$ROUNDED[i]= round(newlines.df$long[i], digits=2)}
+    }
+  }
+
+
   newlines.df$SPLIT=as.numeric(factor(interaction(newlines.df$STRATNAME, newlines.df$ROUNDED)))
 
   newlines@data$SPLIT=0
@@ -245,6 +280,8 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE){
                                  "New Transect: ", newlines$OBJECTID, "<br>",
                                  "Split Transect: ", newlines$SPLIT, "<br>",
                                  "Length: ", newlines$len))  %>%
+
+      addProviderTiles("Esri.WorldImagery")  %>%
 
       addScaleBar()
 
@@ -762,7 +799,8 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #diff.lat=merge(diff.lat, area.summary, by=c("yr", "obs", "strata"))
 
   #replace the Egg Island N/S facing transect M calculation
-  if(area=="crd"){diff.lat$M[diff.lat$strata=="Egg Island"]=10/(trans.width*n.obs)}
+  #Note-moved this to StrataSummary
+  #if(area=="crd"){diff.lat$M[diff.lat$strata=="Egg Island"]=10/(trans.width*n.obs)}
 
   #print(diff.lat)
 
@@ -1135,32 +1173,52 @@ TransectLevel=function(data, n.obs=2, trans.method="gis", trans.width=.2, area) 
 }
 
 
-CorrectTrans=function(full.data, threshold=.5, split.design, area){
+CorrectTrans=function(full.data, threshold=.5, split.design, area, strata.file){
 
   split.design=sp::spTransform(split.design, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 
 coordinates(full.data)=~Lon+Lat
 proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
+
+
+# if(area=="CRD"){
+# strata.proj=LoadMap(strata.file, type="proj")
+# strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
+#
+# full.data=raster::intersect(full.data, strata.proj)
+# }
+
 full.data=sp::spTransform(full.data, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+
+
+
+full.data$ctran=full.data$Transect
+full.data$closest=full.data$Transect
+full.data$dist=0
+
+
+for (j in seq_along(full.data$closest)){
+  full.data$closest[j]=as.numeric(as.character(split.design$SPLIT[which.min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))]))
+  full.data$dist[j]=min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))
+}
 
 
 if(area=="CRD"){
 
-  full.data$ctran=full.data$tran
+
+  for (k in 1:length(full.data$ctran)){
+  full.data$ctran[k]=split.design$SPLIT[split.design$ORIGID==full.data$Transect[k]][1]
+
+  }
+
+  full.data$dist = full.data$dist/1000
+  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84")
+
 
 }
 
 
 if(area != "CRD"){
-
-  full.data$ctran=full.data$Transect
-  full.data$closest=full.data$Transect
-  full.data$dist=0
-
-    for (j in seq_along(full.data$closest)){
-      full.data$closest[j]=as.numeric(as.character(split.design$SPLIT[which.min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))]))
-      full.data$dist[j]=min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))
-       }
 
   full.data$ctran=full.data$closest
 
@@ -1168,9 +1226,10 @@ if(area != "CRD"){
   full.data$dist = full.data$dist/1000
   full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84")
 
+  full.data$ctran[full.data$dist>threshold]=NA
+
 }
 
-full.data$ctran[full.data$dist>threshold]=NA
 
 full.data=full.data[!(is.na(full.data$ctran)), ]
 
@@ -1289,7 +1348,7 @@ TransSummary=function(full.data, split.design, area){
     for (j in 1:length(observers)){
 
 
-      if(area=="YKG" || area=="YKD" || area=="ACP"){
+      if(area=="YKG" || area=="YKD" || area=="ACP" || area=="CRD"){
 
 
         #if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
@@ -1611,13 +1670,34 @@ StrataSummary=function(strata.file){
 
  strata.area=merge(strata.area, diff.lat)
 
+ if("Egg Island" %in% strata.area$strata){
+
+   strata.area$diff[strata.area$strata=="Egg Island"]=10
+   strata.area$M[strata.area$strata=="Egg Island"]=50
+
+
+ }
 
   return(strata.area)
 }
 
 
 
+TrimToStrata=function(full.data, strata.path){
 
+
+  coordinates(full.data)=~Lon+Lat
+  proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
+
+  strata.proj=LoadMap(strata.file, type="proj")
+  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
+
+  full.data=raster::intersect(full.data, strata.proj)
+
+  return(as.data.frame(full.data))
+
+
+}
 
 
 

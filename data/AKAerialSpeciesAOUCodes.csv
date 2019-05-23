@@ -1,4 +1,5 @@
 INPUT,COMMON,SCIENTIFIC,QAQC,ACP,ACP_EST,BLSC,BLSC_EST,CRD,CRD_EST,WBPHS,WBPHS_EST,YKD,YKD_EST
+ABDU,American Black Duck,Anas rubripes,ABDU,ABDU,1,ABDU,0,ABDU,0,ABDU,1,ABDU,1
 ACGO,Aleutian Cackling Goose,Branta hutchinsii leucopareia,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 ALGO,Aleutian Cackling Goose,Branta hutchinsii leucopareia,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 AGWT,American Green-winged Teal,Anas crecca carolinensis,GWTE,GWTE,1,GWTE,0,GWTE,0,GWTE,1,GWTE,1
@@ -63,13 +64,17 @@ BLTU,Black Turnstone,Arenaria melanocephala,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXX
 BBPL,Black-bellied Plover,Pluvialis squatarola,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BLKI,Black-legged Kittiwake,Rissa tridactyla,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BWTE,Blue-winged Teal,Spatula discors,BWTE,BWTE,1,BWTE,0,BWTE,0,BWTE,1,BWTE,1
+CITE,Cinnamon Teal,Spatula cyanoptera,CITE,CITE,1,CITE,0,CITE,0,CITE,1,CITE,1
 BOGU,Bonaparte's Gull,Chroicocephalus philadelphia,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BTCU,Bristle-thighed Curlew,Numenius tahitiensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BRBE,Brown Bear,Ursus arctos,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+brbe,Brown Bear,Ursus arctos,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+BRBR,Brown Bear,Ursus arctos,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GRIZ,Brown Bear,Ursus arctos,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BBSP,Buff-breasted Sandpiper,Calidris subruficollis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BUFF,Bufflehead,Bucephala albeola,BUFF,BUFF,1,BUFF,0,BUFF,0,BUFF,1,BUFF,1
 CACG,Cackling Goose,Branta hutchinsii,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
+cack,Cackling Goose,Branta hutchinsii,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 CC.N,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CCNE,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
 ccne,Cackling Goose,Branta hutchinsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,CCGO,1
@@ -120,8 +125,10 @@ CRAU,Crested Auklet,Aethia cristatella,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 DCCO,Double-crested Cormorant,Phalacrocorax auritus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 DUNL,Dunlin,Calidris alpina,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 DCGO,Dusky Canada Goose,Branta canadensis occidentalis,DCGO,DCGO,0,DCGO,0,DCGO,1,DCGO,1,DCGO,0
+dcgo,Dusky Canada Goose,Branta canadensis occidentalis,DCGO,DCGO,0,DCGO,0,DCGO,1,DCGO,1,DCGO,0
 DCGON,Dusky Canada Goose,Branta canadensis occidentalis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 DCNE,Dusky Canada Goose,Branta canadensis occidentalis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+dcne,Dusky Canada Goose,Branta canadensis occidentalis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 YWAG,Eastern Yellow Wagtail,Motacilla tschutschensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EM.N,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EMGN,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
@@ -133,6 +140,7 @@ EMNE,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
 emne,Emperor Goose,Anser canagicus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,EMGO,1
 end,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
 END,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
+End,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
 ENDCOUNT,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
 ENDPT,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
 ENDT,End of transect,N/A,END,END,0,END,0,END,0,END,0,END,0
@@ -161,6 +169,7 @@ WFGN,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,
 wfgn,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
 WFGO,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1,GWFG,0,GWFG,0,GWFG,1,GWFG,1
 wfgo,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1,GWFG,0,GWFG,0,GWFG,1,GWFG,1
+WFTGout,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 WFNE,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
 wfne,Greater White-fronted Goose,Anser albifrons,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,GWFG,1
 GRYE,Greater Yellowlegs,Tringa melanoleuca,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -222,6 +231,7 @@ BOAT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 boat,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CAMP,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 DELE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+dout,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EBKR,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EBOL,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EBOR,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -255,6 +265,7 @@ SHORE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SHORELINE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SHORELINE-9.4,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 snowline,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+SNOWout,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SSBI,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 STRM,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SWAMPED,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -321,6 +332,7 @@ PEFA,Peregrine Falcon,Falco peregrinus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 PIGU,Pigeon Guillemot,Cepphus columba,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 POBE,Polar Bear,Ursus maritimus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 POJA,Pomarine Jaeger,Stercorarius pomarinus,JAEG,JAEG,1,JAEG,0,JAEG,0,JAEG,0,JAEG,1
+coyo,Coyote,Canis latrans,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 REFO,Red Fox,Vulpes vulpes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 refo,Red Fox,Vulpes vulpes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RFOX,Red Fox,Vulpes vulpes,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -335,6 +347,7 @@ RNGRN,Red-necked Grebe,Podiceps grisegena,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,
 RNPH,Red-necked Phalarope,Phalaropus lobatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTHA,Red-tailed Hawk,Buteo jamaicensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTLO,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
+rtlo,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
 RTLOB,Red-throated Loon,Gavia stellata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTLON,Red-throated Loon,Gavia stellata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 REDH,Redhead,Aythya americana,REDH,REDH,1,REDH,0,REDH,0,REDH,1,REDH,1
@@ -382,6 +395,7 @@ USPE,Spectacled Eider,Somateria fischeri,SPEI,SPEI,1,SPEI,0,SPEI,0,SPEI,1,SPEI,1
 USPH,Spectacled Eider,Somateria fischeri,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 BEGCOUNT,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 BEGT,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
+BEG,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 start,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 START,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
 START-9.4,Start transect,Start transect,START,START,0,START,0,START,0,START,0,START,0
@@ -403,7 +417,9 @@ tcne,Taverner's Cackling Goose,Branta hutchinsii taverneri,XXXX,XXXX,0,XXXX,0,XX
 TDC,Taverner's Cackling Goose,Branta hutchinsii taverneri,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
 TBMU,Thick-billed Murre,Uria lomvia,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 TRNE,Trumpeter Swan,Cygnus buccinator,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
+trne,Trumpeter Swan,Cygnus buccinator,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
 TRSW,Trumpeter Swan,Cygnus buccinator,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
+trsw,Trumpeter Swan,Cygnus buccinator,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
 TRUS,Trumpeter Swan,Cygnus buccinator,SWAN,TUSW,1,SWAN,0,TRUS,1,SWAN,1,TUSW,1
 TUPU,Tufted Puffin,Fratercula cirrhata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 TS.N,Tundra swan,Cygnus columbianus,SWANN,SWANN,1,SWANN,0,SWANN,1,SWANN,1,SWANN,1
@@ -419,9 +435,9 @@ CORM,Unidentified Cormorant,Phalacrocorax spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,
 UNCO,Unidentified Cormorant,Phalacrocorax spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 CURL,Unidentified Curlew,Numenius spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UDOW,Unidentified Dowitcher,Limnodromus sp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-UNDK,Unidentified Duck,,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+UNDK,Unidentified Duck,Duck spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNDU,Unidentified Duck,Duck spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-DUCK,Unidentified duck species,,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+DUCK,Unidentified duck species,Duck spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 EAGL,Unidentified Eagle,Aquila or Haliaeetus spp.,UNEA,UNEA,1,UNEA,0,UNEA,0,UNEA,0,UNEA,0
 UNEA,Unidentified Eagle,Aquila or Haliaeetus spp.,UNEA,UNEA,1,UNEA,0,UNEA,0,UNEA,0,UNEA,0
 EIDE,Unidentified Eider,Somateria spp.,UNEI,UNEI,1,UNEI,0,UNEI,0,UNEI,0,UNEI,0
@@ -462,6 +478,7 @@ UNGU,Unidentified Larus Gull,Larus spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 LOON,Unidentified Loon,Gavia spp.,UNLO,UNLO,0,UNLO,0,UNLO,0,UNLO,1,UNLO,0
 LOPA,Unidentified Loon,Gavia spp.,PALO,PALO,1,PALO,0,PALO,0,PALO,1,PALO,1
 UNLO,Unidentified Loon,Gavia spp.,UNLO,UNLO,0,UNLO,0,UNLO,0,UNLO,1,UNLO,0
+HOME,Hooded Merganser,Lophodytes cucullatus,HOME,HOME,1,HOME,0,HOME,0,HOME,1,HOME,1
 MERG,Unidentified Merganser,Mergus spp.,UNME,RBME,1,UNME,0,UNME,0,UNME,0,RBME,1
 UNME,Unidentified Merganser,Mergus spp.,UNME,RBME,1,UNME,0,UNME,0,UNME,0,RBME,1
 MSSH,Unidentified mid-sized shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -508,7 +525,7 @@ SMSB,Unidentified small shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,
 SMSH,Unidentified small shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 USSB,Unidentified small shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 USSH,Unidentified small shorebird,Shorebird spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-UNKN,Unidentified Species,,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+UNKN,Unidentified Species,Unknown spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SWAL,Unidentified Swallow,Tachycineta spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SWSP,Unidentified Swallow,Tachycineta spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 UNSW,Unidentified Swallow,Tachycineta spp.,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -545,3 +562,4 @@ YWAR,Yellow Warbler,Motacilla tschutschensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XX
 YBLO,Yellow-billed Loon,Gavia adamsii,YBLO,YBLO,1,YBLO,0,YBLO,0,YBLO,1,YBLO,1
 YBLOB,Yellow-billed Loon,Gavia adamsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 YBLON,Yellow-billed Loon,Gavia adamsii,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+WODU,Wood Duck,Aix sponsa,WODU,WODU,1,WODU,0,WODU,0,WODU,1,WODU,1
