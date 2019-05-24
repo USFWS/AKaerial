@@ -1,9 +1,9 @@
 Package: AKaerial
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Analysis of Alaska Region Aerial Survey Data
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Charles Frost
+Maintainer: Charles Frost <charles_frost@fws.gov>
+Description: Basic functions for QA/QC processes, data manipulation, analysis, and visualization of aerial survey data collected by R7 USFWS MBM. 
+License: None
 LazyData: TRUE

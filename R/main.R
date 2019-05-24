@@ -34,7 +34,7 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
   data=data[data$Code==1,]
 
-  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = TRUE)
+  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE)
 
   data=CorrectTrans(full.data=data, area=area, split.design=split.design, strata.file=strata.path)
 
@@ -582,7 +582,7 @@ TranSelect = function(year, area){
 
 
 
-Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, output=TRUE) {
+Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, output=FALSE) {
 
   #Save old warning settings to revert to before leaving function
   oldw <- getOption("warn")
@@ -1689,7 +1689,7 @@ TrimToStrata=function(full.data, strata.path){
   coordinates(full.data)=~Lon+Lat
   proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
 
-  strata.proj=LoadMap(strata.file, type="proj")
+  strata.proj=LoadMap(strata.path, type="proj")
   strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
 
   full.data=raster::intersect(full.data, strata.proj)
@@ -1701,6 +1701,37 @@ TrimToStrata=function(full.data, strata.path){
 
 
 
+EstimatesTable=function(area, year){
 
+  entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
+
+
+  for (i in 1:length(entries[,1])){
+
+    if(entries$COMBINE==1){}
+
+    data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")
+
+    strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
+
+    transect.path=paste(entries$DRIVE[i], entries$TRANS[i], sep="")
+
+    if(!file.exists(data.path)){next}
+    if(!file.exists(strata.path)){next}
+    if(!file.exists(transect.path)){next}
+
+    data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+    est=Densities(data, area=entries$AREA[i])
+
+    if(i==1){output.table=est$estimates}
+    if(i>1){output.table=rbind(output.table, est$estimates)}
+
+    }
+
+  output.table$area=area
+  return(output.table)
+
+
+}
 
 
