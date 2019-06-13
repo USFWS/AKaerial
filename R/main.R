@@ -232,9 +232,13 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
   newlines@data$len=sp::SpatialLinesLengths(newlines, longlat=TRUE)
   newlines=smoothr::drop_crumbs(newlines, threshold=.1)
   newlines@data$id=rownames(newlines@data)
+  newlines.proj=sp::spTransform(newlines, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
+                     +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
+  midpoints=as.data.frame(sp::spTransform(maptools::SpatialLinesMidPoints(newlines.proj), "+proj=longlat +ellps=WGS84"))
   newlines.fort=ggplot2::fortify(newlines, region="STRAT")
   newlines.df=plyr::join(newlines.fort, newlines@data, by="id")
   newlines.df$ROUNDED=round(newlines.df$lat, digits=3)
+
 
   if(area=="CRD"){
 
@@ -247,10 +251,14 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
   newlines.df$SPLIT=as.numeric(factor(interaction(newlines.df$STRATNAME, newlines.df$ROUNDED)))
 
   newlines@data$SPLIT=0
+  newlines@data$mid.Lon=0
+  newlines@data$mid.Lat=0
 
   for (i in 1:length(newlines)){
 
     newlines@data$SPLIT[i]=newlines.df$SPLIT[newlines.df$OBJECTID==newlines@data$OBJECTID[i] & newlines@data$STRATNAME[i]==newlines.df$STRATNAME][1]
+    newlines@data$mid.Lon[i]=midpoints$coords.x1[midpoints$OBJECTID==newlines@data$OBJECTID[i] & newlines@data$STRATNAME[i]==midpoints$STRATNAME][1]
+    newlines@data$mid.Lat[i]=midpoints$coords.x2[midpoints$OBJECTID==newlines@data$OBJECTID[i] & newlines@data$STRATNAME[i]==midpoints$STRATNAME][1]
 
   }
 
@@ -1176,6 +1184,36 @@ TransectLevel=function(data, n.obs=2, trans.method="gis", trans.width=.2, area) 
 CorrectTrans=function(full.data, threshold=.5, split.design, area, strata.file){
 
   split.design=sp::spTransform(split.design, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+
+for (t in 1:length(full.data$Lon)){
+
+  if(is.na(full.data$Lon[t])){
+
+    full.data$Lon[t]=split.design$mid.Lon[split.design$ORIGID==full.data$Transect[t]][1]
+
+  }
+
+  if(is.na(full.data$Lat[t])){
+
+    full.data$Lat[t]=split.design$mid.Lat[split.design$ORIGID==full.data$Transect[t]][1]
+
+  }
+
+  if(full.data$Lon[t]==0){
+
+    full.data$Lon[t]=split.design$mid.Lon[split.design$ORIGID==full.data$Transect[t]][1]
+
+  }
+
+  if(full.data$Lat[t]==0){
+
+    full.data$Lat[t]=split.design$mid.Lon[split.design$ORIGID==full.data$Transect[t]][1]
+
+  }
+
+
+}
+
 
 coordinates(full.data)=~Lon+Lat
 proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
