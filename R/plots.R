@@ -1,6 +1,6 @@
 
 
-ShowMe=function(strata.path, data.path, transect.path){
+ShowMe=function(strata.path, data.path, transect.path, species="all"){
 
 
   split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE)
@@ -52,6 +52,11 @@ ShowMe=function(strata.path, data.path, transect.path){
 
     }
 
+    if(species != "all"){
+      data=data[data$Species %in% species, ]
+
+    }
+
   }
 
   coordinates(data)=~Lon+Lat
@@ -65,9 +70,10 @@ ShowMe=function(strata.path, data.path, transect.path){
                      radius = 3,
                      color = ~pal(Observer),
                      stroke = FALSE,
-                     fillOpacity = 0.5,
+                     fillOpacity = 1,
                      popup= paste(data$Observer, "<br>", data$Species,
-                                  "<br>", data$Obs_Type, "<br>", data$Num)
+                                  "<br>", data$Obs_Type, "<br>", data$Num,
+                                  "<br>", data$Transect)
                   ) %>%
 
     addProviderTiles("Esri.WorldImagery")
