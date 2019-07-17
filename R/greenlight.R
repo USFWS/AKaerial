@@ -36,9 +36,9 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
   if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE, na.strings=c("NA", "na", "N/A"))}
   if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE, na.strings=c("NA", "na", "N/A"))}
 
-  if(!area %in% c("ACP", "YKD", "YKG", "CRD", "BPOP", "BLSC")){
+  if(!area %in% c("ACP", "YKD", "YKG", "CRD", "WBPHS", "BLSC")){
 
-    print("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, BPOP.")
+    print("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, WBPHS.")
     break
   }
 
@@ -96,7 +96,7 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
   #are the species codes correct?
 
-  test.species=SpeciesCheck(data)
+  test.species=SpeciesCheck(data, area=area)
 
   if(length(test.species$change)>0){s.species="yellow"}
   if(length(test.species$bad)>0){s.species="red"}
@@ -167,7 +167,7 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
     rmd.path=system.file("rmd/raw2analysis.Rmd", package="AKaerial")
 
-    data.obj=Raw2Analysis(data)
+    data.obj=Raw2Analysis(data, area=area)
 
     data.new=data.obj$newdata
     data.new=data.new[data.new$Species != "XXXX",]
@@ -269,9 +269,10 @@ SeatCheck=function(data){
 }
 
 
-SpeciesCheck=function(data){
+SpeciesCheck=function(data, area){
 
 
+if(area!="WBPHS"){
 
   if("sppn" %in% colnames(data)){
     bad=data[which(!(data$sppn %in% sppntable$QAQC) & !(data$sppn %in% sppntable$INPUT)),]
@@ -287,7 +288,33 @@ SpeciesCheck=function(data){
 
     change=data[which(data$Species %in% sppntable$INPUT & (!(data$Species %in% sppntable$QAQC))),]
 
+  }
+
+}
+
+  if(area=="WBPHS"){
+
+
+    if("sppn" %in% colnames(data)){
+      bad=data[which(!(data$sppn %in% WBPHSsppntable$QAQC) & !(data$sppn %in% WBPHSsppntable$INPUT)),]
+
+      change=data[which(data$sppn %in% WBPHSsppntable$INPUT & (!(data$sppn %in% WBPHSsppntable$QAQC))),]
+
     }
+
+    if("Species" %in% colnames(data)){
+
+
+      bad=data[which(!(data$Species %in% WBPHSsppntable$QAQC) & !(data$Species %in% WBPHSsppntable$INPUT)),]
+
+      change=data[which(data$Species %in% WBPHSsppntable$INPUT & (!(data$Species %in% WBPHSsppntable$QAQC))),]
+
+    }
+
+
+
+
+  }
 
 
   return(list("fail"=(length(bad[,1])!=0), "bad"=bad, "change"=change))
@@ -370,7 +397,7 @@ ObsByYear=function(path.name){
 }
 
 
-CommonFix=function(data, fix){
+CommonFix=function(data, fix, area){
 
   #change seats to uppercase, fix swapping (FR to RF, etc)
   if("Seat" %in% fix){
@@ -457,13 +484,25 @@ CommonFix=function(data, fix){
 
   #data$OldSpecies=data$Species
 
+    if(area!="WBPHS"){
+
   for(n in 1:length(data$Species)){
 
     data$Species[n]=sppntable$QAQC[sppntable$INPUT==data$Species[n]]
 
-
-
   }
+    }
+
+
+    if(area == "WBPHS"){
+
+      for(n in 1:length(data$Species)){
+
+        data$Species[n]=WBPHSsppntable$QAQC[WBPHSsppntable$INPUT==data$Species[n]]
+
+      }
+    }
+
 
     }
 
@@ -473,7 +512,7 @@ CommonFix=function(data, fix){
 }
 
 
-Raw2Analysis=function(data){
+Raw2Analysis=function(data, area){
   fix=c("Species")
 
   if(length(unique(data$Obs_Type[!is.na(data$Obs_Type)])) <= 1){fix=c(fix, "Obs_Type")}
@@ -487,7 +526,7 @@ Raw2Analysis=function(data){
   swan.test=SwanCheck(data)
   if(swan.test$fail==TRUE){fix=c(fix, "Swan")}
 
-  data=CommonFix(data=data, fix=fix)
+  data=CommonFix(data=data, fix=fix, area=area)
 
   return(list("newdata"=data, "fix"=fix))
 

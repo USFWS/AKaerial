@@ -1,0 +1,138 @@
+INPUT,COMMON,SCIENTIFIC,QAQC,WBPHS,WBPHS_EST
+ABDU,American Black Duck,Anas rubripes,ABDU,ABDU,1
+AGWT,American Green-winged Teal,Anas crecca carolinensis,GWTE,GWTE,1
+AMCO,American Coot,Fulican americana,AMCO,AMCO,1
+COOT,American Coot,Fulican americana,AMCO,AMCO,1
+AMWI,American Wigeon,Mareca americana,AMWI,AMWI,1
+BAEA,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BAEAA,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BAEAa,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BAEAI,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BAEAi,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BAEAIM,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BAEAN,Bald Eagle,Haliaeetus leucocephalus,XXXX,XXXX,0
+BAEAn,Bald Eagle,Haliaeetus leucocephalus,BAEA,BAEA,0
+BANE,Bald Eagle,Haliaeetus leucocephalus,XXXX,XXXX,0
+BAEANEST,Bald Eagle nest,Haliaeetus leucocephalus,XXXX,XXXX,0
+BAGO,Barrow's Goldeneye,Bucephala islandica,GOLD,GOLD,1
+BEAR,Bear,Ursus spp.,XXXX,XXXX,0
+BLBR,Black Brant,Branta bernicula nigricans,BRAN,BRAN,1
+BRAN,Black Brant,Branta bernicula nigricans,BRAN,BRAN,1
+BLSC,Black Scoter,Melanitta americana,BLSC,BLSC,1
+BLSC1,Black Scoter,Melanitta americana,BLSC,BLSC,1
+BLSC2,Black Scoter,Melanitta americana,BLSC,BLSC,1
+BWTE,Blue-winged Teal,Spatula discors,BWTE,BWTE,1
+CITE,Cinnamon Teal,Spatula cyanoptera,CITE,CITE,1
+BUFF,Bufflehead,Bucephala albeola,BUFF,BUFF,1
+CCGO,Cackling/Canada Goose,Branta hutchinsii/canadensis,CCGO,CCGO,1
+CAGO,Canada Goose,Branta canadensis,CCGO,CCGO,1
+CANV,Canvasback,Aythya valisineria,CANV,CANV,1
+CARIBOU,Caribou,Rangifer tarandus,XXXX,XXXX,0
+COEI,Common Eider,Somateria mollissima,COEI,COEI,1
+COGO,Common Goldeneye,Bucephala clangula,GOLD,GOLD,1
+COLO,Common Loon,Gavia immer,COLO,COLO,1
+COME,Common Merganser,Mergus merganser,COME,COME,1
+CORA,Common Raven,Corvus corax,XXXX,XXXX,0
+RAVE,Common Raven,Corvus corax,XXXX,XXXX,0
+DCGO,Dusky Canada Goose,Branta canadensis occidentalis,DCGO,DCGO,1
+EMGO,Emperor Goose,Anser canagicus,EMGO,EMGO,1
+END,End count,N/A,END,END,0
+ENDCOUNT,End count,N/A,END,END,0
+endcount,End count,N/A,END,END,0
+ENDSEG,End count,N/A,END,END,0
+endseg,End count,N/A,END,END,0
+EUWI,Eurasian Wigeon,Mareca penelope,EUWI,EUWI,1
+GADW,Gadwall,Mareca strepera,GADW,GADW,1
+GOEA,Golden Eagle,Aquila chrysaetos,GOEA,GOEA,0
+GOEAn,Golden Eagle,Aquila chrysaetos,GOEA,GOEA,0
+GRSC,Greater Scaup,Aythya marila,UNSC,UNSC,1
+GWFG,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1
+WFGO,Greater White-fronted Goose,Anser albifrons,GWFG,GWFG,1
+GWTE,Green-winged Teal,Anas crecca,GWTE,GWTE,1
+HADU,Harlequin Duck,Histrionicus histrionicus,HADU,HADU,0
+HARD,Harlequin Duck,Histrionicus histrionicus,HADU,HADU,0
+HOGR,Horned grebe,Podiceps auritus,HOGR,HOGR,1
+KIEI,King Eider,Somateria spectabilis,KIEI,KIEI,1
+LESC,Lesser Scaup,Aythya affinis,UNSC,UNSC,1
+LTDU,Long-tailed Duck,Clangula hyemalis,LTDU,LTDU,1
+OLDS,Long-tailed Duck,Clangula hyemalis,LTDU,LTDU,1
+MALL,Mallard,Anas platyrhynchos,MALL,MALL,1
+NONE,No birds seen on segment,Marker,NONE,NONE,0
+NoBirdsSeen,No birds seen on segment,Marker,NONE,NONE,0
+AIRFIELD,Marker,Marker,XXXX,XXXX,0
+Landing,Marker,Marker,XXXX,XXXX,0
+POND,Pond,N/A,XXXX,XXXX,0
+STRE,Stream,N/A,XXXX,XXXX,0
+MOOSE,Moose,Alces alces,XXXX,XXXX,0
+MOOSECALF,Moose,Alces alces,XXXX,XXXX,0
+MOOSESCALF,Moose,Alces alces,XXXX,XXXX,0
+MOOSECOW,Moose,Alces alces,XXXX,XXXX,0
+MOOSECOW2YROLD,Moose,Alces alces,XXXX,XXXX,0
+MOOSEBULL,Moose,Alces alces,XXXX,XXXX,0
+MOOSEYEARLING,Moose,Alces alces,XXXX,XXXX,0
+MUSKOX,Musk Ox,Ovibos moschatus,XXXX,XXXX,0
+BWHA,Broad-winged Hawk,Buteo platypterus,XXXX,XXXX,0
+GTBH,Great Blue Heron,Ardea herodias,XXXX,XXXX,0
+NOHA,Northern Harrier,Circus hudsonius,XXXX,XXXX,0
+NOPI,Northern Pintail,Anas acuta,NOPI,NOPI,1
+NOSH,Northern Shoveler,Spatula clypeata,NSHO,NSHO,1
+NSHO,Northern Shoveler,Spatula clypeata,NSHO,NSHO,1
+OSPR,Osprey,Pandion haliaetus,XXXX,XXXX,0
+OSPRNEST,Osprey Nest,Pandion haliaetus,XXXX,XXXX,0
+PALO,Pacific Loon,Gavia pacifica,PALO,PALO,1
+PAJA,Parasitic Jaeger,Stercorarius parasiticus,XXXX,XXXX,0
+PEFA,Peregrine Falcon,Falco peregrinus,XXXX,XXXX,0
+RBME,Red-breasted Merganser,Mergus serrator,RBME,RBME,1
+RNGR,Red-necked Grebe,Podiceps grisegena,RNGR,RNGR,1
+RTHA,Red-tailed Hawk,Buteo jamaicensis,XXXX,XXXX,0
+RTLO,Red-throated Loon,Gavia stellata,RTLO,RTLO,1
+REDH,Redhead,Aythya americana,REDH,REDH,1
+RNDU,Ring-necked Duck,Aythya collaris,RNDU,RNDU,1
+RUDU,Ruddy Duck,Oxyura jamaicensis,RUDU,RUDU,1
+SACR,Sandhill Crane,Antigone canadensis,SACR,SACR,1
+LSGO,Snow Goose,Anser caerulescens,SNGO,SNGO,1
+SNGO,Snow Goose,Anser caerulescens,SNGO,SNGO,1
+SPEI,Spectacled Eider,Somateria fischeri,SPEI,SPEI,1
+BEGCOUNT,Start count,Start count,START,START,0
+begcount,Start count,Start count,START,START,0
+BEGSEG,Start count,Start count,START,START,0
+begseg,Start count,Start count,START,START,0
+START,Start count,Start transect,START,START,0
+STEI,Steller's Eider,Polysticta stelleri,STEI,STEI,1
+SUSC,Surf Scoter,Melanitta perspicillata,SUSC,SUSC,1
+SUSC1,Surf Scoter,Melanitta perspicillata,SUSC,SUSC,1
+SUSC2,Surf Scoter,Melanitta perspicillata,SUSC,SUSC,1
+UNDU,Unidentified Duck,Duck spp.,UNDU,UNDU,0
+EAGL,Unidentified Eagle,Aquila or Haliaeetus spp.,UNEA,UNEA,0
+UNEA,Unidentified Eagle,Aquila or Haliaeetus spp.,UNEA,UNEA,0
+NEST,"Unoccupied eagle nest, species unknown",Aquila or Haliaeetus spp.,XXXX,XXXX,0
+EIDE,Unidentified Eider,Somateria spp.,UNEI,UNEI,1
+UNEI,Unidentified Eider,Somateria spp.,UNEI,UNEI,1
+GOLD,Unidentified Goldeneye,Bucephala spp.,GOLD,GOLD,1
+UNGO,Unidentified Goose,Goose spp,UNGO,UNGO,0
+GREB,Unidentified Grebe,Podiceps spp.,UNGR,UNGR,1
+GREBE,Unidentified Grebe,Podiceps spp.,UNGR,UNGR,1
+UNGR,Unidentified Grebe,Podiceps spp.,UNGR,UNGR,1
+GULL,Unidentified Gull,Larus spp.,XXXX,XXXX,0
+JAEG,Unidentified Jaeger,Stercorarius spp.,XXXX,XXXX,0
+LOON,Unidentified Loon,Gavia spp.,UNLO,UNLO,1
+UNLO,Unidentified Loon,Gavia spp.,UNLO,UNLO,1
+HOME,Hooded Merganser,Lophodytes cucullatus,HOME,HOME,1
+MERG,Unidentified Merganser,Mergus spp.,UNME,UNME,1
+UNME,Unidentified Merganser,Mergus spp.,UNME,UNME,1
+PTAR,Unidentified Ptarmigan,Lagopus spp.,XXXX,XXXX,0
+SCAU,Unidentified Scaup,Aythya spp.,UNSC,UNSC,1
+UNSC,Unidentified Scaup,Aythya spp.,UNSC,UNSC,1
+SCOT,Unidentified Scoter,Melanitta spp.,SCOT,SCOT,1
+SCOT1,Unidentified Scoter,Melanitta spp.,SCOT,SCOT,1
+SCOT2,Unidentified Scoter,Melanitta spp.,SCOT,SCOT,1
+SWAN,Unidentified Swan,Cygnus spp.,SWAN,SWAN,1
+SWANN,Unidentified Swan nest,Cygnus spp.,SWANN,SWANN,1
+SWANNEST,Unidentified Swan nest,Cygnus spp.,SWANN,SWANN,1
+WEGR,Western Grebe,Aechmophorus occidentalis,WEGR,WEGR,0
+WWSC,White-winged Scoter,Melanitta fusca,WWSC,WWSC,1
+WWSC1,White-winged Scoter,Melanitta fusca,WWSC,WWSC,1
+WWSC2,White-winged Scoter,Melanitta fusca,WWSC,WWSC,1
+WOLF,Wolf,Canis lupus,XXXX,XXXX,0
+YBLO,Yellow-billed Loon,Gavia adamsii,YBLO,YBLO,1
+WODU,Wood Duck,Aix sponsa,WODU,WODU,1

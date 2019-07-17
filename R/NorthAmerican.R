@@ -8,6 +8,10 @@ ReadWBPHS= function(full.data){
 
   full.data=full.data[full.data$keep==1,]
 
+  full.data$Obs_Type[full.data$Obs_Type=="open" & full.data$Num==1 & full.data$Species!="SWANN"]="single"
+
+  full.data$Obs_Type[full.data$Obs_Type=="open" & full.data$Num==2]="pair"
+
   full.data=AdjustCounts(full.data)
 
   return(full.data)
@@ -510,7 +514,7 @@ SplitWBPHS= function(folder.path){
 
     type <- file_ext(file)
 
-    if(type == "docx" || type=="txt") {
+    if(type == "docx" || type=="txt" || type=="csv") {
       print(paste("Skipped", file))
       next}
 
@@ -536,8 +540,14 @@ SplitWBPHS= function(folder.path){
 
    temp.data=full.data[full.data$Observer==obs.list[i],]
 
-   write.csv(temp.data, paste(folder.path, "WBPHS_", temp.data$Year[1], "_RawObs_", obs.list[i], ".csv", sep=""),
+   yr.list=unique(temp.data$Year)
+
+   for (k in 1:length(yr.list)){
+
+   write.csv(temp.data[temp.data$Year==yr.list[k],], paste(folder.path, "/WBPHS_", yr.list[k], "_RawObs_", obs.list[i], ".csv", sep=""),
              row.names=FALSE, quote=FALSE)
+
+   }
  }
 
 
