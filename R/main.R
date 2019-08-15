@@ -30,7 +30,7 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
 
 
-  if(area=="YKDV"){area="YKD"}
+  if(area=="YKDV" || area=="KIG"){area="YKD"}
 
   data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
 
@@ -796,52 +796,7 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
 
   ### Var(N) ###
 
-  #Keep projection consistent
-  #shp.proj <- rgdal::spTransform(shp, "+proj=longlat +ellps=WGS84")
 
-  #shp.proj@data$id = rownames(shp.proj@data)
-  #shp.fort <- fortify(shp.proj, region="STRAT")
-  #shp.df=join(shp.fort, shp.proj@data, by="id")
-
-  ##extract min and max lat from shp.df, calc gcd and / by sampled width
-  #min.lat=aggregate(shp.df$lat~shp.df$id, FUN=min)
-  #max.lat=aggregate(shp.df$lat~shp.df$id, FUN=max)
-  #piece.min.lat=aggregate(shp.df$lat~shp.df$piece+shp.df$id, FUN=min)
-  #colnames(piece.min.lat)=c("piece", "id", "min")
-  #piece.max.lat=aggregate(shp.df$lat~shp.df$piece+shp.df$id, FUN=max)
-  #colnames(piece.max.lat)=c("piece", "id", "max")
-
-  #pieces=data.frame("id"=piece.max.lat$id, "min"=piece.min.lat$min, "max"=piece.max.lat$max)
-  #pieces=pieces[order(pieces$id, -pieces$max),]
-
-  #Find holes between shape polygons
-  #voids=FindVoids(pieces=pieces)
-
-  #111.5 km in 1 deg lat
-
-  #diff.lat=data.frame("strata"=min.lat[,1], "diff"=abs(max.lat[,2]-min.lat[,2])*111.5)
-
-  #If there are voids in strata, remove them from possible sample area
-
-  #diff.lat$strata=as.character(diff.lat$strata)
-
-  #for (i in 1:length(diff.lat$strata)){
-  #  if (diff.lat$strata[i] %in% voids$id){diff.lat$diff[i]=diff.lat$diff[i]-111.5*voids$d[voids$id==diff.lat$strata[i]]}
-
-  #}
-
-
-  #Total possible transects available (M)
-  #diff.lat$M=diff.lat$diff/(trans.width*n.obs)
-
-  #print(transects)
-  #Number of transects sampled (m of a possible M)
-  #reps=aggregate(transects$original~transects$type, FUN=length)
-
-  #reps=data.frame("strata"=transects$type, "original"=transects$original)
-  #reps=unique(reps)
-
-  #print(reps)
   reps2=aggregate(t3$ctran~t3$Year+t3$Observer+t3$strata+t3$Species, FUN=length)
   colnames(reps2)=c("Year", "Observer", "strata", "Species","m")
 
@@ -908,13 +863,13 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   estimates$SE.sing1pair2=sqrt(estimates$var.Nsing1pair2)
   estimates$SE.flock=sqrt(estimates$var.Nflock)
 
-
-  estimates$total.est=as.integer(estimates$total.est)
-  estimates$itotal.est=as.integer(estimates$itotal.est)
-  estimates$ibbtotal.est=as.integer(estimates$ibbtotal.est)
-  estimates$sing1pair2.est=as.integer(estimates$sing1pair2.est)
-  estimates$flock.est=as.integer(estimates$flock.est)
-
+#
+#   estimates$total.est=as.integer(estimates$total.est)
+#   estimates$itotal.est=as.integer(estimates$itotal.est)
+#   estimates$ibbtotal.est=as.integer(estimates$ibbtotal.est)
+#   estimates$sing1pair2.est=as.integer(estimates$sing1pair2.est)
+#   estimates$flock.est=as.integer(estimates$flock.est)
+#
 
   options(warn = oldw)
 
@@ -1328,6 +1283,36 @@ if(area != "CRD"){
 
 full.data=full.data[!(is.na(full.data$ctran)), ]
 
+ORIG.list=unique(split.design$ORIGID)
+
+for(i in 1:length(ORIG.list)){
+
+
+  suppressWarnings(if(any(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]])[!(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]]) %in% unique(full.data$ctran[full.data$Transect==ORIG.list[i]]))])){
+
+    missing=unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]])[!(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]]) %in% unique(full.data$ctran[full.data$Transect==ORIG.list[i]]))]
+
+
+    for(j in 1:length(missing)){
+
+      dummy.row=full.data[1,]
+
+      dummy.row$ctran=missing[j]
+      dummy.row$Transect=ORIG.list[i]
+      dummy.row$Species="START"
+      dummy.row$Num=0
+      #dummy.row$Lat=split.design$mid.Lat[split.design$ORIGID==ORIG.list[i]]
+      #dummy.row$Lon=split.design$mid.Lon[split.design$ORIGID==ORIG.list[i]]
+
+      full.data=rbind(full.data, dummy.row)
+    }
+
+  })
+
+
+}
+
+
 return(as.data.frame(full.data))
 
 }  #end CorrectTrans()
@@ -1376,67 +1361,8 @@ return(strata.plot)
 TransSummary=function(full.data, split.design, area){
 
   observers=unique(as.character(full.data$Observer))
-  #years=unique(full.data$yr)
 
-  #print(observers)
-  #print(years)
-
-  #tsum=data.frame(yr=NULL,obs=NULL, orig=NULL, len=NULL, part.of=NULL)
   tsum=NULL
-
-  #for (i in 1:length(years)){
-
-
-    #if(area=="acp" || area=="ykg"){
-
-
-     # trans=TranSelect(year=years[i], area=area)
-      #trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-      #trans.layer=trans$layer
-
-
-     # trans.obj=rgdal::readOGR(trans.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
-    #  trans.obj <- rgdal::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
-
-     # GIS.obj = LoadMap(area, type="proj")
-
-
-
-
-    #} #end acp/ykg
-
-    #if(area=="crd"){
-
-
-     # trans=TranSelect(year=years[i], area="crd")
-    #  trans.file=system.file(paste("external/", trans$file, sep=""), package="AKaerial")
-     # trans.layer=trans$layer
-
-
-      #trans.obj=rgdal::readOGR(trans.file, trans.layer, verbose=FALSE)
-      #trans.obj <- rgdal::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
-
-     #GIS.obj = LoadMap(area, type="proj")
-
-      #trans.obj=raster::intersect(trans.obj, GIS.obj)  #trim the excess lines
-
-
-    #} #end crd
-
-
-
-    #trans.obj@data$len=SpatialLinesLengths(trans.obj, longlat=TRUE)
-
-
-
-    #tpoints=as(trans.obj, "SpatialPointsDataFrame")
-    #tpoints=rgdal::spTransform(tpoints, "+proj=longlat +ellps=WGS84")
-    #tpoints$strata=over(tpoints,GIS.obj)$STRATNAME
-
-
-
-    # names(sort(table(tpoints$name[tpoints$OBJECTID==1]),decreasing=TRUE)[1])
-
 
 
 
@@ -1777,12 +1703,36 @@ EstimatesTable=function(area, year){
 
   entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
 
+  now.skip=0
+  rep=1
 
   for (i in 1:length(entries[,1])){
 
-    if(entries$COMBINE[i]==1){next}
 
-    data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")
+    if(entries$YEAR[i]==now.skip){next}
+
+    if(entries$COMBINE[i]==1){
+
+      if(area=="YKD" || area=="YKDV" || area=="KIG"){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKD_2001_QCObs_Pooled.csv", sep="")
+        now.skip=entries$YEAR[i]
+      }
+
+      if(area=="ACP" & rep==1){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatLF.csv", sep="")
+        rep=2
+      }
+
+      if(area=="ACP" & rep==2){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=1
+      }
+
+
+    }
+
+    if(entries$COMBINE[i]!=1){data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")}
 
     strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
 
@@ -1837,6 +1787,8 @@ PoolData=function(year, area){
 
   }
 
+  if(area != "YKD"){
+
   LF=data[data$Seat=="LF",]
   RF=data[data$Seat=="RF",]
 
@@ -1849,8 +1801,131 @@ PoolData=function(year, area){
 
   write.csv(LF, write.LF, quote=FALSE, row.names=FALSE )
   write.csv(RF, write.RF, quote=FALSE, row.names=FALSE )
+  }
 
+  if(area=="YKD"){
+
+    data$Observer=paste(unique(data$Observer), collapse="_")
+    data$Seat=paste(unique(data$Seat), collapse="_")
+
+    write.pool=paste(dirname(data.path),"/", area, "_", year, "_QCObs_Pooled.csv", sep="")
+    write.csv(data, write.pool, quote=FALSE, row.names=FALSE )
+
+
+  }
 
 }
 
 
+
+SpeciesTransect=function(area, year, species){
+
+  entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
+
+  now.skip=0
+  rep=1
+
+  for (i in 1:length(entries[,1])){
+
+    if(entries$YEAR[i]==now.skip){next}
+
+    if(entries$COMBINE[i]==1){
+
+      if(area=="YKD" || area=="YKDV" || area=="KIG"){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKD_2001_QCObs_Pooled.csv", sep="")
+        now.skip=entries$YEAR[i]
+      }
+
+      if(area=="ACP" & rep==1){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatLF.csv", sep="")
+        rep=2
+      }
+
+      if(area=="ACP" & rep==2){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=1
+      }
+    }
+
+    if(entries$COMBINE[i]!=1){data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")}
+
+    strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
+
+    transect.path=paste(entries$DRIVE[i], entries$TRANS[i], sep="")
+
+    if(!file.exists(data.path)){next}
+    if(!file.exists(strata.path)){next}
+    if(!file.exists(transect.path)){next}
+
+    print(data.path)
+
+    data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+
+    #est=Densities(data, area=entries$AREA[i])
+
+    if(i==1){
+
+      if(species %in% unique(data$transect$Species)){
+        output.table=data$transect[data$transect$Species %in% species,]
+      names(output.table)[names(output.table) == "area"] <- "obs.area"
+      output.table$strata.area=0
+      }
+
+      if(!(species %in% unique(data$transect$Species))){
+
+        output.table=expand.grid(Year=data$transect$Year[1], Observer=data$transect$Observer[1], Species=species, Obs_Type=unique(data$transect$Obs_Type), ctran=unique(data$transect$ctran), Num=0, itotal=0, total=0, ibb=0, sing1pair2=0, flock=0)
+        output.table$strata.area=0
+        output.table$obs.area=data$transect$area[data$transect$ctran==output.table$ctran][1]
+        output.table$strata=data$transect$strata[data$transect$ctran==output.table$ctran][1]
+
+      }
+
+
+      for(j in 1:length(output.table$strata.area)){
+        output.table$strata.area[j]=data$strata$layer.area[output.table$strata[j]==data$strata$strata]
+      }
+
+      data$strata$Year=entries$YEAR[i]
+      M.table=data$strata
+
+        }
+
+    if(i>1){
+
+      if(species %in% unique(data$transect$Species)){
+      temp.table=data$transect[data$transect$Species %in% species,]
+      names(temp.table)[names(temp.table) == "area"] <- "obs.area"
+      temp.table$strata.area=0
+      }
+
+
+      if(!(species %in% unique(data$transect$Species))){
+
+        temp.table=expand.grid(Year=data$transect$Year[1], Observer=data$transect$Observer[1], Species=species, Obs_Type=unique(data$transect$Obs_Type), ctran=unique(data$transect$ctran), Num=0, itotal=0, total=0, ibb=0, sing1pair2=0, flock=0)
+        temp.table$strata.area=0
+        temp.table$obs.area=data$transect$area[data$transect$ctran==temp.table$ctran][1]
+        temp.table$strata=data$transect$strata[data$transect$ctran==temp.table$ctran][1]
+
+      }
+
+
+
+      for(j in 1:length(temp.table$strata.area)){
+        temp.table$strata.area[j]=data$strata$layer.area[temp.table$strata[j]==data$strata$strata]
+      }
+
+      data$strata$Year=entries$YEAR[i]
+      output.table=rbind(output.table, temp.table)
+      M.table=rbind(M.table, data$strata)
+   }
+
+  }
+
+  output.table$area=area
+
+
+  return(list(output.table, M.table))
+
+
+}

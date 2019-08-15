@@ -639,3 +639,71 @@ map= leaflet() %>%
 
 print(map)
 }
+
+
+
+EstimatesTableWBPHS=function(year){
+
+  entries=MasterFileList_WBPHS[MasterFileList_WBPHS$YEAR %in% year,]
+
+  by.year=aggregate(entries$DRIVE~entries$YEAR,FUN=length)
+  colnames(by.year)=c("YEAR", "COUNT")
+
+
+  for (i in 1:length(by.year$YEAR)){
+
+    temp.entries=entries[entries$YEAR==by.year$YEAR[i],]
+    print(temp.entries)
+
+    for (j in 1:by.year$COUNT[i]){
+
+      if(j==1){
+
+        data.path=paste(temp.entries$DRIVE[j], temp.entries$OBS[j], sep="")
+        if(!file.exists(data.path)){next}
+        data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
+
+      }
+
+      if(j != 1){
+
+        data.path=paste(temp.entries$DRIVE[j], temp.entries$OBS[j], sep="")
+        if(!file.exists(data.path)){next}
+        temp.data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
+
+        data=rbind(data, temp.data)
+      }
+
+      data$Observer=paste(unique(data$Observer), collapse="_")
+
+    }
+
+
+    formatted=ReadWBPHS(data)
+
+    flight=SummaryWBPHS(formatted)
+
+
+    transdata=TransDataWBPHS(formatted)
+
+    estimate=EstimatesWBPHS(transdata, flight=flight)
+
+
+    if(i==1){output.table=estimate$estimates
+    expanded.table=estimate$expanded}
+    if(i>1){output.table=rbind(output.table, estimate$estimates)
+    expanded.table=rbind(expanded.table, estimate$expanded)}
+
+  }
+
+  output.table$area="WBPHS"
+  expanded.table$area="WBPHS"
+
+
+
+  return(list(output.table=output.table, expanded.table=expanded.table))
+
+
+}
+
+
