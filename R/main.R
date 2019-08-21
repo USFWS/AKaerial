@@ -52,6 +52,8 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
   data=AdjustCounts(data)
 
+  data=AddClass(data)
+
   strata=StrataSummary(strata.path)
 
   data=list("obs"=data, "flight"=flight, "design"=split.design, "strata"=strata)
@@ -1870,7 +1872,16 @@ SpeciesTransect=function(area, year, species){
         output.table=data$transect[data$transect$Species %in% species,]
       names(output.table)[names(output.table) == "area"] <- "obs.area"
       output.table$strata.area=0
+
+      output.flkdrake=data$obs[1,]
+
+      if("flkdrake" %in% unique(data$obs$Obs_Type)){
+
+        new.flkdrake=data$obs[data$obs$Obs_Type=="flkdrake", ]
+        output.flkdrake=rbind(output.flkdrake, new.flkdrake)
       }
+      }
+
 
       if(!(species %in% unique(data$transect$Species))){
 
@@ -1897,6 +1908,13 @@ SpeciesTransect=function(area, year, species){
       temp.table=data$transect[data$transect$Species %in% species,]
       names(temp.table)[names(temp.table) == "area"] <- "obs.area"
       temp.table$strata.area=0
+
+      if("flkdrake" %in% unique(data$obs$Obs_Type)){
+
+        new.flkdrake=data$obs[data$obs$Obs_Type=="flkdrake", ]
+        output.flkdrake=rbind(output.flkdrake, new.flkdrake)
+      }
+
       }
 
 
@@ -1924,8 +1942,47 @@ SpeciesTransect=function(area, year, species){
 
   output.table$area=area
 
+  output.flkdrake=output.flkdrake[output.flkdrake$Obs_Type=="flkdrake" & output.flkdrake$Species %in% species,]
 
-  return(list(output.table, M.table))
+  return(list(output.table, M.table, output.flkdrake))
 
 
 }
+
+
+
+AddClass=function(full.data){
+
+  full.data$class="empty"
+
+  for (i in 1:length(full.data$class)){
+
+  if(full.data$Obs_Type[i]=="single"){full.data$class[i]="single"}
+
+  if(full.data$Obs_Type[i]=="pair"){full.data$class[i]="pair"}
+
+  if(full.data$Obs_Type[i]=="flkdrake"){
+
+    if(full.data$Num[i]==1){full.data$class[i]="single"}
+    if(full.data$Num[i]==2){full.data$class[i]="pair"}
+    if(full.data$Num[i]>2 && full.data$Num[i]<6){full.data$class[i]="s.flock"}
+    if(full.data$Num[i]>5){full.data$class[i]="l.flock"}
+
+  }
+
+    if(full.data$Obs_Type[i]=="open"){
+
+      if(full.data$Num[i]==1){full.data$class[i]="single"}
+      if(full.data$Num[i]==2){full.data$class[i]="pair"}
+      if(full.data$Num[i]>2 && full.data$Num[i]<6){full.data$class[i]="s.flock"}
+      if(full.data$Num[i]>5){full.data$class[i]="l.flock"}
+
+    }
+
+
+  }
+
+
+  return(full.data)
+}
+

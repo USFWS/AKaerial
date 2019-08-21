@@ -149,10 +149,10 @@ EUWI,Eurasian Wigeon,Mareca penelope,EUWI,EUWI,1,EUWI,0,EUWI,0,EUWI,1,EUWI,1
 FTSP,Fork-tailed Storm-Petrel,Oceanodroma furcata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GADW,Gadwall,Mareca strepera,GADW,GADW,1,GADW,0,GADW,0,GADW,1,GADW,1
 GG.N,Glaucous Gull,Larus hyperboreus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-GGAD,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
-GGIM,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
-GLGU,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
-GLGUI,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,0
+GGAD,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,1
+GGIM,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,1
+GLGU,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,1
+GLGUI,Glaucous Gull,Larus hyperboreus,GLGU,GLGU,1,GLGU,0,GLGU,0,GLGU,0,GLGU,1
 GLGUN,Glaucous Gull,Larus hyperboreus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GWGU,Glaucous-winged gull,Larus glaucescens,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 GOEA,Golden Eagle,Aquila chrysaetos,GOEA,GOEA,1,GOEA,0,GOEA,0,GOEA,0,GOEA,0
@@ -249,6 +249,7 @@ HUNT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 hunt,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 LAKE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MARK,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+MIDPT,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 mark,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 NONE,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 NoBirdsSeen,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -267,6 +268,7 @@ SHORELINE-9.4,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 snowline,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SNOWout,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SSBI,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
+STEP,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 STRM,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 SWAMPED,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 TEST,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -286,9 +288,9 @@ WCOL,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 WEOI,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 XXXX,Marker,Marker,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MERL,Merlin,Falco columbarius,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-MEGU,Mew Gull,Larus canus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-MWGU,Mew Gull,Larus canus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-MCGO,Minima Cackling Goose,Branta hutchinsii minima,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,1
+MEGU,Mew Gull,Larus canus,MEGU,XXXX,0,XXXX,0,XXXX,0,XXXX,0,MEGU,1
+MWGU,Mew Gull,Larus canus,MEGU,XXXX,0,XXXX,0,XXXX,0,XXXX,0,MEGU,1
+MCGO,Minima Cackling Goose,Branta hutchinsii minima,CCGO,CCGO,1,CCGO,0,CCGO,1,CCGO,1,CCGO,0
 MOOS,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 moos,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 MOOSC,Moose,Alces alces,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -347,7 +349,7 @@ RNGR,Red-necked Grebe,Podiceps grisegena,RNGR,RNGR,1,RNGR,0,RNGR,0,RNGR,1,RNGR,1
 RNGRN,Red-necked Grebe,Podiceps grisegena,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RNPH,Red-necked Phalarope,Phalaropus lobatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTHA,Red-tailed Hawk,Buteo jamaicensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-RTLO,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
+1,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
 rtlo,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
 RTLOB,Red-throated Loon,Gavia stellata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTLON,Red-throated Loon,Gavia stellata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
@@ -363,7 +365,7 @@ RLHA,Rough-legged Hawk,Buteo lagopus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RUDU,Ruddy Duck,Oxyura jamaicensis,RUDU,RUDU,1,RUDU,0,RUDU,0,RUDU,1,RUDU,1
 RUTU,Ruddy Turnstone,Arenaria interpres,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RUBL,Rusty Blackbird,Euphagus carolinus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-SAGU,Sabine's Gull,Xema sabini,SAGU,SAGU,1,SAGU,0,SAGU,0,SAGU,0,SAGU,0
+SAGU,Sabine's Gull,Xema sabini,SAGU,SAGU,1,SAGU,0,SAGU,0,SAGU,0,SAGU,1
 SAGUN,Sabine's Gull,Xema sabini,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 LSCR,Sandhill Crane,Antigone canadensis,SACR,SACR,1,SACR,0,SACR,0,SACR,1,SACR,1
 SACR,Sandhill Crane,Antigone canadensis,SACR,SACR,1,SACR,0,SACR,0,SACR,1,SACR,1
