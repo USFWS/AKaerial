@@ -62,8 +62,7 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
   if(test.switchmatch==TRUE){
     s.switchmatch="green"
-  }
-  else{s.switchmatch="red"}
+  }else{s.switchmatch="red"}
 
 
 

@@ -349,7 +349,7 @@ RNGR,Red-necked Grebe,Podiceps grisegena,RNGR,RNGR,1,RNGR,0,RNGR,0,RNGR,1,RNGR,1
 RNGRN,Red-necked Grebe,Podiceps grisegena,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RNPH,Red-necked Phalarope,Phalaropus lobatus,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTHA,Red-tailed Hawk,Buteo jamaicensis,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
-1,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
+RTLO,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
 rtlo,Red-throated Loon,Gavia stellata,RTLO,RTLO,1,RTLO,0,RTLO,0,RTLO,1,RTLO,1
 RTLOB,Red-throated Loon,Gavia stellata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0
 RTLON,Red-throated Loon,Gavia stellata,XXXX,XXXX,0,XXXX,0,XXXX,0,XXXX,0,XXXX,0

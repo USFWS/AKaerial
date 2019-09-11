@@ -68,7 +68,7 @@ return(full.data)
 }
 
 
-SummaryWBPHS=function(full.data, strip.width=0.125){
+SummaryWBPHS=function(full.data, strip.width=0.25){
 
   flight=data.frame(
 
