@@ -1967,7 +1967,7 @@ SpeciesTransect=function(area, year, species){
 
 
       if(area=="CRD" & rep==1 & entries$YEAR[i]==1988){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/YKG_1988_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatLF.csv", sep="")
 
       }
 
@@ -1977,7 +1977,7 @@ SpeciesTransect=function(area, year, species){
         rep=3
       }
       if(area=="CRD" & rep==1 & entries$YEAR[i]==1998){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/YKG_1998_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatLF.csv", sep="")
 
       }
 
