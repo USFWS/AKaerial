@@ -177,9 +177,11 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
     type="QCObs"
     name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
 
+    data.new$Notes=gsub(",","", data.new$Notes)
+
     write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
     print(write.path)
-    write.csv(data.new, write.path, quote=FALSE, row.names=FALSE )
+    write.csv(data.new[,1:25], write.path, quote=FALSE, row.names=FALSE )
     rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))
 
   }
