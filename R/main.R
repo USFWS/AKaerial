@@ -1287,22 +1287,25 @@ if(area != "CRD"){
 
 full.data=full.data[!(is.na(full.data$ctran)), ]
 
-ORIG.list=unique(split.design$ORIGID)
+ORIG.list=as.data.frame(split.design[,c("ORIGID", "SPLIT")])
+flown.ORIG=unique(full.data$Transect)
+flown.SPLIT=unique(full.data$SPLIT)
 
-for(i in 1:length(ORIG.list)){
-
-
-  suppressWarnings(if(any(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]])[!(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]]) %in% unique(full.data$ctran[full.data$Transect==ORIG.list[i]]))])){
-
-    missing=unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]])[!(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]]) %in% unique(full.data$ctran[full.data$Transect==ORIG.list[i]]))]
+for(i in 1:length(ORIG.list$SPLIT)){
 
 
-    for(j in 1:length(missing)){
+  #suppressWarnings(if(any(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]])[!(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]]) %in% unique(full.data$ctran[full.data$Transect==ORIG.list[i]]))])){
+
+  if((ORIG.list$ORIGID[i] %in% flown.ORIG) & !(ORIG.list$SPLIT[i] %in% flown.SPLIT)){
+
+    #missing=unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]])[!(unique(split.design$SPLIT[split.design$ORIGID==ORIG.list[i]]) %in% unique(full.data$ctran[full.data$Transect==ORIG.list[i]]))]
+
+    missing=ORIG.list$SPLIT[i]
 
       dummy.row=full.data[1,]
 
-      dummy.row$ctran=missing[j]
-      dummy.row$Transect=ORIG.list[i]
+      dummy.row$ctran=missing
+      dummy.row$Transect=ORIG.list$ORIGID[i]
       dummy.row$Species="START"
       dummy.row$Num=0
       #dummy.row$Lat=split.design$mid.Lat[split.design$ORIGID==ORIG.list[i]]
@@ -1311,7 +1314,7 @@ for(i in 1:length(ORIG.list)){
       full.data=rbind(full.data, dummy.row)
     }
 
-  })
+
 
 
 }
