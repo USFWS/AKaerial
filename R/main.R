@@ -773,6 +773,9 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
 
   counts.final=cbind(counts.final, total.est, itotal.est,ibbtotal.est, sing1pair2.est, flock.est)
 
+  counts.final=counts.final[counts.final$strata != "Nonhabitat", ]
+  counts.final=counts.final[counts.final$strata != "Mountains", ]
+
 
   #Summarize in table
   estimates=aggregate(counts.final$total.est~counts.final$Year+counts.final$Observer+counts.final$Species, FUN=sum)
