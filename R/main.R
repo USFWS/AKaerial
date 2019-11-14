@@ -139,28 +139,6 @@ SpeciesByProject=function(full.data, area){
 
 
 
-CorrectUnit=function(full.data){
-
-  acceptable=c("open", "single", "pair","flkdrake")
-
-  for (i in 1:length(full.data$unit)){
-
-    if(full.data$unit[i] %in% acceptable){next}
-
-    print(paste("Nonsense detected.  Unit ", full.data$unit[i], " is not acceptable."))
-
-
-  }
-
-  full.data=full.data[full.data$unit %in% acceptable,]
-  return(full.data)
-
-}
-
-
-
-
-
 
 
 TransData=function(selected.data){
@@ -195,7 +173,7 @@ TransData=function(selected.data){
 
 
 
-    agg=as.data.frame(complete(data=agg, Year, Observer, Species, Obs_Type, ctran, fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0, flock=0)))
+    agg=as.data.frame(tidyr::complete(data=agg, Year, Observer, Species, Obs_Type, ctran, fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0, flock=0)))
 
   agg$area=0
 
@@ -232,11 +210,6 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 
   strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
-
-  # newlines = raster::intersect(design.proj, strata.proj)
-  # newlines@data$id=rownames(newlines@data)
-  # newlines.fort=fortify(newlines, region="STRAT")
-  # newlines.df=join(newlines.fort, newlines@data, by="id")
 
   #intersect transects with strata, create new attribute SPLIT that is a unique
   #numbering system for latitude/strata combos
@@ -277,7 +250,7 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 
   if(SegCheck==TRUE){
 
-    factpal=colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+    factpal=leaflet::colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
 
 
     map= leaflet() %>%
@@ -334,8 +307,8 @@ LoadMap <- function(map.file, type="df") {
   maptools::gpclibPermit()
   strata <- rgdal::readOGR(map.file, layer=tools::file_path_sans_ext(basename(map.file)), verbose=FALSE)
 
-  strata.proj <- sp::spTransform(strata, "+proj=longlat +ellps=WGS84")
-  strata<- rgeos::gBuffer(strata, byid=TRUE, width=0)
+  strata.proj <- sp::spTransform(strata, "+proj=longlat +ellps=WGS84 +datum=WGS84")
+  #strata<- rgeos::gBuffer(strata, byid=TRUE, width=0)
 
 
 
@@ -541,9 +514,9 @@ PointsToStrata=function(full.data, area){
 
   sp=cbind(x,y)
 
-  sp=SpatialPoints(sp)
+  sp=sp::SpatialPoints(sp)
 
-  proj4string(sp)=CRS("+proj=longlat +ellps=WGS84")
+  sp::proj4string(sp)=sp::CRS("+proj=longlat +ellps=WGS84")
 
   sp=sp::spTransform(sp, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
@@ -642,13 +615,6 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
   #Add a row with a 0 count for every species counted somewhere in the data but not on a given transect
   #t3=MakeZeroes(data, counts.t)
    t3=counts.t
-
-
-  #Make sure totals are numeric
-  #t3$total=as.numeric(t3$total)
-  #t3$itotal=as.numeric(t3$itotal)
-  #t3$ibb=as.numeric(t3$ibb)
-  #t3$sing1pair2=as.numeric(t3$sing1pair2)
 
 
   #Sum the counts of each species by strata type
@@ -1085,7 +1051,7 @@ TransectTable <- function(trans.file, trans.layer, obs=1, method, area) {
 
 
   sp.set=SpatialPoints(sp.set)
-  proj4string(sp.set)=CRS("+proj=longlat +ellps=WGS84")
+  sp::proj4string(sp.set)=sp::CRS("+proj=longlat +ellps=WGS84")
 
 
   if(method=="text"){type=over(sp.set,LoadMap(area, type="proj"))$STRATNAME}
@@ -1233,9 +1199,9 @@ for (t in 1:length(full.data$Lon)){
 }
 
 
-coordinates(full.data)=~Lon+Lat
+sp::coordinates(full.data)=~Lon+Lat
 
-proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
+sp::proj4string(full.data)=sp::CRS("+proj=longlat +ellps=WGS84")
 
 
 # if(area=="CRD"){
@@ -1255,8 +1221,8 @@ full.data$dist=0
 
 
 for (j in seq_along(full.data$closest)){
-  full.data$closest[j]=as.numeric(as.character(split.design$SPLIT[which.min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))]))
-  full.data$dist[j]=min(suppressWarnings(gDistance(full.data[j,],split.design,byid=TRUE)))
+  full.data$closest[j]=as.numeric(as.character(split.design$SPLIT[which.min(suppressWarnings(rgeos::gDistance(full.data[j,],split.design,byid=TRUE)))]))
+  full.data$dist[j]=min(suppressWarnings(rgeos::gDistance(full.data[j,],split.design,byid=TRUE)))
 }
 
 
@@ -1347,7 +1313,7 @@ PlotObs=function(strata.plot, selected.data, multiyear=TRUE, labelyear=FALSE, bo
   }
 
 if (box==TRUE){
-  coordinates(selected.data)=~long+lat
+  sp::coordinates(selected.data)=~long+lat
   bound=bbox(selected.data)
 
   strata.plot= strata.plot + coord_map(xlim=c(bound[1,1]-.5, bound[1,2]+.5), ylim=c(bound[2,1]-.25, bound[2,2]+.25))
@@ -1380,7 +1346,7 @@ TransSummary=function(full.data, split.design, area){
     for (j in 1:length(observers)){
 
 
-      if(area=="YKG" || area=="YKD" || area=="ACP" || area=="CRD" || area=="YKDV"){
+      if(area=="YKG" || area=="YKD" || area=="ACP" || area=="CRD" || area=="YKDV" || area=="KIG"){
 
 
         #if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
@@ -1501,90 +1467,6 @@ TransSummary=function(full.data, split.design, area){
 
 
 
-TransData2=function(selected.data){
-
-  #groupings list
-  unit.list=c("single", "pair","open", "flkdrake")
-  #list of years
-  yr.list=as.character(unique(selected.data$flight$yr))
-  #list of species
-  sp.list=as.character(unique(selected.data$obs$sppn))
-
-
-
-
-  #cycle through, check each transect/observer combo for each species
-  for (h in 1:length(yr.list)){
-    sub.data=selected.data$obs[selected.data$obs$yr==yr.list[h],]
-
-    obs.list=unique(as.character(selected.data$flight$obs[selected.data$flight$yr==yr.list[h]]))
-
-    #print(paste("Making zeroes for year ", yr.list[h]))
-    for (i in 1:length(sp.list)){
-
-      sub.data=sub.data[sub.data$sppn==sp.list[i],]
-
-     for (j in 1:length(obs.list)){
-        #print(paste("Observer ", obs.list[j]))
-        tran.list=unique(selected.data$flight$part.of[selected.data$flight$yr==yr.list[h] & selected.data$flight$obs==obs.list[j]])
-
-        sub.data=sub.data[as.character(sub.data$obs)==obs.list[j],]
-
-        for (k in 1:length(tran.list)){
-
-          sub.data=sub.data[as.character(sub.data$ctran)==tran.list[k],]
-
-          for (m in 1:length(unit.list)){
-
-  #skip if count exists
-
-
-  if(any(as.character(selected.data$obs$sppn)==sp.list[i] & as.character(selected.data$obs$ctran)==tran.list[k] & as.character(selected.data$obs$obs)==obs.list[j] & selected.data$obs$yr==yr.list[h] & selected.data$obs$unit==unit.list[m]))
-            if(any(sub.data$unit==unit.list[m]))
-              {next}
-
-  #add the 0 row
-            new.row=c(yr.list[h], NA, NA, NA, obs.list[j], NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, sp.list[i], 0, unit.list[m], NA, NA, tran.list[k], NA, 0)
-            selected.data$obs=rbind(selected.data$obs,new.row)
-
-
-
-          } #end unit
-
-        } #end tran
-
-      } #end obs
-    } #end sp
-  } #end yr
-
-  selected.data$obs$grp=as.numeric(selected.data$obs$grp)
-
-
-  agg=aggregate(grp~yr+obs+sppn+unit+ctran, data=selected.data$obs, FUN=sum)
-
-
-  colnames(agg)=c("yr", "obs", "sppn", "unit", "ctran", "grp")
-
-
-  agg$area=0
-
-  agg$strata="none"
-
-
-  for(g in 1:length(agg$area)){
-
-    agg$area[g]=sum(selected.data$flight$sampled.area[selected.data$flight$yr==agg$yr[g] & selected.data$flight$obs==agg$obs[g] & selected.data$flight$part.of==agg$ctran[g]])
-    agg$strata[g]=selected.data$flight$strata[selected.data$flight$yr==agg$yr[g] & selected.data$flight$obs==agg$obs[g] & selected.data$flight$part.of==agg$ctran[g]][1]
-
-  }
-
-
-
-
-  return(agg[order(agg$yr, agg$obs, agg$sppn, as.numeric(agg$ctran), agg$unit),])
-
-}
-
 
 CorrectionFactor=function(estimates, species){
 
@@ -1695,8 +1577,8 @@ StrataSummary=function(strata.file){
 TrimToStrata=function(full.data, strata.path){
 
 
-  coordinates(full.data)=~Lon+Lat
-  proj4string(full.data)=CRS("+proj=longlat +ellps=WGS84")
+  sp::coordinates(full.data)=~Lon+Lat
+  sp::proj4string(full.data)=sp::CRS("+proj=longlat +ellps=WGS84")
 
   strata.proj=LoadMap(strata.path, type="proj")
   strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
@@ -2109,6 +1991,8 @@ SpeciesTransect=function(area, year, species){
   output.table=output.table[!(output.table$Obs_Type=="flkdrake" & output.table$Num > 0),]
 
   output.flkdrake=output.flkdrake[output.flkdrake$Obs_Type=="flkdrake" & output.flkdrake$Species %in% species,]
+
+  if(length(output.flkdrake[,1]>=1)){
   output.flkdrake$freq=0
 
   sum.flkdrake = aggregate(freq~Year+Observer+Species+Obs_Type+ctran+Num+obs.area+strata+strata.area+area, data=output.flkdrake, FUN = length)
@@ -2122,9 +2006,15 @@ SpeciesTransect=function(area, year, species){
 
   }
 
+  }
+
   output.table = output.table[,!names(output.table)%in%c("itotal", "total", "ibb", "sing1pair2", "flock")]
 
+
+
+  if(length(output.flkdrake[,1]>=1)){
   output.table=rbind(output.table, sum.flkdrake)
+  }
 
   output.table=output.table[order(output.table$Year, output.table$Observer, output.table$Species, output.table$ctran, output.table$Obs_Type),]
 

@@ -31,14 +31,42 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
               "Notes")
 
 
+  if(area=="VIS"){necessary=c("Year",
+                              "Month",
+                              "Day",
+                              "Seat",
+                              "Observer",
+                              "Stratum",
+                              "Transect",
+                              "Segment",
+                              "Trans_Num",
+                              "Flight_Dir",
+                              "Area",
+                              "Aircraft",
+                              "Wind_Vel",
+                              "Sky",
+                              "Filename",
+                              "Lat",
+                              "Lon",
+                              "Time",
+                              "Delay",
+                              "Species",
+                              "Num",
+                              "Obs_Type",
+                              "Behavior",
+                              "Distance",
+                              "Code",
+                              "Notes")
+    }
+
   type <- tools::file_ext(path.name)
 
   if(type == "txt") {data <- read.table(path.name, header=TRUE, stringsAsFactors = FALSE, na.strings=c("NA", "na", "N/A"))}
   if(type == "csv") {data <- read.csv(path.name, header=TRUE, stringsAsFactors = FALSE, na.strings=c("NA", "na", "N/A"))}
 
-  if(!area %in% c("ACP", "YKD", "YKG", "CRD", "WBPHS", "BLSC")){
+  if(!area %in% c("ACP", "YKD", "YKG", "CRD", "WBPHS", "BLSC", "VIS")){
 
-    print("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, WBPHS.")
+    print("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, VIS, WBPHS.")
     break
   }
 
@@ -97,10 +125,13 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
   test.species=SpeciesCheck(data, area=area)
 
-  if(length(test.species$change)>0){s.species="yellow"}
-  if(length(test.species$bad)>0){s.species="red"}
-  if(test.species$fail==FALSE){s.species="green"}
+  s.species="test"
 
+  if(length(test.species$change[,1])>0){s.species="yellow"}
+
+  if(length(test.species$bad[,1])>0){s.species="red"}
+
+  if(test.species$fail==FALSE & s.species!="yellow"){s.species="green"}
 
   #are the observer initials all uppercase?
 
@@ -172,18 +203,32 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
     data.new=data.new[data.new$Species != "XXXX",]
     fix=data.obj$fix
 
+    if(area != "VIS"){
     proj=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][1]
     yr=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][2]
     type="QCObs"
     name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
+    write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
+    }
 
     data.new$Notes=gsub(",","", data.new$Notes)
 
-    write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
+    if(area=="VIS"){
+      proj=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][1]
+      yr=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][2]
+      region=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][3]
+      aircraft=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
+      name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][6]
+
+      type="QCObs"
+    write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_", region, "_", aircraft, "_QCObs_", name, ".csv", sep='')
+    }
+
     print(write.path)
     write.csv(data.new[,1:25], write.path, quote=FALSE, row.names=FALSE )
-    rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))
 
+    if(area!="VIS"){rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))}
+    if(area=="VIS"){rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj, "_", yr, "_", region, "_", aircraft, "_QCLog_", name, ".html", sep=''))}
   }
 
 

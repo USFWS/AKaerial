@@ -8,16 +8,16 @@ ShowMe=function(strata.path, data.path, transect.path, species="all"){
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.path, type="proj")
 
-  split.design <- spTransform(split.design, "+proj=longlat +ellps=WGS84")
-  strata.proj <- suppressWarnings(gBuffer(strata.proj, byid=TRUE, width=0))
+  split.design <- sp::spTransform(split.design, "+proj=longlat +ellps=WGS84")
+  strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
 
-  factpal=colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+  factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
 
 
-  map= leaflet() %>%
-    addTiles() %>%
-    addPolygons(data=strata.proj,
+  map= leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addPolygons(data=strata.proj,
                 fillColor=~factpal(strata.proj$STRATNAME),
                 fillOpacity=.4,
                 stroke=TRUE,
@@ -26,7 +26,7 @@ ShowMe=function(strata.path, data.path, transect.path, species="all"){
                 weight=1,
                 popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
 
-    addPolylines(data=split.design,
+    leaflet::addPolylines(data=split.design,
                  color="black",
                  weight=4,
                  opacity=.9,
@@ -37,7 +37,7 @@ ShowMe=function(strata.path, data.path, transect.path, species="all"){
                                "Split Transect: ", split.design$SPLIT, "<br>",
                                "Length: ", split.design$len))  %>%
 
-    addScaleBar()
+    leaflet::addScaleBar()
 
   for(i in 1:length(data.path)){
 
@@ -59,14 +59,14 @@ ShowMe=function(strata.path, data.path, transect.path, species="all"){
 
   }
 
-  coordinates(data)=~Lon+Lat
+  sp::coordinates(data)=~Lon+Lat
 
-  pal=colorFactor(palette = c("red", "blue", "yellow", "green","orange"), data$Observer)
+  pal=leaflet::colorFactor(palette = c("red", "blue", "yellow", "green","orange"), data$Observer)
 
 
   map= map %>%
 
-    addCircleMarkers(data=data,
+    leaflet::addCircleMarkers(data=data,
                      radius = 3,
                      color = ~pal(Observer),
                      stroke = FALSE,
@@ -76,7 +76,7 @@ ShowMe=function(strata.path, data.path, transect.path, species="all"){
                                   "<br>", data$Transect)
                   ) %>%
 
-    addProviderTiles("Esri.WorldImagery")
+    leaflet::addProviderTiles("Esri.WorldImagery")
 
 
   print(map)
@@ -97,16 +97,16 @@ ShowMeDesign=function(strata.path, transect.path){
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.path, type="proj")
 
-  split.design <- spTransform(split.design, "+proj=longlat +ellps=WGS84")
-  strata.proj <- suppressWarnings(gBuffer(strata.proj, byid=TRUE, width=0))
+  split.design <- sp::spTransform(split.design, "+proj=longlat +ellps=WGS84")
+  strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
 
-  factpal=colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+  factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
 
 
-  map= leaflet() %>%
-    addTiles() %>%
-    addPolygons(data=strata.proj,
+  map= leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addPolygons(data=strata.proj,
                 fillColor=~factpal(strata.proj$STRATNAME),
                 fillOpacity=.4,
                 stroke=TRUE,
@@ -115,7 +115,7 @@ ShowMeDesign=function(strata.path, transect.path){
                 weight=1,
                 popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
 
-    addPolylines(data=split.design,
+    leaflet::addPolylines(data=split.design,
                  color="black",
                  weight=4,
                  opacity=.9,
@@ -126,9 +126,9 @@ ShowMeDesign=function(strata.path, transect.path){
                                "Split Transect: ", split.design$SPLIT, "<br>",
                                "Length: ", split.design$len))  %>%
 
-    addScaleBar() %>%
+    leaflet::addScaleBar() %>%
 
-    addProviderTiles("Esri.WorldImagery")
+    leaflet::addProviderTiles("Esri.WorldImagery")
 
 
   print(map)
@@ -191,18 +191,18 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
 
   strata.proj=LoadMap(strata.path, type="proj")
 
-  strata.proj <- suppressWarnings(gBuffer(strata.proj, byid=TRUE, width=0))
+  strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
   design=rgdal::readOGR(transect.path, layer=tools::file_path_sans_ext(basename(transect.path)), verbose=FALSE)
   design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84")
   design.proj <- smoothr::drop_crumbs(design.proj, threshold=.1)
 
 
-  factpal=colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+  factpal=leaflet::colorFactor(brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
 
 
-  map= leaflet() %>%
-    addTiles() %>%
-    addPolygons(data=strata.proj,
+  map= leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addPolygons(data=strata.proj,
                 fillColor=~factpal(strata.proj$STRATNAME),
                 fillOpacity=.4,
                 stroke=TRUE,
@@ -211,7 +211,7 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
                 weight=1,
                 popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
 
-    addPolylines(data=design.proj,
+    leaflet::addPolylines(data=design.proj,
                  color="white",
                  weight=4,
                  opacity=.9,
@@ -222,9 +222,9 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
                                "Split Transect: ", design.proj$SPLIT, "<br>",
                                "Length: ", design.proj$len))  %>%
 
-    addScaleBar() %>%
+    leaflet::addScaleBar() %>%
 
-    addProviderTiles("Esri.WorldImagery")
+    leaflet::addProviderTiles("Esri.WorldImagery")
 
 
   if(data.path != "none"){
@@ -250,14 +250,14 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
 
 
 
-  coordinates(data)=~Lon+Lat
+  sp::coordinates(data)=~Lon+Lat
 
-  pal=colorFactor(palette = c("red", "blue", "yellow", "green","orange"), data$Observer)
+  pal=leaflet::colorFactor(palette = c("red", "blue", "yellow", "green","orange"), data$Observer)
 
 
   map= map %>%
 
-    addCircleMarkers(data=data,
+    leaflet::addCircleMarkers(data=data,
                      radius = 3,
                      color = ~pal(Observer),
                      stroke = FALSE,
@@ -266,7 +266,7 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
                                   "<br>", data$Obs_Type, "<br>", data$Num)
     ) %>%
 
-    addProviderTiles("Esri.WorldImagery")
+    leaflet::addProviderTiles("Esri.WorldImagery")
 
   }
 
@@ -278,5 +278,92 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
 
 
 }
+
+
+
+
+ShowMeYears=function(area, year, species="all"){
+
+  entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
+  strata.path=paste(entries$DRIVE[1], entries$STRATA[1], sep="")
+
+  data.path=c()
+
+  for (n in 1:length(entries$OBS)){
+
+    data.path[n]=paste(entries$DRIVE[n], entries$OBS[n], sep="")
+
+  }
+
+
+
+  #read projected (non-dataframe) strata
+  strata.proj=LoadMap(strata.path, type="proj")
+
+  strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
+
+
+  factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.proj$STRATNAME)), name="Spectral"), as.factor(strata.proj$STRATNAME))
+
+
+  map= leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addPolygons(data=strata.proj,
+                fillColor=~factpal(strata.proj$STRATNAME),
+                fillOpacity=.4,
+                stroke=TRUE,
+                color="black",
+                opacity=1,
+                weight=1,
+                popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
+
+    leaflet::addScaleBar()
+
+  for(i in 1:length(data.path)){
+
+    temp.data=read.csv(data.path[i], header=TRUE, stringsAsFactors = FALSE)
+
+    if(i==1){
+      data=temp.data
+    }
+
+    if(i!=1){
+      data=rbind(data, temp.data)
+
+    }
+
+    if(species[1] != "all"){
+      data=data[data$Species %in% species, ]
+
+    }
+
+  }
+
+  sp::coordinates(data)=~Lon+Lat
+
+  pal=leaflet::colorFactor(palette = c("white", "blue", "yellow", "green","orange"), data$Species)
+
+
+  map= map %>%
+
+    leaflet::addCircleMarkers(data=data,
+                     radius = 3,
+                     color = ~pal(Species),
+                     stroke = FALSE,
+                     fillOpacity = 1,
+                     popup= paste(data$Observer, "<br>", data$Species,
+                                  "<br>", data$Obs_Type, "<br>", "n = ",data$Num,
+                                  "<br>", "Transect ", data$Transect, "<br>", data$Year)
+    ) %>%
+
+    leaflet::addProviderTiles("Esri.WorldImagery")
+
+
+  print(map)
+  return(map)
+
+
+}
+
 
 
