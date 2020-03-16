@@ -1,0 +1,155 @@
+---
+title: "AKAerial State Space Model"
+author: "Erik Osnas and Chuck Frost"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:  
+  html_document:  
+    fig_caption:  true
+---
+
+
+```{r setup, include=FALSE, cache = FALSE}
+set.seed(3)
+require(R2jags)
+require(pander)
+require(dplyr)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, cache.lazy = FALSE, tidy = TRUE,
+                      tidy.opts=list(blank=FALSE, width.cutoff=50))
+```
+
+
+
+#Fitting a Bayesian State Space Model
+Here we fit a Bayesian state-space model to the `r species` data.  A state-space model is a general term that usually refers to a model containing the true underlying (and unobserved) time-dependent state of the system and imperfect time-dependent observations.  The states change with time so that the state at time $t$ depends on the state at time $t-1$ (and potentially other factors).  Here, the state is defined as the unobserved total population of `r species` in the survey area, and observations depend just on the state. State-space models were first developed as part of missile guidance systems and the Apollo space program in the 1950s and 60s (the Kalman filter, see en.wikipedia.org/wiki/Kalman_filter), so in this sense a state-space model can be thought of as "rocket science."  Ecological processes, however, are often more difficult to predict than rocket trajectories. State-space models are commonly applied in ecological contexts (Kery and Schaub 2012).  
+
+The model is fit using Bayesian methods because this requires us to specify prior distributions for the parameters. Prior distributions represent information about the parameters that is more general than the specific data set in the current analysis.  Priors also represent a set of assumptions we must make in order to use the Bayesian methodology. Priors can be based on highly specific and certain knowledge or they can represent little or no knowledge about a parameter.  When the priors convey a large amount of information about a parameter, the prior is said to be "informative" and can be very influential on the estimate parameter values, even more informative than the data. In contrast, "noninformative" priors could be used in cases of large uncertainty to bound the range of appropriate estimates. Priors are expressed as probability distributions with more "peaked" distributions being more informative than less "peaked" distributions.  
+
+The model we use has four parts: a mathematical population projection model, an observation model, priors on all parameters, and observed data.  The population projection model is  
+
+$N_{t+1} = N_t e^{r_t}$
+
+with 
+
+$r_t \sim Normal(\bar{r}, \sigma_1)$.  
+
+$N_t$ is the true population in the surveyed area (the state) and $r_t$ are the year-specific annual change in the population on the log scale.  The parameter $\bar{r}$ represents the average growth rate of the population on the log scale during the observed time interval. The $\sim$ means "is distributed as" and signifies a random quantity.  Thus, the underlying model is a stochastic exponential growth model. As $\sigma_1$ goes to zero, the population trajectory goes to the curve defined by $N_{t+1} = N_t e^{r_t}$; as $\sigma_1$ increases, the trajectory departs more from a fixed curve and looks more and more random as $\sigma_1$ increases further. These departures from the modeled curve are not "error" in the sense of sampling variance, but represent difference between the true underlying population and the mathematical model; therefore, this component of the variance is often called "process variance."  These deviations are true fluctuations in the population from all causes, including births, deaths, and immigration and emigration from the surveyed area; as well as observation biases that flucuate annually ( e.g., detection) and not accounted for in the model.   
+
+The observation component of the model is 
+
+$Y_t \sim Normal(N_t, \sigma_{2,t})$
+
+Here $Y_t$ are the observed data (index values), and the standard deviation, $\sigma_{2,t}$, is year-specific. Because $\sigma_{2,t}$ is calculated as part of the population index, $\sigma_{2,t}$ is input as data along with the index observations. The difference between $N_t$ and $Y_t$ represent errors in the sense of sampling noise--if the index survey was repeated with a different sample of transects and calculated anew (but all else being the same), the observed index value would be different. This error reflect our inability to observe the system perfectly. Having an estimate of the sampling variance allows us to separate process variance from sample variance and to "smooth" the population estimate based on the data. The observation model defines the likelihood of the observing the data.   
+
+The final component of the model is a set of priors for the parameters. Priors represent our belief before we analyze the current data. One possible set of priors for the parameters is
+
+$\bar{r} \sim Normal(0, 0.1)$,
+
+$\sigma_1 \sim Uniform(0, 0.3)$, and  
+
+$log(N_1) \sim Normal(log(50000), 0.1)$.
+
+ The prior for $\bar{r}$ is normally distributed between `r r[1]` and `r r[2]`. True long term average growth rate is nearer to zero than these extremes, and this belief can be reflected in the choice of a normal distribution with a mean of zero. The prior for parameter $\sigma_1$ is Uniform (equally probable) between `r sigma[1]` and `r sigma[2]` on the log population scale (standard deviation parameters can only be positive). This equates approximately to an annual coefficient of variation of about `r round(sigma[2]*100,2)`% at the maximum; meaning that if $\sigma_1$ is 0.3, then on average the annual deviation between the unobserved true population and the mathematical model will be about 30% (on the real scale of population, not log population).  Any one deviation in a given year will be very different because it is a random quantity with a normal distribution on the log scale.  On average across a large number of observations, however, deviations will be about 30% different from the mathematical model if $\sigma_1$ is set at the maximum. Finally, we need to specify a prior for the initial population size in the first year of observation.  This basically constrains the model near biologically realistic populations sizes. Without this constraint, models of this type can sometimes be very difficult to fit. Here, the initial (log) population size is given a normal prior centered on log(`r (N1[1]+N1[2])/2`) and a standard deviation of 0.1.  
+
+Estimates from a Bayesian analysis depend on both the priors and the data.  When little or no information is contained in the data, estimates will to a greater degree reflect the prior if the prior is "informative." Conversely, when the data contributes much information and the priors are relatively "non-informative," the final estimates (called "posterior estimates") can be very different from the priors. If priors are very "informative" then it is possible for the information is the prior to overwhelmn information in the data, even when the data are highly informative. Thus, much though must be given to the choice of priors. For time series-type data and when estimating variance components, as is the case here, 30 years of data can be thought of as mildly informative--not bad but also not great. 
+
+In the software language of BUGS (Lunn, et al. 2009) or JAGS (Plummer 2003) used through R (R Core Team 2015), the above model is represented as:  
+
+-Priors
+  # Prior for initial population size log scale
+  logN.est[1] ~ dnorm(log(`r (N1[1]+N1[2])/2`), 1/(0.1)^2) 
+
+  # Prior for mean growth rate
+  mean.r ~ dnorm(`r (r[1]+r[2])/2`, 1/(0.1)^2)                
+  
+  # Prior for sd of state process log scale
+  sigma.proc ~ dunif(`r sigma[1]`, `r sigma[2]`)           
+  tau.proc <- pow(sigma.proc, -2)
+  
+-Likelihood
+
+-State process
+for (t in 1:(T-1) ) {
+  r[t] ~ dnorm(mean.r, tau.proc)
+  logN.est[t+1] <- logN.est[t] + r[t]
+}
+
+-Observation process
+for (i in 1:T) {
+  tau.obs[i] <- pow(sigma.obs[i], -2)
+  y[i] ~ dnorm(exp(logN.est[i]), tau.obs[i])
+}
+
+
+The above code is written as a file to the directory, which is then used by BUGS or JAGS to define a simulation model that generates Bayesian posterior estimates. In R, we need to set up a list of data, a function that supplies initial values for the simulations, and then call and run the model. We run 3 independent simulations ("chains") that allow us to assess model convergence and be sure our estimates do not depend on the initial values supplied.  In R using the package R2jags:  
+
+```{r echo=FALSE, fig.cap="The observed index estimates and 95% CI."}
+
+plot(years, N, pch=16, ylim=c(0, max(N)+3*max(SE)), xlab="Year",
+         ylab="Population Estimate +/- 2SE",
+         main=paste("Observed Population- ", species, sep=""))
+    arrows(x0=years, y0=N-2*SE, y1=N+2*SE, length=0, col=1)
+
+    
+```
+
+
+```{r echo=FALSE, fig.cap="The observed index data plotted with the estimated posterior mean and 95% credible interval for the modelled population state.  The observed index is shown by the filled circles and vertical bars representing 2 standard errors of the index."}
+plot(1,1, type="n", xlim=range(years), ylim=c(0, 1.5*max(N)), xlab="Year",
+           ylab="Population Estimate",
+           main="Observed Population and Bayesian Estimates")
+      polygon(x=c(years, rev(years)), y=c(sum.quant["2.5%",], rev(sum.quant["97.5%",])),
+              col="lightgray")
+      arrows(x0=years, y0=N-2*SE, y1=N+2*SE, length=0, col=1)
+      points(years, N, pch=16)
+      lines(years, sum.mean, col=1, lwd=2)
+
+```
+
+
+
+```{r echo=FALSE, fig.cap="Posterior mean and distribution for the modelled population growth rate."}
+
+r.plot
+
+```
+
+
+```{r echo=FALSE, fig.cap="Posterior mean and distribution for the process standard deviation."}
+
+hist(out$BUGSoutput$sims.list$sigma.proc, xlim=c(0,sigma[2]), xlab="", col="lightgray",
+           main=expression(paste("Posterior of process standard deviation (",sigma["1"],")")))
+
+
+```
+
+```{r echo=FALSE}
+plot(out)
+
+      hist(out$BUGSoutput$summary[,"Rhat"], col="lightgray",
+           xlab="R-hat", main="R-hat should be near 1.0")
+
+      R2jags::traceplot(out, ask=FALSE, varname ="mean.r")
+
+      R2jags::traceplot(out, ask=FALSE, varname ="sigma.proc")
+      
+```
+
+```{r echo=FALSE}
+
+kableExtra::kable(out$BUGSoutput$summary, "html", caption = "Parameter Summary") %>%
+        kableExtra::kable_styling("striped", full_width = F)
+
+
+```
+
+```{r echo=FALSE}
+
+    knitr::kable(out.data, caption="State Space and Index Population Estimates",
+                          col.names = c("Year", "N_S", "2.5 %", "97.5 %", "SD", "N(index)", "2.5 %", "97.5 %", "SE(index)" ), escape=FALSE) %>%
+          kableExtra::kable_styling("striped", full_width = F)
+
+```
+
+
+
+      

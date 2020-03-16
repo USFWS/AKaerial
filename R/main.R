@@ -26,7 +26,7 @@ library(tidyr)
 
 
 
-DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
+DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA, threshold=.5){
 
 
 
@@ -40,7 +40,7 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA){
 
   split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE)
 
-  data=CorrectTrans(full.data=data, area=area, split.design=split.design, strata.file=strata.path)
+  data=CorrectTrans(full.data=data, area=area, split.design=split.design, strata.file=strata.path, threshold=threshold)
 
   flight=TransSummary(full.data=data, split.design=split.design, area=area)
   #flight=flight[flight$len>0,]
@@ -741,6 +741,8 @@ Densities=function(data, n.obs=1, trans.method="gis", trans.width=.2, area, outp
 
   counts.final=counts.final[counts.final$strata != "Nonhabitat", ]
   counts.final=counts.final[counts.final$strata != "Mountains", ]
+  counts.final=counts.final[counts.final$strata != "zero", ]
+
 
 
   #Summarize in table
@@ -1346,7 +1348,7 @@ TransSummary=function(full.data, split.design, area){
     for (j in 1:length(observers)){
 
 
-      if(area=="YKG" || area=="YKD" || area=="ACP" || area=="CRD" || area=="YKDV" || area=="KIG"){
+      if(area=="YKG" || area=="YKD" || area=="ACP" || area=="CRD" || area=="YKDV" || area=="KIG" || area=="BLSC"){
 
 
         #if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
@@ -1361,7 +1363,11 @@ TransSummary=function(full.data, split.design, area){
           obs=as.character(obs.flown$Observer)
           renum=as.numeric(as.character(obs.flown$ctran))
 
-          orig=as.numeric(as.character(obs.flown$Transect))
+
+          #orig=as.numeric(as.character(obs.flown$Transect))
+          orig=as.character(obs.flown$Transect)
+
+
           len=array(0,length(orig))
           strata=vector("character",length(orig))
 
@@ -1515,6 +1521,7 @@ StrataSummary=function(strata.file){
   strata.proj=LoadMap(strata.file, type="proj")
   strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
 
+  strata.proj@data$AREA=raster::area(strata.proj)
 
   #Get actual areas from gis layers
   strata.area=aggregate(strata.proj@data$AREA~strata.proj@data$STRATNAME, FUN=sum)
@@ -1779,7 +1786,7 @@ PoolData=function(year, area){
 
 
 
-SpeciesTransect=function(area, year, species){
+SpeciesTransect=function(area, year, species, strata.overwrite="none"){
 
   entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
 
@@ -1883,6 +1890,10 @@ SpeciesTransect=function(area, year, species){
 
     strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
 
+    if(strata.overwrite != "none"){
+      strata.path=strata.overwrite
+    }
+
     transect.path=paste(entries$DRIVE[i], entries$TRANS[i], sep="")
 
     if(!file.exists(data.path)){next}
@@ -1925,8 +1936,18 @@ SpeciesTransect=function(area, year, species){
 
         output.table=expand.grid(Year=data$transect$Year[1], Observer=data$transect$Observer[1], Species=species, Obs_Type=unique(data$transect$Obs_Type), ctran=unique(data$transect$ctran), Num=0, itotal=0, total=0, ibb=0, sing1pair2=0, flock=0)
         output.table$strata.area=0
-        output.table$obs.area=data$transect$area[data$transect$ctran==output.table$ctran][1]
-        output.table$strata=data$transect$strata[data$transect$ctran==output.table$ctran][1]
+
+
+        for(u in 1:length(output.table$strata.area)){
+          output.table$obs.area[u]=data$transect$area[data$transect$ctran==output.table$ctran[u]][1]
+        output.table$strata[u]=data$transect$strata[data$transect$ctran==output.table$ctran[u]][1]
+        }
+
+        output.flkdrake=data$obs[1,]
+        output.flkdrake$strata="None"
+        output.flkdrake$area=area
+        output.flkdrake$obs.area=0
+        output.flkdrake$strata.area=0
 
       }
 
@@ -1967,8 +1988,11 @@ SpeciesTransect=function(area, year, species){
 
         temp.table=expand.grid(Year=data$transect$Year[1], Observer=data$transect$Observer[1], Species=species, Obs_Type=unique(data$transect$Obs_Type), ctran=unique(data$transect$ctran), Num=0, itotal=0, total=0, ibb=0, sing1pair2=0, flock=0)
         temp.table$strata.area=0
-        temp.table$obs.area=data$transect$area[data$transect$ctran==temp.table$ctran][1]
-        temp.table$strata=data$transect$strata[data$transect$ctran==temp.table$ctran][1]
+
+        for(v in 1:length(temp.table$strata.area)){
+        temp.table$obs.area[v]=data$transect$area[data$transect$ctran==temp.table$ctran[v]][1]
+        temp.table$strata[v]=data$transect$strata[data$transect$ctran==temp.table$ctran[v]][1]
+        }
 
       }
 
@@ -2132,3 +2156,205 @@ MakeStateSpace=function(folder.path, area="all") {
   }
 }
 
+
+
+
+
+SpeciesObs=function(area, year, species, strata.overwrite="none"){
+
+  entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
+
+  now.skip=0
+  rep=1
+
+  for (i in 1:length(entries[,1])){
+
+    if(entries$YEAR[i]==now.skip){next}
+
+    if(entries$COMBINE[i]==1){
+
+      if(area=="YKD" || area=="YKDV" || area=="KIG"){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKD_2001_QCObs_Pooled.csv", sep="")
+        now.skip=entries$YEAR[i]
+      }
+
+      if(area=="ACP" & rep==1){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatLF.csv", sep="")
+      }
+
+      if(area=="ACP" & rep==2){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+
+      if(area=="YKG" & rep==1 & entries$YEAR[i]==1986){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatLF.csv", sep="")
+
+      }
+
+      if(area=="YKG" & rep==2 & entries$YEAR[i]==1986){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+
+      if(area=="YKG" & rep==1 & entries$YEAR[i]==1989){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatLF.csv", sep="")
+
+      }
+
+      if(area=="YKG" & rep==2 & entries$YEAR[i]==1989){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+
+
+      if(area=="YKG" & rep==1 & entries$YEAR[i]==1997){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatLF.csv", sep="")
+
+      }
+
+      if(area=="YKG" & rep==2 & entries$YEAR[i]==1997){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+
+
+      if(area=="YKG" & rep==1 & entries$YEAR[i]==2005){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatLF.csv", sep="")
+
+      }
+
+      if(area=="YKG" & rep==2 & entries$YEAR[i]==2005){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+
+
+      if(area=="CRD" & rep==1 & entries$YEAR[i]==1988){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatLF.csv", sep="")
+
+      }
+
+      if(area=="CRD" & rep==2 & entries$YEAR[i]==1988){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+      if(area=="CRD" & rep==1 & entries$YEAR[i]==1998){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatLF.csv", sep="")
+
+      }
+
+      if(area=="CRD" & rep==2 & entries$YEAR[i]==1998){
+        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatRF.csv", sep="")
+        now.skip=entries$YEAR[i]
+        rep=3
+      }
+
+      if(rep==1){rep=2}
+      if(rep==3){rep=1}
+    }
+
+    if(entries$COMBINE[i]!=1){data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")}
+
+    strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
+
+    if(strata.overwrite != "none"){
+      strata.path=strata.overwrite
+    }
+
+    transect.path=paste(entries$DRIVE[i], entries$TRANS[i], sep="")
+
+    if(!file.exists(data.path)){next}
+    if(!file.exists(strata.path)){next}
+    if(!file.exists(transect.path)){next}
+
+    print(data.path)
+
+    data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+
+
+    if(i==1){
+
+    output.table=data$obs[1,]
+    output.table=output.table[-1,]
+
+    if(any(data$obs$Species %in% species)){
+
+      temp.table=data$obs[data$obs$Species %in% species,]
+
+      output.table=rbind(output.table, temp.table)
+
+    }
+
+    }
+
+    if(i>1){
+
+      if(any(data$obs$Species %in% species)){
+
+        temp.table=data$obs[data$obs$Species %in% species,]
+
+        output.table=rbind(output.table, temp.table)
+    }
+
+  }
+  }
+
+  return(output.table)
+
+
+}
+
+
+
+
+CombineByStrata=function(counts.final1, counts.final2){
+
+  estimates=rbind(counts.final1, counts.final2)
+  strata.list=unique(estimates$strata)
+  sp.list=unique(estimates$Species)
+
+  combined=data.frame(Year=rep(counts.final1$Year[1], each=length(strata.list)*length(sp.list)), Species=rep(sp.list, each=length(strata.list)*length(sp.list)), strata=strata.list, total=0, total.var=0, total.se=0, itotal=0, itotal.var=0, itotal.se=0, ibb=0, ibb.var=0, ibb.se=0, sing1pair2=0, sing1pair2.var=0, sing1pair2.se=0, flock=0, flock.var=0, flock.se=0)
+
+  for(i in 1:length(combined$strata)){
+
+
+    combined$total[i]=mean(estimates$total.est[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])
+
+    combined$itotal[i]=mean(estimates$itotal.est[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])
+
+    combined$ibb[i]=mean(estimates$ibbtotal.est[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])
+
+    combined$sing1pair2[i]=mean(estimates$sing1pair2.est[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])
+
+    combined$flock[i]=mean(estimates$flock.est[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])
+
+    combined$total.var[i]=sum(estimates$var.N[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.N[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])^2)
+
+    combined$itotal.var[i]=sum(estimates$var.Ni[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Ni[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])^2)
+
+    combined$ibb.var[i]=sum(estimates$var.Nib[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Nib[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])^2)
+
+    combined$sing1pair2.var[i]=sum(estimates$var.Nsing1pair2[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Nsing1pair2[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])^2)
+
+    combined$flock.var[i]=sum(estimates$var.Nflock[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])/(length(estimates$var.Nflock[estimates$strata==combined$strata[i] & estimates$Species==combined$Species[i]])^2)
+
+  }
+
+  combined$total.se=sqrt(combined$total.var)
+  combined$itotal.se=sqrt(combined$itotal.var)
+  combined$ibb.se=sqrt(combined$ibb.var)
+  combined$sing1pair2.se=sqrt(combined$sing1pair2.var)
+  combined$flock.se=sqrt(combined$flock.var)
+
+  combined[is.na(combined)]=0
+
+  return(combined)
+
+}

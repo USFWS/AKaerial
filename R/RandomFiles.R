@@ -1,0 +1,50 @@
+random_files <- function(path, percent_number, pattern = "jpg$|JPG$", folders=TRUE){
+  ####################################################################
+  # path = path to folder with files to select
+  #
+  # percent_number = percentage or number of files to select. If value is
+  #   between 0 and 1 percentage of files is assumed, if value greater than 1,
+  #   number of files is assumed
+  #
+  # pattern = file extension to select. By default it selects jpg files. For
+  #   other type of files replace jpg and JPG by the desired extension
+  ####################################################################
+
+  # Get file list with full path and file names
+  files <- list.files(path, full.names = TRUE, pattern = pattern, include.dirs = TRUE, recursive=folders)
+  file_names <- list.files(path, pattern = pattern, recursive=folders)
+
+  # Select the desired % or number of file by simple random sampling
+  randomize <- sample(seq(files))
+  file_sample <- files[randomize]
+  name_sample <- file_names[randomize]
+  if(percent_number <= 1){
+    size <- floor(percent_number * length(files))
+  }else{
+    size <- percent_number
+  }
+  file_sample <- file_sample[(1:size)]
+  name_sample <- name_sample[(1:size)]
+
+  # Create folder to output
+  results_folder <- "Q:/Waterfowl/STEI_Survey/Data/RandomFiles"
+  dir.create(results_folder, recursive=TRUE)
+
+  # Write csv with file names
+
+  changes=data.frame(Original=file_sample, Copy=paste0(results_folder, "/", basename(file_sample)), New=paste0(results_folder, "/", seq(1:length(name_sample)),".jpg"))
+
+  write.csv(changes, file = paste0(results_folder, "/selected_files.csv"),
+              row.names = FALSE, quote=FALSE)
+
+  # Copy files
+  for(i in seq(file_sample)){
+
+    file.copy(file_sample[i], "Q:/Waterfowl/STEI_Survey/Data/RandomFiles")
+
+  file.rename(from = as.character(changes$Copy[i]), to = as.character(changes$New[i]))
+  }
+
+
+
+}

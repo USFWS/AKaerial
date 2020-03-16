@@ -1,5 +1,69 @@
 
 
+#' QA/QC checks for standardized aerial survey data
+#'
+#' Greenlight will take input data, check for errors, create a summary report, and optionally output a new data file.
+#'
+#' Greenlight is designed to automate common data QA/QC functions that are normally done live by an observer.
+#' In the future, these checks will use a specific set of fields derived from a generic aerial survey protocol, but
+#' this protocol does not currently exist, so instead the checks provided here are simply to streamline the
+#' creation of population estimates using this R package and provide some consistency in the data fields before
+#' a data set is shared with others.  The specific tests performed are:
+#' \enumerate{
+#' \item Column Names - Are all required columns present and named correctly?  Necessary columns are:
+#'   \describe{
+#'   \item{Year}{4 digit integer representing the year of the observation}
+#'   \item{Month}{2 digit integer representing the month of the observation}
+#'   \item{Day}{1 or 2 digit integer representing the day of the observation}
+#'   \item{Seat}{2 character representation of seat assignment; RF (right front), LF (left front), RR (right rear), or LR (left rear)}
+#'   \item{Observer}{3 character initials of the observer (such as CJF, all capitalized, or C_F)}
+#'   \item{Stratum}{character string (or numeric, treated as string) representing the stratum the observation was in (if known by the observer)}
+#'   \item{Transect}{character string (or numeric, treated as string) of the DESIGN FILE transect number}
+#'   \item{Segment}{character string (or numeric, treated as string) of the transect segment (if known)}
+#'   \item{Flight_Dir}{character string of flight direction (numeric as degrees, character cardinal or intercardinal directions)}
+#'   \item{A_G_Name}{character string of air to ground segment ID}
+#'   \item{Wind_Dir}{character string of wind direction based on 8 point cardinal/intercardinal directions}
+#'   \item{Wind_Vel}{integer representing wind speed in knots}
+#'   \item{Sky}{character string representing sky condition (clear, scattered, etc.)}
+#'   \item{Filename}{character string representing .wav file recording for the associated observation}
+#'   \item{Lat}{floating decimal representing decimal degrees of latitude in WGS84 datum}
+#'   \item{Lon}{floating decimal representing decimal degrees of longitude in WGS84 datum}
+#'   \item{Time}{floating decimal representing computer clock seconds past midnight}
+#'   \item{Delay}{floating decimal representing the delay in clock time and GPS system time in seconds}
+#'   \item{Species}{4 character string representing the acceptable species code for an observation.  See \code{\link{sppntable}}}
+#'   \item{Num}{}
+#'   \item{Obs_Type}{}
+#'   \item{Behavior}{}
+#'   \item{Distance}{}
+#'   \item{Code}{}
+#'   \item{Notes}{}
+#'   }
+#'
+#' }
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param area The area code for dedicated MBM Alaska region surveys.
+#'    Acceptable values include:
+#'  \itemize{
+#'  \item YKD - Yukon Kuskokwim Delta MBM duck stratification
+#'  \item YKDV - Yukon Kuskokwim Delta VCF study duck stratification
+#'  \item YKG - Yukon Kuskokwim Delta MBM goose stratification
+#'  \item KIG - Kigigak Island only
+#'  \item ACP - Arctic Coastal Plain
+#'  \item CRD - Copper River Delta
+#'  }
+#' @param year The year or range of years to display.
+#' @param species The species code(s) to be displayed.
+#'    Acceptable values are those in \code{sppntable}.
+#'
+#' @return None
+#'
+#' @examples
+#'  ShowMeYears(area="ACP", year=c(2015:2019), species=c("SPEI", "STEI"))
+#'
+#' @export
 GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
   can.fix=TRUE

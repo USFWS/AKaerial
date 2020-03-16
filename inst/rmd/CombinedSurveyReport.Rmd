@@ -1,0 +1,197 @@
+---
+title: "Aerial Survey Summary Report"
+author: "Chuck Frost"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+
+library(leaflet)
+library(plyr)
+library(dplyr)
+library(kableExtra)
+library(DT)
+
+```
+
+## Introduction
+
+This document provides a combined index estimate for 2 observers on Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), Black Scoter Survey (BLSC), and North American Waterfowl Breeding Population (BPOP).
+
+All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/cfrost3/AKaerial>.
+
+You entered the function call:
+
+CombinedReport(strata.path = `r strata.path`, 
+  transect.path = `r transect.path`, 
+  data1.path = `r data1.path`,
+  data2.path = `r data2.path`,
+  area = `r area`,
+  threshold = `r threshold`)
+
+You have chosen the files:
+```{r files}
+
+print(data1.path)
+
+print(data2.path)
+
+```
+
+For the `r area` survey in `r data1$obs$Year[1]`. There were `r length(strata.names)` strata detected and maps appear below with transect design and observations added.  
+
+
+```{r maps, echo=FALSE}
+createMaps <- function(strata.name){
+mymap <- leaflet() %>%
+addTiles() %>%
+  addPolygons(data=split(strata.proj, strata.proj$STRATNAME)[[strata.name]],
+                fillOpacity=.4,
+                stroke=TRUE,
+                color="white",
+                opacity=1,
+                weight=1,
+                popup = paste("Strata: ", strata.proj$STRATNAME)) %>%
+  
+  addPolylines(data=split(split.design, split.design$STRATNAME)[[strata.name]],
+                 color="black",
+                 weight=4,
+                 opacity=.9,
+                 label=~split.design$OBJECTID,
+                 popup = paste("Strata: ", split.design$STRATNAME, "<br>",
+                               "Old Transect: ", split.design$ORIGID, "<br>",
+                               "New Transect: ", split.design$OBJECTID, "<br>",
+                               "Split Transect: ", split.design$SPLIT, "<br>",
+                               "Length: ", split.design$len))  %>%
+  
+  addCircleMarkers(data=total.obs[as.character(total.obs@data$ctran) %in% as.character(split(split.design, split.design$STRATNAME)[[strata.name]]$SPLIT),],
+                     radius = 3,
+                     color = "red",
+                     stroke = FALSE,
+                     fillOpacity = 1
+                  
+                  ) %>%
+
+    leaflet::addProviderTiles("Esri.WorldImagery")
+  
+return(list(tags$h1(strata.name), mymap))
+}
+
+htmltools::tagList(lapply(as.list(names(split(strata.proj, strata.proj$STRATNAME))), function(x) createMaps(x) ))
+
+
+   
+```
+
+
+
+
+
+
+
+
+## Diagnostics
+
+The following table shows the stratification names and areas in square kilometers as derived from the file `r strata.path`. 
+
+```{r tables1, echo=FALSE}
+
+datatable(data1$strata[,1:2])
+
+
+```
+
+
+
+
+
+
+
+
+
+The following table displays the transects (Original is the design file or navigational name, PartOf is the corrected name based on latitude/longitude, extraneous pieces, misnumbering, etc.), their sampled areas (SampledArea, in square kilometers), Length in kilometers, and associated Strata.  
+
+
+```{r tables2, echo=FALSE}
+
+datatable(rbind(data1$flight, data2$flight))
+
+```
+
+
+
+
+
+
+
+
+The following table provides a summary of the sampled area by observer and strata:
+
+```{r tables3, echo=FALSE}
+
+datatable(aggregate(SampledArea~Observer+Strata, data=rbind(data1$flight, data2$flight), FUN=sum))
+
+```
+
+
+
+
+
+
+
+
+
+## Results
+
+If the above diagnostic checks are reasonable, the following observer-specific index estimates apply:
+
+```{r results1, echo=FALSE}
+
+datatable(rbind(obs1.est$estimates, obs2.est$estimates))
+
+```
+
+
+
+
+
+For more detailed results by observer:
+
+```{r results2, echo=FALSE}
+
+datatable(rbind(obs1.est$counts.final, obs2.est$counts.final))
+
+```
+
+
+
+
+
+For combined estimates:
+
+```{r results3, echo=FALSE}
+
+datatable(combine.est)
+
+```
+
+
+
+
+
+And finally, combined stratified estimates:
+
+```{r results4, echo=FALSE}
+
+datatable(est.by.strata)
+
+```
+
+
+
+
+
+
