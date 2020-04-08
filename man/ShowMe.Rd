@@ -4,7 +4,14 @@
 \alias{ShowMe}
 \title{Display a combination of strata, transect design, and data}
 \usage{
-ShowMe(strata.path, transect.path, data.path, species = "all")
+ShowMe(
+  strata.path,
+  transect.path,
+  data.path,
+  species = "all",
+  bounds = NA,
+  bounds.which = NA
+)
 }
 \arguments{
 \item{strata.path}{The path name to the .shp file of the stratification.  Must be in a format

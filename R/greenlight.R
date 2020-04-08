@@ -31,37 +31,72 @@
 #'   \item{Time}{floating decimal representing computer clock seconds past midnight}
 #'   \item{Delay}{floating decimal representing the delay in clock time and GPS system time in seconds}
 #'   \item{Species}{4 character string representing the acceptable species code for an observation.  See \code{\link{sppntable}}}
-#'   \item{Num}{}
-#'   \item{Obs_Type}{}
-#'   \item{Behavior}{}
-#'   \item{Distance}{}
-#'   \item{Code}{}
-#'   \item{Notes}{}
+#'   \item{Num}{up to 5 digit integer representing the number seen}
+#'   \item{Obs_Type}{character string representing observation type: \enumerate{
+#'   \item single - one lone drake (dimorphic species) or lone bird (monomorphic species)
+#'   \item pair - hen and drake in close association (dimorphic species) or 2 birds in close association (monomorphic species)
+#'   \item open - a mixed sex flock that can't be classified as single, pair, or flkdrake
+#'   \item flkdrake - 2 or more drakes in close association}}
+#'   \item{Behavior}{character string representing observed behavior: diving, flying, swimming, or NA}
+#'   \item{Distance}{character string representing distance from the observer: near, far, NA}
+#'   \item{Code}{integer representing the use of the data in analysis: \enumerate{
+#'   \item use in standard index estimate
+#'   \item use as double observer only
+#'   \item additional data collected but not used in analysis}}
+#'   \item{Notes}{character string reserved for additional comments}
 #'   }
-#'
+#' \item Area - Does the area specified have a defined QAQC process? Acceptable values include: \itemize{
+#'   \item YKD - Yukon Kuskokwim Delta MBM duck stratification
+#'   \item WBPHS - Waterfowl Breeding Population Habitat Survey ("North American")
+#'   \item YKG - Yukon Kuskokwim Delta MBM goose stratification
+#'   \item BLSC - Black Scoter
+#'   \item ACP - Arctic Coastal Plain
+#'   \item CRD - Copper River Delta
+#'   \item VIS - Aircraft Visibility}
+#' \item Swans - Are swans and swan nests appropriately recorded?  Appropriate treatment is recording any observed swans separately from their nests, and nests as open 1.
+#'  This applies to tundra swans (TUSW) and trumpeter swans (TRSW), and their associated nests.
+#' \item Obs_Type - Are all Obs_Type recorded as one of the accepted 4 codes (single, pair, open, flkdrake)?
+#' \item Seat - Are the observer seat codes recorded as one of the 4 acceptable upper case codes (RF, LF, RR, LR)?
+#' \item Species - Are the species codes correct?  See \code{\link{sppntable}}.
+#' \item Observer - Are all observer initials the same (1 observer per data file) and upper case?
+#' \item Numeric columns - The columns Year, Month, Day, Wind_Vel, Lat, Lon, Time, Delay, Num, and Code must contain only numeric values.
 #' }
+#'
+#' A file is given a "red light" and deemed inappropriate for analysis if it fails checks on required columns, is in an undefined area,
+#' incorrect Obs_Types detected, unknown seat code, unrecognized species codes, multiple observers per file, or any of the numeric columns contain non-numerics.
+#'
+#' A file is given a "yellow light" that indicates inconsistencies in the file, but with known treatments by the function, if any of several common mistakes occur.
+#' These include incorrect swan transcription, reversed seat codes (FR for front right instead of RF), use of older species codes, or lower case observer initials.
+#'
+#' If a file sufficiently passes quality checks (receives a green light) and raw2analysis = TRUE, a QCobs (archive quality) .csv file and associated report is produced 2 directories above the path.name specified.
+#' This is done according to the file structure proposed in current data management plans.  If a file receives a yellow light and raw2analysis = TRUE, the associated report will detail the
+#' quality checks that were failed and the specific treatment by the function of the offending data fields before creating the QCobs file.  If a preliminary report has already been produced, setting
+#' report = FALSE before generating a QCobs file will stop another preliminary report from being generated.
+#'
+#'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
 #' @references \url{https://github.com/cfrost3/AKaerial}
 #'
+#' @param path.name The path to the raw data file to be checked.
 #' @param area The area code for dedicated MBM Alaska region surveys.
 #'    Acceptable values include:
 #'  \itemize{
 #'  \item YKD - Yukon Kuskokwim Delta MBM duck stratification
-#'  \item YKDV - Yukon Kuskokwim Delta VCF study duck stratification
+#'  \item WBPHS - Waterfowl Breeding Population Habitat Survey ("North American")
 #'  \item YKG - Yukon Kuskokwim Delta MBM goose stratification
-#'  \item KIG - Kigigak Island only
+#'  \item BLSC - Black Scoter
 #'  \item ACP - Arctic Coastal Plain
 #'  \item CRD - Copper River Delta
+#'  \item VIS - Aircraft Visibility
 #'  }
-#' @param year The year or range of years to display.
-#' @param species The species code(s) to be displayed.
-#'    Acceptable values are those in \code{sppntable}.
+#' @param report TRUE or FALSE, should a preliminary report be generated?
+#' @param raw2analysis TRUE or FALSE, should the archive version of the raw data file be generated (if possible)?
 #'
 #' @return None
 #'
 #' @examples
-#'  ShowMeYears(area="ACP", year=c(2015:2019), species=c("SPEI", "STEI"))
+#'  Greenlight(path.name = "C:/DATA/MyData.csv", area = "CRD", report = TRUE, raw2analysis = FALSE)
 #'
 #' @export
 GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
@@ -130,23 +165,9 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
   if(!area %in% c("ACP", "YKD", "YKG", "CRD", "WBPHS", "BLSC", "VIS")){
 
-    print("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, VIS, WBPHS.")
-    break
+    stop("Area not supported or incorrect.  Currently supported areas are ACP, YKD, YKG, CRD, VIS, WBPHS.")
+
   }
-
-
-  #check for missing or outlier lat/longs
-  #took this out after meeting in 12/18; currently have no agreed on imputation scheme/treatment
-  #latlong=SpatialNA(data,method="greenlight")
-
-
-  # if(is.na(latlong[1])){
-  # n.latlong=0
-  # s.latlong="green"
-  # }else {
-  # n.latlong=length(latlong[,1])
-  # s.latlong="yellow"
-  # }
 
 
   #are the columns there that need to be renamed?
@@ -300,6 +321,21 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
 
 
 
+#' Check for the old style of transcribed data.
+#'
+#' SwitchMatch will test if the original style of transcribed column headings is present
+#'
+#' SwitchMatch is designed to check if the old style of column headings is present and the minimum set of
+#' yr, se, mo, strat, da, grp, and sppn exists.  If TRUE, then ColSwitch can be used to overwrite to the current headings.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be checked.
+#'
+#' @return TRUE/FALSE
+#'
+#' @export
 SwitchMatch=function(data){
 
   necessary=c("yr", "se", "mo", "strat", "da", "grp", "sppn")
@@ -308,34 +344,90 @@ SwitchMatch=function(data){
 }
 
 
+#' Check if observer initials are uppercase.
+#'
+#' ObserverCheck checks to see if the observer initials were entered consistently in uppercase
+#'
+#' ObserverCheck checks to see if the observer initials were entered consistently in uppercase.  This is a basic QA/QC check
+#' so the analysis is not split among upper and lowercase versions of the same observer.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be checked.
+#'
+#' @return TRUE/FALSE
+#'
+#' @export
 ObserverCheck=function(data){
 
   return(all(data$Observer==toupper(data$Observer)))
 
 }
 
-
+#' Switch necessary column names
+#'
+#' ColSwitch takes old column names and changes them to current styling
+#'
+#' ColSwitch will change yr, mo, da, se, strata, grp, and sppn to Year, Month, Day, Seat, Strata, Obs_Type, and Species, respectively.
+#' This function was written to quickly allow an old data file to be formatted for analysis, but probably won't be used in the future.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be checked.
+#'
+#' @return Data frame with new column names.
+#'
+#' @export
 ColSwitch=function(data){
 
-  colnames(data)[which(colnames(data)=="yr")]="year"
-  colnames(data)[which(colnames(data)=="mo")]="month"
-  colnames(data)[which(colnames(data)=="da")]="day"
-  colnames(data)[which(colnames(data)=="se")]="seat"
-  colnames(data)[which(colnames(data)=="strat")]="strata"
-  colnames(data)[which(colnames(data)=="grp")]="group"
-  colnames(data)[which(colnames(data)=="sppn")]="species"
+  colnames(data)[which(colnames(data)=="yr")]="Year"
+  colnames(data)[which(colnames(data)=="mo")]="Month"
+  colnames(data)[which(colnames(data)=="da")]="Day"
+  colnames(data)[which(colnames(data)=="se")]="Seat"
+  colnames(data)[which(colnames(data)=="strat")]="Strata"
+  colnames(data)[which(colnames(data)=="grp")]="Obs_Type"
+  colnames(data)[which(colnames(data)=="sppn")]="Species"
 
   return(data)
 }
 
-
+#' Check if column names are appropriate for analysis.
+#'
+#' ColMatch checks to see if the column headings match those needed by AKAerial for analysis.
+#'
+#' ColMatch is the first GreenLight QA/QC check performed on a data set.  If the column names do not match the necessary set of names in GreenLight,
+#' the function will throw an error and end abruptly.  For the current list of acceptable names, see \code{\link{GreenLight}}
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be checked.
+#'
+#' @return TRUE/FALSE
+#'
+#' @export
 ColMatch=function(data, necessary){
 
   return(all(necessary %in% colnames(data)))
 
 }
 
-
+#' Check if entries in a column are all numeric
+#'
+#' ShouldBeNumeric checks to see if column entries are numeric values needed for analysis.
+#'
+#' ShouldBeNumeric is a GreenLight QA/QC check performed on a data set.  If the column entries are not numeric values it will return a "red" status.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param col.data The column to be checked.
+#'
+#' @return data frame of TRUE/FALSE and offending entries
+#'
+#' @export
 ShouldBeNumeric=function(col.data){
 
 bad.na=suppressWarnings(which(is.na(col.data)))
@@ -348,7 +440,20 @@ return(list("fail"=any(bad),"bad"=bad))
 
 }
 
-
+#' Check if Obs_Type entries are all correct
+#'
+#' UnitCheck checks to see if Obs_Type entries are correct values needed for analysis.
+#'
+#' UnitCheck is a GreenLight QA/QC check performed on a data set.  If the Obs_Type entries are not single, pair, flkdrake, or open, it will return a "red" status.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param col.data The column to be checked.
+#'
+#' @return data frame of TRUE/FALSE and offending entries
+#'
+#' @export
 UnitCheck=function(data){
 
 units=c("single", "pair", "flkdrake", "open", NA)
@@ -360,6 +465,20 @@ return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
 
 }
 
+#' Check if Seat entries are all correct
+#'
+#' SeatCheck checks to see if Seat entries are correct values needed for analysis.
+#'
+#' SeatCheck is a GreenLight QA/QC check performed on a data set.  If the Seat entries are not LF, RF, LR, or RR, it will return a "red" status.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param col.data The column to be checked.
+#'
+#' @return data frame of TRUE/FALSE and offending entries
+#'
+#' @export
 SeatCheck=function(data){
 
   seats=c("LF", "RF", "LR", "RR")
@@ -379,6 +498,22 @@ SeatCheck=function(data){
 }
 
 
+#' Check if Species column inputs are all correct
+#'
+#' SpeciesCheck checks to see if Species entries are correct values needed for analysis.
+#'
+#' SpeciesCheck is a GreenLight QA/QC check performed on a data set.  Species entries are cross-referenced with approved entries by project in
+#' \code{\link{sppntable}} and values with known treatments are marked as "yellow light" issues that will be updated.  Completely unknown species codes
+#' will result in a "red" status.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param col.data The column to be checked.
+#'
+#' @return data frame of TRUE/FALSE, incorrect unfixable entries, and incorrect but fixable entries
+#'
+#' @export
 SpeciesCheck=function(data, area){
 
 
@@ -434,6 +569,22 @@ if(area!="WBPHS"){
 }
 
 
+#' Check if swan and swan nest entries are all correct
+#'
+#' SwanCheck checks to see if swan and swan nest entries were transcribed correctly for analysis.
+#'
+#' SwanCheck is a GreenLight QA/QC check performed on a data set.  The correct transcription of a swan and associated nest is to
+#' record the swan Obs_Type (single or pair) and then the associated nest as a separate row with Obs_Type open and Num 1.  Anything
+#' else will result in "yellow" status if the treatment of the data type is known, and "red" if unknown.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be checked.
+#'
+#' @return data frame of TRUE/FALSE and offending entries
+#'
+#' @export
 SwanCheck=function(data){
 
   nest=data[data$Species=="TUNE" |
@@ -470,7 +621,22 @@ SwanCheck=function(data){
 
 
 
-
+#' Split an old combined data file by observer and year
+#'
+#' ObsByYear will take a .csv or .txt file with 2 or more observers and parse it into observer- and year-specific files
+#'
+#' ObsByYear will take a .csv or .txt file with 2 or more observers and parse it into observer- and year-specific files. This is designed to fix
+#' older files that may have been concatenated into a master file, splitting them into separate pieces.  Since this was an ACP problem,
+#' the files default to the directory "Q:/Waterfowl/Parsed/ACP_" and would need recoding for any other survey.  Individual .csv files are written to the directory.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param path.name The path to the combined file.
+#'
+#' @return None
+#'
+#' @export
 ObsByYear=function(path.name){
 
   #created to split a master file out into observer/year specific files
@@ -507,6 +673,28 @@ ObsByYear=function(path.name){
 }
 
 
+
+#' Apply "yellow light" changes to a data set
+#'
+#' CommonFix is used in conjunction with GreenLight to apply "no-loss" changes to a data set
+#'
+#' Commonfix will take "yellow light" issues and apply a known treatment to fix offending issues. The list of fixes includes \itemize{
+#'   \item Seat - changes lower to uppercase, flips the characters (FR, FL, RL to RF, LF, LR)
+#'   \item Observer - changes lower to uppercase
+#'   \item Swan - breaks up a nest-only observation into 2 observations
+#'   \item Obs_Type - changes open 2 or open 1 SWAN to pair or single, changes SWANN to open 1
+#'   \item Species - changes incorrect or outdated species codes to current ones}
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be fixed.
+#' @param fix The character string vector of the names of the fixes to be applied.
+#' @param area The project area designation.
+#'
+#' @return data frame of fixed columns
+#'
+#' @export
 CommonFix=function(data, fix, area){
 
   #change seats to uppercase, fix swapping (FR to RF, etc)
@@ -621,7 +809,21 @@ CommonFix=function(data, fix, area){
 
 }
 
-
+#' Check if common fixes need to be applied to a raw data file
+#'
+#' Raw2Analysis checks to see if any of the common fixes need to be applied to a data set.
+#'
+#' Raw2Analysis is a QA/QC check in GreenLight that will check for and apply common fixes to a data set through CommonFix.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The data frame to be checked.
+#' @param area The project area designation.
+#'
+#' @return list of data and fix categories that should be applied
+#'
+#' @export
 Raw2Analysis=function(data, area){
   fix=c("Species")
 

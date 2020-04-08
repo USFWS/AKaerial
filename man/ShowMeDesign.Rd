@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{ShowMeDesign}
 \alias{ShowMeDesign}
-\title{Display a combination of strata, transect design, and data}
+\title{Display a combination of strata and transect design}
 \usage{
 ShowMeDesign(strata.path, transect.path)
 }

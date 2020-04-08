@@ -1,4 +1,28 @@
-random_files <- function(path, percent_number, pattern = "jpg$|JPG$", folders=TRUE){
+
+
+#' Randomly sample files in a directory
+#'
+#' RandomFiles will randomly sample files from a directory and optionally its internal folders
+#'
+#' RandomFiles was designed to randomly sample systematic photos of a sampled area for analysis.  It is generalized to use any file extension
+#' a user inputs.  Files are copied and a lookup table is generated to crosswalk original and new names.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param path The path to the folder containing files to be sampled (or folders of files).
+#' @param percent_number The percent (if less than 1.0) or raw number (if greater than 1.0) of files to sample.
+#' @param pattern The file extension of the requested sample.
+#' @param folders Should nested folders also be searched?  TRUE/FALSE
+#' @param results The folder path for the copied (sampled) output
+#'
+#' @return copies randomly selected files to results directory and writes a lookup key \code{selected_files.csv}
+#'
+#' @examples
+#'  RandomFiles(path = "C:/DATA/PHOTOS", percent_number = 0.10, pattern = "jpg$|JPG$", folders = TRUE, results = "C:/RESULTS")
+#'
+#' @export
+random_files <- function(path, percent_number, pattern = "jpg$|JPG$", folders=TRUE, results="Q:/Waterfowl/STEI_Survey/Data/RandomFiles"){
   ####################################################################
   # path = path to folder with files to select
   #
@@ -27,7 +51,7 @@ random_files <- function(path, percent_number, pattern = "jpg$|JPG$", folders=TR
   name_sample <- name_sample[(1:size)]
 
   # Create folder to output
-  results_folder <- "Q:/Waterfowl/STEI_Survey/Data/RandomFiles"
+  results_folder <- results
   dir.create(results_folder, recursive=TRUE)
 
   # Write csv with file names
@@ -40,7 +64,7 @@ random_files <- function(path, percent_number, pattern = "jpg$|JPG$", folders=TR
   # Copy files
   for(i in seq(file_sample)){
 
-    file.copy(file_sample[i], "Q:/Waterfowl/STEI_Survey/Data/RandomFiles")
+    file.copy(file_sample[i], results)
 
   file.rename(from = as.character(changes$Copy[i]), to = as.character(changes$New[i]))
   }

@@ -1,19 +1,20 @@
 
-#' Apply \code{\link{Greenlight}} function to an entire folder
+#' Runs a new combination of separate and combined estimates for 2 observers
 #'
-#' CombinedReport will scan a folder for .csv data files and apply the \code{\link{Greenlight}}
-#' function to each.
+#' CombinedReport will produce an annual estimate report in .html format for 2 observers
 #'
-#' CombinedReport is designed to produce QAQC reports for a large number of files based on a set of established criteria for data integrity.
-#' It can also create the files used for analysis (those with extraneous species codes removed) based on the method chosen.
-#' It was created to avoid single calls to Greenlight when changes are implemented in the QAQC process that need to be applied to all data files at once, such as
-#' including or excluding a species in the generated sharable analysis files.
+#' CombinedReport is designed to produce a basic .html report for quality checks for a particular year/crew combination. The report
+#' contains basic visual QA/QC maps of stratification and transect design, as well as observation information by observer. It also
+#' presents the basic and expanded table of estimates.  It uses the markdown script within AKaerial (CombinedSurveyReport.Rmd) and writes an
+#' output report to the directory of data1.path.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
 #' @references \url{https://github.com/cfrost3/AKaerial}
 #'
-#' @param folder.path The path name to the folder containing the raw .csv files.
-#'  Either folder.path or area must be specified.
+#' @param strata.path The file location of the analysis stratification .shp file
+#' @param transect.path The file location of the transect design .shp file
+#' @param data1.path The file location of the .csv transcribed data for observer 1
+#' @param data2.path The file location of the .csv transcribed data for observer 2
 #' @param area The area code for dedicated MBM Alaska region surveys.  Either folder.path or area must be specified.
 #'    Acceptable values include:
 #'  \itemize{
@@ -23,12 +24,10 @@
 #'  \item WBPHS - The North American Waterfowl Breeding Population Habitat Survey
 #'  \item BLSC - 2018 Black Scoter Survey
 #'  }
-#' @param method
+#' @param threshold The distance in kilometers from a design file where observations are no longer counted.  Defaults to 0.5 km.
 #'
 #' @return None
 #'
-#' @examples
-#'  MassReport(area="ACP", method="both")
 #'
 #' @export
 CombinedReport=function(strata.path=NA,
@@ -77,6 +76,21 @@ CombinedReport=function(strata.path=NA,
 
 
 
+#' Calculate bounding boxes for each distinct stratum in a stratification .shp file
+#'
+#' BoundingByStrata calculates a bounding box for each stratum in a .shp file in a format leaflet can use to display in markdown efficiently
+#'
+#' BoundingByStrata will calculate separate bounding boxes for each stratum in a .shp file.  It is primarily used to display each
+#' stratum specifically in leaflet used within Rmarkdown.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param strata.path The path to the stratification .shp file.
+#'
+#' @return List of distinct strata and their bounding boxes.
+#'
+#' @export
 BoundingByStrata= function(strata.path){
 
   #read projected (non-dataframe) strata
