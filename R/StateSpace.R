@@ -8,7 +8,9 @@
 #'  time-dependent state of the system and imperfect time-dependent observations.
 #'  The states change with time so that the state at time t depends on the state at time t-1
 #'  (and potentially other factors).  Here, the state is defined as the unobserved total population of geese or ducks in the survey area, and observations depend just on the state.
-#'  A formal description is contained in GenericStateSpaceModel.Rmd, which is provided as the output to this function
+#'  A formal description is contained in GenericStateSpaceModel.Rmd, which is provided as the output to this function.
+#'
+#' The current index objects in the package are ACPHistoric, CRDHistoric, YKDHistoric, and YKGHistoric.
 #'
 #' @author \itemize{
 #' \item{Charles Frost, \email{charles_frost@@fws.gov}}

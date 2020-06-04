@@ -1,5 +1,31 @@
 
 
+#' Prepare WBPHS data for index estimate calculation
+#'
+#' Load and adjust counts for WBPHS data to prepare for index estimate calculation
+#'
+#' This function takes standard greenlight data for the WBPHS (Waterfowl Breeding Population Habitat Survey, or North American) and prepares it for
+#' index estimate calculations.  The function calls Cut9 to remove observations in Stratum 9 by a pre-defined longitudinal gradient for swans,
+#' cackling Canada geese, and greater white-fronted geese.  These observations are removed prior to index estimation since they are included in
+#' other MBM coastal zone surveys (YKG).  This function also adjusts the counts for each of 4 indices:
+#' \enumerate{
+#' \item itotal - Indicated total.  Singles doubled, pairs doubled, opens added, flkdrake 1-4 doubled, flkdrake 5+ added.
+#' \item ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
+#' \item total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
+#' \item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
+#' }
+#' In addition, due to inconsistencies in interpretation of the field protocol for data collection, open 1 and open 2 are changed to single 1
+#' and pair 1, respectively, across the entire data set.
+#'
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param full.data An R data frame of observations in a given year of the survey
+#'
+#' @return The same data frame with additional index columns and modified counts, as well as modified Stratum 9 observations.
+#'
+#' @export
 ReadWBPHS= function(full.data){
 
   full.data=full.data[full.data$Code==1,]
@@ -19,55 +45,100 @@ ReadWBPHS= function(full.data){
 }
 
 
-Cut9= function(full.data, copy=TRUE){
-
-full.data$keep=1
-
-long.cut <- data.frame(cbind(rep(9,8),
-                            seq(12,19,1),
-                            c(-163.559,-163.738,-164.388,-164.130,-164.440,-164.995,-164.938,-164.810)))
-
-names(long.cut) <- c("strata","tran","long")
 
 
-for(i in 1:length(full.data$Species)){
+#' Clip stratum 9 for overlap for 3 species
+#'
+#' Clip the data from stratum 9 for CCGO, GWFG, and SWAN observations past a longitudinal gradient
+#'
+#' This function removes observations in Stratum 9 by a pre-defined longitudinal gradient for swans,
+#' cackling Canada geese, and greater white-fronted geese.  These observations are removed prior to index estimation since they are included in
+#' other MBM coastal zone surveys (YKG).  The gradient is as follows, by transect number:
+#'  \itemize{
+#'   \item 12:  -163.559
+#'   \item 13:  -163.738
+#'   \item 14:  -164.388
+#'   \item 15:  -164.130
+#'   \item 16:  -164.440
+#'   \item 17:  -164.995
+#'   \item 18:  -164.938
+#'   \item 19:  -164.810
+#'   }
+#' Observations for CCGO, GWFG, and SWAN are trimmed past the western edge of the gradient and remaining observations are now attributed to
+#' stratum 99 for documentation and to avoid confusion with stratum 9.
+#'
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param full.data An R data frame of observations in a given year of the survey
+#'
+#' @return The same data frame with modified Stratum 9 observations.
+#'
+#' @export
+Cut9= function(full.data){
 
-  if(full.data$Species[i] %in% c("CCGO", "GWFG", "SWAN") &
-     full.data$Stratum[i]==9 &
-    full.data$Transect[i] %in% long.cut$tran){
+  full.data$keep=1
 
-    full.data$Stratum[i]=99
-    if(full.data$Lon[i]<long.cut$long[full.data$Transect[i]==long.cut$tran]){full.data$keep[i]=0}
+  long.cut <- data.frame(cbind(rep(9,8),
+                               seq(12,19,1),
+                               c(-163.559,-163.738,-164.388,-164.130,-164.440,-164.995,-164.938,-164.810)))
+
+  names(long.cut) <- c("strata","tran","long")
+
+
+  for(i in 1:length(full.data$Species)){
+
+    if(full.data$Species[i] %in% c("CCGO", "GWFG", "SWAN") &
+       full.data$Stratum[i]==9 &
+       full.data$Transect[i] %in% long.cut$tran){
+
+      full.data$Stratum[i]=99
+      if(full.data$Lon[i]<long.cut$long[full.data$Transect[i]==long.cut$tran]){full.data$keep[i]=0}
+
+
+
+    }
+
 
 
 
   }
 
 
-
-
+  return(full.data)
 }
 
 
-# temp.data=full.data[full.data$sppn %in% c("CCGO", "GWFG", "SWAN") & full.data$strata=="9" & full.data$tran %in% long.cut$tran,]
-#
-# temp.data$strata="9c"
-# temp.data$keep="y"
-#
-# for (i in 1:length(temp.data$long)){
-#   if(temp.data$long[i]<long.cut$long[temp.data$tran[i]==long.cut$tran]){temp.data$keep[i]="n"}
-#
-# }
-#
-# temp.data=temp.data[temp.data$keep=="y",]
-# temp.data=subset(temp.data, select=-keep)
-#
-# full.data=rbind(full.data, temp.data)
-
-return(full.data)
-}
-
-
+#' Summarize the flight information for an observer on the WBPHS
+#'
+#' SummaryWBPHS will summarize the flight and sampled area of a pilot or observer and give both the original and renumbered transect for reference
+#'
+#' This function takes an observation file and uses it to imply the sampled area for each observer.  Segment, transect, and strata records are pulled
+#' from the observations and compared to a table of known values for lengths and sizes.  Segments in all strata except stratum 7 and stratum 12
+#' are 16 miles long.  Segments in stratum 7 are 8 miles long and segments in stratum 12 are 18 miles long.  Total lengths for the augmented transects 12-19
+#' in modified stratum 9 (see Cut9) are:
+#' \itemize{
+#'   \item 12:  22 mi
+#'   \item 13:  20.763 mi
+#'   \item 14:  21.32 mi
+#'   \item 15:  12 mi
+#'   \item 16:  14.543 mi
+#'   \item 17:  8.395 mi
+#'   \item 18:  7.663 mi
+#'   \item 19:  8.372 mi
+#'   }
+#'  Default strip width is 0.25 mi for 2 observers, each viewing 0.125 mi.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param full.data A clean (greenlight) file of observations
+#' @param strip.width The sampled strip width in miles
+#'
+#' @return Data frame containing strata, transect, and segment information by observer
+#'
+#' @export
 SummaryWBPHS=function(full.data, strip.width=0.25){
 
   flight=data.frame(
@@ -116,7 +187,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
     )
 
 
-    temp.flight$SampledArea=temp.flight$Length*strip.width
+    temp.flight$SampledArea=temp.flight$Length*strip.width/2
 
     flight=rbind(flight, temp.flight)
 
@@ -127,14 +198,14 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     if(flight$Strata[i]==99){
 
-      if(flight$Transect[i]==12){flight$SampledArea[i]=22 * (strip.width/.125)}
-      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763* (strip.width/.125)}
-      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32* (strip.width/.125)}
-      if(flight$Transect[i]==15){flight$SampledArea[i]=12* (strip.width/.125)}
-      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543* (strip.width/.125)}
-      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395* (strip.width/.125)}
-      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663* (strip.width/.125)}
-      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372* (strip.width/.125)}
+      if(flight$Transect[i]==12){flight$SampledArea[i]=22 * (strip.width/2)}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763* (strip.width/2)}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32* (strip.width/2)}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12* (strip.width/2)}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543* (strip.width/2)}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395* (strip.width/2)}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663* (strip.width/2)}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372* (strip.width/2)}
 
 
 
@@ -148,7 +219,21 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 }
 
 
-
+#' Summarize index counts for WBPHS data by Segment, Transect, and Stratum
+#'
+#' Summarize index counts for WBPHS data by Segment, Transect, and Stratum
+#'
+#' This function takes standard greenlight data for the WBPHS (Waterfowl Breeding Population Habitat Survey, or North American) and
+#' summarizes it at the Segment, Transect, and Stratum level.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param selected.data An R data frame of observations in a given year of the survey
+#'
+#' @return A data frame with index values by Year, Observer, Species, Obs_Type, Segment, Transect, and Stratum.
+#'
+#' @export
 TransDataWBPHS=function(selected.data){
 
     agg=aggregate(cbind(Num,itotal,total,ibb, sing1pair2)~Year+Observer+Species+Obs_Type+Stratum+Transect+Segment,data=selected.data, FUN=sum)
@@ -156,7 +241,7 @@ TransDataWBPHS=function(selected.data){
 
     colnames(agg)=c("Year", "Observer", "Species", "Obs_Type", "Stratum", "Transect", "Segment", "Num", "itotal", "total", "ibb", "sing1pair2")
 
-    agg=as.data.frame(complete(data=agg, Year, Observer, Species, Obs_Type, nesting(Stratum, Transect, Segment), fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0)))
+    agg=as.data.frame(tidyr::complete(data=agg, Year, Observer, Species, Obs_Type, tidyr::nesting(Stratum, Transect, Segment), fill=list(Num=0, itotal=0, total=0, ibb=0, sing1pair2=0)))
 
     agg$area=0
 
@@ -164,51 +249,25 @@ TransDataWBPHS=function(selected.data){
 
   }
 
-  #   #groupings list
-  #   unit.list=c("single", "pair","open", "flkdrake")
-  #
-  #   #list of species
-  #   sp.list=as.character(unique(selected.data$Species))
-  #
-  #   #grid method
-  #
-  #
-  #   for (observer in unique(selected.data$obs)){
-  #
-  #     temp.data=selected.data[selected.data$obs==observer,]
-  #     sets=(unique(temp.data[,c("strata", "tran", "seg")]))
-  #
-  #
-  #     for (n in 1:length(sets[,1])){
-  #       new.rows=expand.grid(temp.data$yr[1], NA, NA, NA, observer, sets[n,1], sets[n,2], sets[n,3], NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, sp.list, 0, unit.list, 0,0,0,0)
-  #
-  #
-  #       names(new.rows)=names(temp.data)
-  #       selected.data=rbind(selected.data,new.rows)
-  #
-  #
-  #     }
-  #
-  #
-  #   }
-  #
-  #
-  #   selected.data$grp=as.numeric(selected.data$grp)
-  #
-  #   agg=aggregate(cbind(grp,itotal,total,ibb, sing1pair2)~yr+obs+sppn+unit+strata+tran+seg,data=selected.data, FUN=sum)
-  #
-  #   colnames(agg)=c("yr", "obs", "sppn", "unit", "strata", "tran", "seg", "grp", "itotal", "total", "ibb", "sing1pair2")
-  #
-  #   return(agg[order(agg$yr, agg$obs, agg$sppn, agg$strata, as.numeric(agg$tran), as.numeric(agg$seg), agg$unit),])
-  #
-  # }
 
 
 
 
-
-
-
+#' Summarize index counts for WBPHS data by Transect and Stratum
+#'
+#' Summarize index counts for WBPHS data by Transect and Stratum
+#'
+#' This function takes standard greenlight data for the WBPHS (Waterfowl Breeding Population Habitat Survey, or North American) and
+#' summarizes it at the Transect and Stratum levels. It uses already adjusted counts by Obs_Type (see AdjustCounts).
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param adj.counts An R data frame of observations in a given year of the survey
+#'
+#' @return A data frame with index values by Year, Observer, Species, Transect, and Stratum.
+#'
+#' @export
 CountsWBPHS=function(adj.counts) {
 
 
@@ -233,6 +292,26 @@ CountsWBPHS=function(adj.counts) {
 
 
 
+#' Standard ratio estimator for WBPHS survey data
+#'
+#' EstimatesWBPHS will combine spatially-referenced observations with design transects and strata to create an index estimate
+#'
+#' EstimatesWBPHS is the primary function in AKaerial for producing index estimates for the WBPHS survey. It will take an object from ReadWBPHS and adjust counts, summarize
+#' spatial information, and calculate indices and their associated standard errors.  Also retained are estimates of densities of bird by strata and on
+#'  each transect.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The ReadWBPHS list object to be analyzed
+#' @param flight Flight summary from SummaryWBPHS
+#'
+#' @return List object with 2 elements: \enumerate{
+#' \item output.table Observer-specific estimates for the species indicated in the sppntable estimates column
+#' \item expanded.table Deeper level count information by transect, strata, species, and observer
+#' }
+#'
+#' @export
 EstimatesWBPHS=function(data, flight){
 
 
@@ -327,15 +406,7 @@ EstimatesWBPHS=function(data, flight){
   }
 
 
-  # for (i in 1:length(sp.strat.final$strata)){
-  #
-  #   temp.t3=t3[t3$yr==sp.strat.final$yr[i] & t3$obs==sp.strat.final$obs[i] & t3$sppn==sp.strat.final$sppn[i] & t3$strata==sp.strat.final$strata[i],]
-  #   sp.strat.final$total.cov[i]=cov(temp.t3$total, temp.t3$area)
-  #   sp.strat.final$itotal.cov[i]=cov(temp.t3$itotal, temp.t3$area)
-  #   sp.strat.final$ibb.cov[i]=cov(temp.t3$ibb, temp.t3$area)
-  #   sp.strat.final$sing1pair2.cov[i]=cov(temp.t3$sing1pair2, temp.t3$area)
-  #
-  # }
+
 
 
   #Calculate the total area by type and the variance of the areas
@@ -477,6 +548,26 @@ EstimatesWBPHS=function(data, flight){
 }
 
 
+
+#' Combine and parse raw WBPHS data files
+#'
+#' SplitWBPHS will combine multiple observation files and split into annual observer files
+#'
+#' SplitWBPHS takes a folder of raw text files (generally at the transect or stratum level) and combines them into an annual data file
+#' for an observer using the naming convention: WBPHS_YYYY_RawObs_NNN.csv, where YYYY is the 4 digit year and NNN is 3 character initials.
+#' Columns must be in the following order: Year, Month, Day, Seat, Observer, Stratum, Transect, Segment, Flight_Dir, A_G_Name, Wind_Dir,
+#' Wind_Vel, Sky, Filename, Lat, Lon, Time, Delay, Species, Num, Obs_Type.
+#' It will also add the columns Behavior, Distance, Code, and Notes that aren't used in the standard WBPHS protocol, but have become
+#' the standard in Alaska Region aerial surveys.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param folder.path The directory path to the folder for input and output files.
+#'
+#' @return Year-Observer combinations of data in csv format to folder.path
+#'
+#' @export
 SplitWBPHS= function(folder.path){
 
   setwd(folder.path)
@@ -555,6 +646,21 @@ SplitWBPHS= function(folder.path){
 
 
 
+#' Combine WBPHS estimates by strata
+#'
+#' CombineEstimatesByStrata will combine multiple observer estimates at the strata level
+#'
+#' CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the strata level.
+#' The resulting data frame is appended onto the master WBPHS results table.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param estimates WBPHS index estimates from EstimatesWBPHS.
+#'
+#' @return Data frame of combined index estimates by species at the strata level
+#'
+#' @export
 CombineEstimatesByStrata=function(estimates){
 
   yr.list=unique(estimates$Year)
@@ -601,7 +707,23 @@ CombineEstimatesByStrata=function(estimates){
 
 
 
-ShowWBPHS=function(estimates.by.strata, data, trans.file="Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp"){
+#' Display observations on WBPHS segments
+#'
+#' ShowWBPHS will load a leaflet display of WBPHS design segments and observations
+#'
+#' ShowWBPHS provides a quick spatial overview of a set of observations and the Waterfowl Breeding Population Habitat Survey segments.
+#' I am unsure of the origin and accuracy of the segments.  Segments and observations are drawn using leaflet.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data WBPHS clean (greenlighted) observations.
+#' @param trans.file Directory path to the WBPHS segment shape file (default to Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp)
+#'
+#' @return Interactive map of segment-level data
+#'
+#' @export
+ShowWBPHS=function(data, trans.file="Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp"){
 
   trans.layer=file_path_sans_ext(basename(trans.file))
 
@@ -642,6 +764,26 @@ print(map)
 
 
 
+#' Calculate index estimates for a given year of WBPHS data
+#'
+#' EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator
+#'
+#' EstimatesTableWBPHS provides a shortcut to running piecewise functions for creating an annual index estimate for the WBPHS survey.
+#' The function uses MasterFileList_WBPHS as a lookup table to locate the appropriate raw observation files, then calls ReadWBPHS to concatenate,
+#' SummaryWBPHS for spatial design summary, TransDataWBPHS to table observations appropriately, and finally EstimatesWBPHS to calculate the ratio
+#' estimate.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param year Four digit year of the WBPHS survey to use
+#'
+#' @return List object with 2 elements: \enumerate{
+#' \item output.table Observer-specific estimates for the species indicated in the sppntable estimates column
+#' \item expanded.table Deeper level count information by transect, strata, species, and observer
+#' }
+#'
+#' @export
 EstimatesTableWBPHS=function(year){
 
   entries=MasterFileList_WBPHS[MasterFileList_WBPHS$YEAR %in% year,]
