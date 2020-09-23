@@ -1,0 +1,21 @@
+---
+title: "Introduction to AKaerial"
+author: "Charles Frost"
+date: "20 September 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AKaerial_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(AKaerial)
+```

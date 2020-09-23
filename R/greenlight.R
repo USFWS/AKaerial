@@ -2,9 +2,9 @@
 
 #' QA/QC checks for standardized aerial survey data
 #'
-#' Greenlight will take input data, check for errors, create a summary report, and optionally output a new data file.
+#' GreenLight will take input data, check for errors, create a summary report, and optionally output a new data file.
 #'
-#' Greenlight is designed to automate common data QA/QC functions that are normally done live by an observer.
+#' GreenLight is designed to automate common data QA/QC functions that are normally done live by an observer.
 #' In the future, these checks will use a specific set of fields derived from a generic aerial survey protocol, but
 #' this protocol does not currently exist, so instead the checks provided here are simply to streamline the
 #' creation of population estimates using this R package and provide some consistency in the data fields before

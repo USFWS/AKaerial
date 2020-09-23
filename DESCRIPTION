@@ -9,3 +9,6 @@ Description: Basic functions for QA/QC processes, data manipulation, analysis, a
 License: None
 LazyData: TRUE
 RoxygenNote: 7.1.0
+Suggests: 
+    knitr
+VignetteBuilder: knitr
