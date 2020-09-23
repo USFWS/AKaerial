@@ -16,6 +16,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, echo=FALSE}
 library(AKaerial)
 ```
+
+
+## What is AKaerial?
+AKaerial is a collection of R functions compiled as an R package that was initiated in 2017 to streamline the analysis and reporting of aerial survey data for the Division of Migratory Bird Management (MBM) in the Alaska Region of the US Fish and Wildlife Service.  Pilots and observers in the Alaska Region have been collecting aerial survey data on waterfowl for over 50 years.  In general, a pilot and observer fly low-level transects over a designated habitat-based study area (usually breeding grounds) and record observations of single drakes (or single birds for monomorphic species), breeding pairs, and flocks. Observations are summarized as densities, and densities are extrapolated to population indices.  Resultant indices are sometimes used in harvest management decisions by both state and federal agencies.  AKaerial was created not only to streamline these steps, but to provide a transparent, repeatable, and defensible alternative to past estimate-generating processes.  
+
+## How does it work?
+The path from data collection to report generation is summarized in 3 main steps in AKaerial:
+
+  1. Quality assurance / quality control of data files  
+  1. Summarizing data files and generating estimates
+  1. Visualizing estimates in tables, figures, maps, and reports
+    
+    
