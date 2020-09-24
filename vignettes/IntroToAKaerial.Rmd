@@ -27,8 +27,37 @@ AKaerial is a collection of R functions compiled as an R package that was initia
 ## How does it work?
 The path from data collection to report generation is summarized in 3 main steps in AKaerial:
 
-  1. Quality assurance / quality control of data files  
+  1. Quality assurance / quality control (QAQC) of data files  
   1. Summarizing data files and generating estimates
   1. Visualizing estimates in tables, figures, maps, and reports
     
-    
+## 1. QAQC 
+Data quality and consistency are paramount to creating a repeatable workflow.  In an ideal setting, the data-generating process is driven by consistent protocol interpretation and data treatment throughout the life of the project.  Unfortunately, the realities of a long-term survey program with hundreds of project-observer-year combinations can curtail any automated analysis, especially when standards of data management were simultaneously poorly developed and unenforced.  AKaerial provides a suite of functions that work together to "greenlight" a standard aerial survey data file.  The greenlight process results in 4 files:
+
+  1. The original, unchanged, raw transcribed data.
+  1. An .html report detailing known and potential issues.
+  1. The (if necessary, altered) archivable and "final" transcribed data file in .csv format.
+  1. An .html report detailing any components that were changed by AKaerial from raw to archivable data.  
+  
+For a detailed description of QAQC in AKaerial, see the vignette [GreenLighting Data](GreenLightingData.html), or [GreenLight()](../help/GreenLight).
+
+## 2. Generating Estimates
+The primary objective of most aerial waterfowl surveys is to generate an index to a population of interest, generally to inform harvest or species recovery decision-making. A long-term survey will also consider trends in an index and growth or decline of an index over time as potential objectives.  These indices and estimates are tied spatially and temporally to the spatial and temporal components of the survey (the "design").  The estimation process relies on heavily on design decisions.  Who conducted the survey?  What were they surveying?  Where was it flown? When did they fly?  How were the observations recorded?  In the absence of standardized protocols, many of these components end up being educated guesses.  The primary components of the design that are required inputs in AKaerial are:
+
+  * The spatial coverage of the area of inference, or study area, currently in .shp (ESRI shapefile) format, including any polygons that may represent habitat or other stratification schemes. 
+  * The spatial representation of the sample (transects) in the area of inference, numbered the same as the navigational file used by pilots and observers to generate transcribed data files, including the strip width (perpendicular distance from an observer to the edge of the sampled area).
+
+The other required inputs for summarization or estimation are:
+
+  * A spatially- and temporally-explicit (tied to the design files above), greenlight data file for each observer.
+  * A list of the species of interest to generate estimates for (in the case where observations of secondary species are included in the data file).
+  
+AKaerial is currently coded to produce a design-based estimate.  That means that we assume the design transect file was followed as closely as possible and can be used as a surrogate for the actual (naturally meandering) track file from the aircraft-mounted global positioning system.  This does not preclude removal of transects (in whole or part) when equipment failure or weather-related factors prohibited full completion of the sampling design.  
+
+Basic spatial and observation summaries are provided as an additional data quality check once a spatial design is combined with an transcribed data file.  We then use the classical ratio estimator described by Cochran (1977) modified for stratification and unequal transect lengths to summarize observations and design files as population indices.    
+
+For a detailed description of summaries and estimates in AKaerial, see the vignette [Generating Estimates](GeneratingEstimates.html), or functions [DataSelect()](../help/DataSelect) and [Densities()](../help/Densities).
+
+## References
+
+Cochran, W.G. _Sampling techniques_. New York: John Wiley & Sons, 1977.
