@@ -58,6 +58,12 @@ Basic spatial and observation summaries are provided as an additional data quali
 
 For a detailed description of summaries and estimates in AKaerial, see the vignette [Generating Estimates](GeneratingEstimates.html), or functions [DataSelect()](../help/DataSelect) and [Densities()](../help/Densities).
 
+## Visualization
+Visualizing data inputs and subsequent output can provide powerful insights on data quality, integrity, and general survey results.  One of the most important features of AKaerial is its ability to generate on-demand tables, figures, maps, and reports of design files, observations, and estimates.  AKaerial contains a series of functions that integrate Geographic Information Systems, design files, and transcribed observations to provide both publication-quality figures and interactive maps. 
+
+For a detailed description of summaries and estimates in AKaerial, see the vignette [Visualization](Visualization.html).
+
+
 ## References
 
 Cochran, W.G. _Sampling techniques_. New York: John Wiley & Sons, 1977.
