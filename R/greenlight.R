@@ -92,6 +92,7 @@
 #'  }
 #' @param report TRUE or FALSE, should a preliminary report be generated?
 #' @param raw2analysis TRUE or FALSE, should the archive version of the raw data file be generated (if possible)?
+#' @param archive.dir Path to the desired archive directory for the new data file.  Defaults to 3 directory levels above the input file to follow current MBM practices.
 #'
 #' @return None
 #'
@@ -99,7 +100,7 @@
 #'  Greenlight(path.name = "C:/DATA/MyData.csv", area = "CRD", report = TRUE, raw2analysis = FALSE)
 #'
 #' @export
-GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
+GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.dir = "default"){
 
   can.fix=TRUE
 
@@ -293,7 +294,11 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
     yr=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][2]
     type="QCObs"
     name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
-    write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
+
+    if(archive.dir != "default"){
+    write.path=paste(archive.dir, "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
+    }else{write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')}
+
     }
 
     data.new$Notes=gsub(",","", data.new$Notes)
@@ -306,15 +311,23 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE){
       name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][6]
 
       type="QCObs"
-    write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_", region, "_", aircraft, "_QCObs_", name, ".csv", sep='')
+
+    if(archive.dir != "default"){
+    write.path=paste(archive.dir, "/", proj, "_", yr, "_", region, "_", aircraft, "_QCObs_", name, ".csv", sep='')
+    }else{write.path=paste(dirname(dirname(dirname(path.name))), "/", proj, "_", yr, "_", region, "_", aircraft, "_QCObs_", name, ".csv", sep='')}
+
     }
+
 
     print(write.path)
     write.csv(data.new[,1:25], write.path, quote=FALSE, row.names=FALSE )
 
-    if(area!="VIS"){rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))}
-    if(area=="VIS"){rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj, "_", yr, "_", region, "_", aircraft, "_QCLog_", name, ".html", sep=''))}
-  }
+    if(area!="VIS" & archive.dir != "default"){rmarkdown::render(rmd.path, output_dir=archive.dir, output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))}
+    if(area=="VIS" & archive.dir != "default"){rmarkdown::render(rmd.path, output_dir=archive.dir, output_file=paste(proj, "_", yr, "_", region, "_", aircraft, "_QCLog_", name, ".html", sep=''))}
+    if(area!="VIS" & archive.dir == "default"){rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))}
+    if(area=="VIS" & archive.dir == "default"){rmarkdown::render(rmd.path, output_dir=dirname(dirname(dirname(path.name))), output_file=paste(proj, "_", yr, "_", region, "_", aircraft, "_QCLog_", name, ".html", sep=''))}
+
+    }
 
 
 }

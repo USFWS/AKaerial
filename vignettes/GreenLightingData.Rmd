@@ -86,3 +86,60 @@ In order to be processed correctly using [GreenLight,](../help/GreenLight) an in
 
 If these 3 conditions are minimally satisfied (additional columns are allowed, but won't be tested), the file can be checked against the predefined standards using [GreenLight](../help/GreenLight).
 
+## How to GreenLight a file
+
+The GreenLight function runs with only 5 arguments.
+
+  1. `path.name` - The directory location of the data file to be checked.
+  1. `area` - The abbreviated name for the spatial location of the project.  This is important because GreenLight needs to pull the appropriate species list from the object `sppntable`.  There are minor regional differences in the species list by project, including omission of non-focal species.  Current acceptable values are:
+        * ACP - Arctic Coastal Plain
+        * BLSC - Black Scoter
+        * CRD - Copper River Delta
+        * VIS - Aircraft Visibility
+        * WBPHS - Waterfowl Breeding Population Habitat Survey ("North American")
+        * YKD - Yukon Kuskokwim Delta MBM duck stratification
+        * YKG - Yukon Kuskokwim Delta MBM goose stratification
+  1. `report` - Should a report be generated?  This will generally be `TRUE` until the file returns "green," at which point no further checks need to be run. 
+  1. `raw2analysis` - Should GreenLight attempt to write the "archive" copy of the data?  This will fail if the file returns a "red" status.  A file receives a "red" status if there are errors in the data that require interpretation that potentially change the information content that was intended by the observer.  For example:
+        * Misspelling a species code as SDEI will trigger a "red" status since it can be interpreted as STEI or SPEI.  This would require a re-transcription of the .wav file.
+        * Entering a non-numeric value in the Num column (or any other numeric columns).  The only way to trace the correct number is through re-transcription. 
+        * Entering any value other than single, pair, flkdrake, or open in the Obs_Type column.  These are the only 4 entries with known treatments in the analysis step.  
+  1. `archive.dir` - Where should the archived data file be written to (if `raw2analysis == TRUE`)?  Defaults to 3 levels above the current file location due to MBM archive structure.  
+  
+A typical use of GreenLight would be to first check the file for errors.
+
+`file="C:/Raw_Survey_Data/Observer_Transcribed_Data/YKG_2020_RawObs_CFrost.csv"`  
+`GreenLight(path.name=file, area="YKG", report=TRUE, raw2analysis = FALSE)`
+
+In this case, a report is generated one directory level above the data file that will detail the status (green, yellow, red) of the file and the location(s) of any errors.  The errors can be fixed by the observer or data collector re-transcribing the data, then re-running the command until a "green" status is attained.  
+
+The naming convention for the input file is particularly important here.  The function will take the name of any newly-generated files from the name of the input file, so it should be in the format __PROJECT_YEAR_TYPE_OBSERVER.csv__.  In this case, it will append `_QAQC_` and the system date on the end of the name of the new report. 
+
+Once the file is "green," `report` is changed to `FALSE` and `raw2analysis` is changed to `TRUE`.  Optionally, `archive.dir` can be set.  
+
+`GreenLight(path.name=file, area="YKG", report=FALSE, raw2analysis = TRUE, archive.dir = "C:/MyArchive")`
+
+This will generate the archive data file and the associated QCLog report that details any changes made between raw and archive files.  The naming convention for the input file is particularly important here as well.  The new *data* file will replace the `TYPE` with `QCObs`.  The new *report* will replace `TYPE` with `QCLog`.  
+
+## Reading a GreenLight QAQC report
+
+A QAQC .html report will be generated once a file has successfully passed through the GreenLight function.  It will have content in the following headings:  
+
+  1. __Introduction__ - This section will provide the background information for the GreenLight function, as well as the directory path, area, and column name check for the file.
+  1. __Spatial__ - This section is reserved for future spatial QAQC that may be include in programmatic standards.  As of now, there are no treatments for missing or incorrect spatial coordinates.  
+  1. __Swans__ - There are historically 2 methods for recording swans and their associated nests.  One method is to record a swan and nest combination as a nest only, leaving the swan record off.  The second method is to record the swan as single or pair and the associated nest as its own record with open, 1. These 2 methods have been used interchangably by pilots and observers until 2018, when the latter was chosen as a programmatic standard.  If a swan nest is recorded as anything other than open, 1, the swan status will be red.  If a nest is recorded and there is no matching swan single or pair record, the status will also be red.  Although these are red light issues, the function [CommonFix](../help/CommonFix) will augment the entries if swans were recorded under the first method.  
+  1. __Obs_Type__ - This section checks the Obs_Type column for correct entries single, pair, open, or flkdrake.  The entries are case sensitive and must be spelled correctly with no leading or trailing spaces.  
+  1. __Seat Codes__ - This section checks for correct entry of the seat an observer sat in.  Acceptable entries are LR (left rear), RR (right rear), LF (left front), and RF (right front).  If the entry is transposed (RL instead of LR), it will be fixed by [CommonFix](../help/CommonFix) with no information lost.
+  1. __Species Codes__ - This section will cross reference the area supplied as an argument to GreenLight with the sppntable data object that contains the acceptable 4 character species codes and focal species for a project.  If any outdated or incorrect species codes are entered that have known treatments in sppntable, they will be flagged as yellow issues.  If any species codes are entered that do not have known treatments, they are flagged as red issues.  The yellow issues will be fixed by [CommonFix](../help/CommonFix), but red issues will need to be re-transcribed.  Any species collected on the survey that are not on the list of focal species will be removed from the data before the archive version is created, but are retained in the raw data.  
+  1. __Observers__ - Observer intials must be entered in uppercase with one observer per file.  Changing initials from lower to uppercase can be done with [CommonFix](../help/CommonFix).  
+  1. __Year, Month, Day__ - The corresponding columns must have numeric values only.  Any other values will result in a red status.  
+  1. __Other numeric values: Wind_Vel, Lat, Lon, Time, Delay, Num, Code__ - The corresponding columns must have numeric values only.  Any other values will result in a red status.  
+  1. __Visualization__ - This section will provide 3 basic figures that summarize entries to identify potential outliers.
+      * Figure 1 is a simple histogram of Obs_Type.  Any incorrect Obs_Type entries will also appear.
+      * Figure 2 is a simple histogram of Species.  
+      * Figure 3 is a simple histogram of Num (the number reported seen).  
+      
+
+## Reading a GreenLight QCLog report
+
+A QCLog .html report is generated when an archive .csv is requested.  It will contain the same headings as a QAQC report, but only those that were changed by [CommonFix](../help/CommonFix) during the file generation.  These are most commonly lower to uppercase issues and outdated species codes.  
