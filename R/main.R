@@ -29,11 +29,12 @@
 #' @param transect.path The location of the transect design .shp file
 #' @param threshold The distance in kilometers from a design file where observations are no longer counted.  Defaults to 0.5 km.
 #'
-#' @return List object with 4 elements: \enumerate{
+#' @return List object with 5 elements: \enumerate{
 #' \item obs The original data file with corrected transect and stratification information
 #' \item flight The flown transects for the observer with corrected numbering
 #' \item design The split design information
 #' \item strata The spatial polygon summary for the stratification layer
+#' \item transect Observations summarized at the transect level
 #' }
 #'
 #' @export
@@ -1855,7 +1856,7 @@ FixTavs=function(selected.data){
 #'
 #' StrataSummary will provide the overall study area spatial characteristics for analysis
 #'
-#' Stratasummary will compute areas of each strata in a design strata file as well as calculate the maximum possible transects in
+#' Stratasummary will compute areas of each strata (in km^2) in a design strata file as well as calculate the maximum possible transects in
 #' a sample (M) using FindVoids.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
