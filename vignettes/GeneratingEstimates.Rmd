@@ -24,11 +24,16 @@ library(AKaerial)
 ## The Ratio Estimator
 The classical ratio estimator (Cochran 1977) is a straightforward approach that can be used to estimate the density of birds on a landscape, given an adequate sampling design.  The Alaska Region employs a stratified strip transect design for the majority of its surveys of breeding waterfowl.  Study areas are separated into spatial strata based on underlying habitat types and assumed suitability as waterfowl breeding habitat.  Strata are then sampled by low-level flights along a series of strip transects, with one or two observers searching 200 meters out from the transect.  Observations and sampled areas are then summed across transects within each stratum to produce strata-specific density estimates.  These densities are then multiplied by associated strata areas to produce stratum-specific population indices that are summed to produce the overall breeding population index.  
 
-EQUATION
 
-With variance:
-
-EQUATION
+$$E[\hat Y] = \displaystyle\sum_{i}^{S} \frac{\bar y_i}{\bar a_i} A_i = \displaystyle\sum_{i}^{S} \hat D_i A_i$$
+where $y_i$ are observations and $a_i$ are sampled areas in strata $i$ and 
+$$A_i = \displaystyle\sum_{j}^{M_i} a_{ij}.$$ 
+with estimated variance from Williams et al. (2002) 
+$$Var(\hat Y) = \displaystyle\sum_{i}^{S} M_i^2 \frac{(1-m_i / M_i)}{m_i} ( s^2_{iy} + \hat {D^2}_i s^2_{ia} - 2 \hat {D_i} s_{iay} ),$$
+where $m_i$ and $M_i$ are the number of sampled and total plots in strata $i$, respectively, and there are $S$ total strata; 
+$$s^2_{ix} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )/(m_i -1), $$
+and 
+$$s^2_{ixy} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )(y_{ij} - \bar y )/(m_i -1).$$ 
 
 The resulting population index generally remains an index to an unknown, larger population.  For some species, visibility correction factors (VCFs) are applied to calculate a population estimate.  In these cases, concurrent studies have estimated the proportion of birds that are available to be seen along a transect, but are missed by an observer.  For example, a VCF of 2.0 would indicate that for every bird seen along a transect, another bird is available to be seen, but goes unseen.  
 
@@ -96,4 +101,6 @@ print(YKDHistoric$output.table[YKDHistoric$output.table$Year==2019,])
 
 ## References
 
-Cochran, W.G. _Sampling techniques_. New York: John Wiley & Sons, 1977.
+Cochran, W.G. 1977. _Sampling techniques_. New York: John Wiley & Sons.
+
+Williams, B.K., J.D. Nichols, and M.J. Conroy. 2002. _Analysis and management of animal populations_.  Academic Press, New York, 817 pp. 

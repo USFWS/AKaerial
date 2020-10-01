@@ -8,7 +8,7 @@ Maintainer: Charles Frost <charles_frost@fws.gov>
 Description: Basic functions for QA/QC processes, data manipulation, analysis, and visualization of aerial survey data collected by R7 USFWS MBM. 
 License: None
 LazyData: TRUE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: 
     knitr
 VignetteBuilder: knitr

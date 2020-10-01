@@ -15,7 +15,8 @@ StateSpace(
   n.chains = 3,
   n.thin = 1,
   n.iter = 5000,
-  n.burnin = 1000
+  n.burnin = 1000,
+  output = "object"
 )
 }
 \arguments{

@@ -35,11 +35,12 @@ DataSelect(
 \item{threshold}{The distance in kilometers from a design file where observations are no longer counted.  Defaults to 0.5 km.}
 }
 \value{
-List object with 4 elements: \enumerate{
+List object with 5 elements: \enumerate{
 \item obs The original data file with corrected transect and stratification information
 \item flight The flown transects for the observer with corrected numbering
 \item design The split design information
 \item strata The spatial polygon summary for the stratification layer
+\item transect Observations summarized at the transect level
 }
 }
 \description{
