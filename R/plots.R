@@ -592,3 +592,139 @@ factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.pro
 
 }
 
+
+
+
+ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new.names="none"){
+
+  data=as.data.frame.list(data)
+
+  always_keep = c("Year", "Observer", "Species", "strata")
+
+  if(index[1] == "none"){
+  print(colnames(data))
+  message("Which index or indices?")
+  message("Split multiples with a comma (total.est,var.N)")
+  message("MAKE SURE TO INCLUDE THE VARIANCE COLUMN")
+  index <- readline(prompt=" ")
+  index = strsplit(index, ",")
+  index = unlist(index)
+  }
+
+
+  data = data %>%
+
+    select((starts_with(index) & ends_with(index)) | contains(always_keep)) %>%
+
+    filter(Species %in% species & Year %in% year) %>%
+
+    mutate_at(c(1:length(index)), ~round(., 0))
+
+  if("strata" %in% colnames(data)){data = data %>% relocate("strata")}
+  if("Species" %in% colnames(data)){data = data %>% select(-"Species")}
+  if("Observer" %in% colnames(data)){data = data %>% relocate("Observer")}
+  if("Year" %in% colnames(data)){data = data %>% relocate("Year")}
+
+  if(yr.avg > 1 & length(index) > 1){
+
+    temp = data %>%
+
+      select(starts_with(index[1]) & ends_with(index[1])) %>%
+
+      mutate(avg1=round(rollapply(.,yr.avg,mean,align='right',fill=NA),0))
+
+
+
+    temp2 = data %>%
+
+      select(starts_with(index[2]) & ends_with(index[2])) %>%
+
+      mutate(se1=round(rollapply(.,yr.avg,function(x) sqrt(sum(x[-yr.avg]/yr.avg^2)),align='right',fill=NA),0))
+
+
+    data = data %>%
+
+      mutate(avg1 = temp[2]) %>%
+
+      mutate(se1 = temp2[2]) %>%
+
+      relocate(avg1, .after=index[2]) %>%
+
+      relocate(se1, .after=avg1)
+
+    data[,which(colnames(data)==index[2])]=round(sqrt(data[,which(colnames(data)==index[2])]),0)
+
+  }
+
+  if(yr.avg > 1 & length(index) > 2){
+
+    temp = data %>%
+
+      select(starts_with(index[3]) & ends_with(index[3])) %>%
+
+      mutate(avg1=round(rollapply(.,yr.avg,mean,align='right',fill=NA),0))
+
+
+    temp2 = data %>%
+
+      select(starts_with(index[4]) & ends_with(index[4])) %>%
+
+      mutate(se1=round(rollapply(.,yr.avg,function(x) sqrt(sum(x[-yr.avg]/yr.avg^2)),align='right',fill=NA),0))
+
+    data = data %>%
+
+      mutate(avg2 = temp[2]) %>%
+
+      mutate(se2 = temp2[2])
+
+
+    data[,which(colnames(data)==index[4])]=round(sqrt(data[,which(colnames(data)==index[4])]),0)
+
+
+    }
+
+
+  if(new.names[1] == "none"){
+  message("Current data structure:")
+
+  print(head(data))
+
+  message("Specify column names separated by a comma (,)")
+
+  new.names <- readline(prompt=" ")
+  new.names = strsplit(new.names, ",")
+  new.names = unlist(new.names)
+  }
+
+  colnames(data)=new.names
+
+
+  if(cap == "none"){
+  message("Specify table caption:")
+  cap <- readline(prompt=" ")
+  }
+
+  table1 = data %>%
+
+    kable(format="html",
+          escape = F,
+          col.names = new.names,
+
+          caption = cap) %>%
+
+
+    kable_styling("bordered",
+                  full_width=FALSE,
+                  font_size = 14)
+
+  print(table1)
+
+  data = data.frame(matrix(unlist(data), length(data$Year), byrow=F),stringsAsFactors=FALSE)
+
+  colnames(data)=new.names
+
+  return(data)
+
+}
+
+
