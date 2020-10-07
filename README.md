@@ -1,2 +1,63 @@
-# AKaerial
-Aerial survey analysis functions for R7 USFWS
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+AKaerial
+========
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of AKaerial is to provide a transparent and repeatable workflow
+to generate, visualize, and report out estimates from the suite of
+aerial surveys undertaken by the Division of Migratory Bird Management
+(MBM) in the Alaska Region of the US Fish and Wildlife Service. Pilots
+and observers in the Alaska Region have been collecting aerial survey
+data on waterfowl for over 50 years. In general, a pilot and observer
+fly low-level transects over a designated habitat-based study area
+(usually breeding grounds) and record observations of single drakes (or
+single birds for monomorphic species), breeding pairs, and flocks.
+Observations are summarized as densities, and densities are extrapolated
+to population indices. Resultant indices are sometimes used in harvest
+management decisions by both state and federal agencies. AKaerial was
+created not only to streamline these steps, but to provide a
+transparent, repeatable, and defensible alternative to past
+estimate-generating processes.
+
+The most likely use of AKaerial would be to take advantage of the
+historic tables of estimates for projects on the Arctic Coastal Plain (
+[ACPHistoric](../help/ACPHistoric), 2007-2019), Copper River Delta (
+[CRDHistoric](../help/CRDHistoric), 1986-2019), and Yukon-Kuskokwim
+River Delta for ducks ( [YKDHistoric](../help/YKDHistoric), 1988-2019)
+and geese ( [YKGHistoric](../help/YKGHistoric), 1985-2019). AKaerial
+includes figure-, table-, and map-generating functions that are designed
+to visualize data, design files, and estimates as a quality control step
+as well as for the production of reports, presentations, and
+manuscripts.
+
+AKaerial also includes a function ( [GreenLight](../help/GreenLight))
+that provides a rigorous and documented quality control process. This
+results in a structured and consistent treatment of both raw transcribed
+and archived data files throughout the data life cycle.
+
+Installation
+------------
+
+You can install the released version of AKaerial from
+[GitHub](https://github.com/) with:
+
+    # install.packages("devtools")
+    devtools::install_github("USFWS/AKaerial", ref = "main", build_vignettes = TRUE)
+
+And the development version from [GitHub](https://github.com/) with:
+
+    # install.packages("devtools")
+    devtools::install_github("USFWS/AKaerial", ref = "development", build_vignettes = TRUE)
+
+Example
+-------
+
+Below are several examples of functions in AKaerial that check, process,
+and summarize data and observations.
+
+    library(AKaerial)
+    ## basic example code

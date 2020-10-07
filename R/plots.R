@@ -595,7 +595,41 @@ factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.pro
 
 
 
+
+#' Create a basic exportable table from historic estimates, including n-year average
+#'
+#' ReportTable will summarize historic estimates from in an .html table that can be exported for reporting.
+#'
+#' ReportTable will take one of the historic estimates tables (package data for AKaerial) and display it as an .html table
+#' object suitable for an external report.  The user can specify n for an n-year average if one is desired.  A similarly
+#' structured data frame could be used in place of one of the historic estimates tables, provided it has columns for Year,
+#' Species, an index, and that index variance.  Table caption and column headings can either be specified as arguments or
+#' entered by the user once the table is created
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param data The estimates object.  Must be in a format with Year, Species, index, and index variance if not one of
+#' the included package data objects (ACPHistoric, CRDHistoric, YKDHistoric, YKDVHistoric, or YKGHistoric).
+#' @param transect.path The species chosen (see \code{\link{sppntable}} for options).  Currently
+#' supports no more than 1 species.
+#' @param year The range of years for the table.
+#' @param index The column names that specify the index estimate and its variance.
+#' Must be ordered correctly (index, variance) or (index1, variance1, index2, variance2).  Currently up to 2 indices are supported.
+#' If no index is specified, the user will be prompted with choices from the data.
+#' @param yr.avg The number of years in the n-year running average requested.
+#' @param cap The overall table caption.  If nothing entered as an argument, the user will be prompted to enter a caption in the function.
+#' @param new.names The desired column names for the final table.  If these are not specified the user will be prompted to
+#' input within the function.
+#'
+#' @return Renders an .html table and also returns it in data frame format
+#'
+#' @examples ReportTable(data=ACPHistoric$combined, species="SPEI", year = c(2007:2019), index = c("total", "total.var"), yr.avg=3, cap="Test table!", new.names=c("Year", "Total Birds", "SE", "3-year Avg", "SE"))
+#'
+#' @export
 ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new.names="none"){
+
+  library(dplyr)
 
   data=as.data.frame.list(data)
 
@@ -631,7 +665,7 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 
       select(starts_with(index[1]) & ends_with(index[1])) %>%
 
-      mutate(avg1=round(rollapply(.,yr.avg,mean,align='right',fill=NA),0))
+      mutate(avg1=round(zoo::rollapply(.,yr.avg,mean,align='right',fill=NA),0))
 
 
 
@@ -639,7 +673,7 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 
       select(starts_with(index[2]) & ends_with(index[2])) %>%
 
-      mutate(se1=round(rollapply(.,yr.avg,function(x) sqrt(sum(x[-yr.avg]/yr.avg^2)),align='right',fill=NA),0))
+      mutate(se1=round(zoo::rollapply(.,yr.avg,function(x) sqrt(sum(x[-yr.avg]/yr.avg^2)),align='right',fill=NA),0))
 
 
     data = data %>%
@@ -662,14 +696,14 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 
       select(starts_with(index[3]) & ends_with(index[3])) %>%
 
-      mutate(avg1=round(rollapply(.,yr.avg,mean,align='right',fill=NA),0))
+      mutate(avg1=round(zoo::rollapply(.,yr.avg,mean,align='right',fill=NA),0))
 
 
     temp2 = data %>%
 
       select(starts_with(index[4]) & ends_with(index[4])) %>%
 
-      mutate(se1=round(rollapply(.,yr.avg,function(x) sqrt(sum(x[-yr.avg]/yr.avg^2)),align='right',fill=NA),0))
+      mutate(se1=round(zoo::rollapply(.,yr.avg,function(x) sqrt(sum(x[-yr.avg]/yr.avg^2)),align='right',fill=NA),0))
 
     data = data %>%
 
@@ -706,14 +740,14 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 
   table1 = data %>%
 
-    kable(format="html",
+    kableExtra::kable(format="html",
           escape = F,
           col.names = new.names,
 
           caption = cap) %>%
 
 
-    kable_styling("bordered",
+    kableExtra::kable_styling("bordered",
                   full_width=FALSE,
                   font_size = 14)
 
