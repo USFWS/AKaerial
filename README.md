@@ -46,7 +46,7 @@ You can install the released version of AKaerial from
 [GitHub](https://github.com/) with:
 
     # install.packages("devtools")
-    devtools::install_github("USFWS/AKaerial", ref = "main", build_vignettes = TRUE)
+    devtools::install_github("USFWS/AKaerial", ref = "master", build_vignettes = TRUE)
 
 And the development version from [GitHub](https://github.com/) with:
 
