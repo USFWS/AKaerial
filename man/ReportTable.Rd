@@ -18,6 +18,9 @@ ReportTable(
 \item{data}{The estimates object.  Must be in a format with Year, Species, index, and index variance if not one of
 the included package data objects (ACPHistoric, CRDHistoric, YKDHistoric, YKDVHistoric, or YKGHistoric).}
 
+\item{species}{The species chosen (see \code{\link{sppntable}} for options).  Currently
+supports no more than 1 species.}
+
 \item{year}{The range of years for the table.}
 
 \item{index}{The column names that specify the index estimate and its variance.
@@ -30,9 +33,6 @@ If no index is specified, the user will be prompted with choices from the data.}
 
 \item{new.names}{The desired column names for the final table.  If these are not specified the user will be prompted to
 input within the function.}
-
-\item{transect.path}{The species chosen (see \code{\link{sppntable}} for options).  Currently
-supports no more than 1 species.}
 }
 \value{
 Renders an .html table and also returns it in data frame format
