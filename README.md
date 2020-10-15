@@ -39,6 +39,13 @@ that provides a rigorous and documented quality control process. This
 results in a structured and consistent treatment of both raw transcribed
 and archived data files throughout the data life cycle.
 
+Bugs, Issues, Feature Requests
+------------------------------
+
+AKaerial is under constant development. It will have occasional bugs and
+other issues. Please report any issues or feature requests on the
+[AKaerial Github repository](https://github.com/USFWS/AKaerial/issues).
+
 Installation
 ------------
 
@@ -57,8 +64,8 @@ Then explore the vignettes with:
 
     vignette("IntroToAKaerial", package="AKaerial")
 
-Example
--------
+Examples
+--------
 
 Below are several examples of functions in AKaerial that check, process,
 and summarize data and observations.

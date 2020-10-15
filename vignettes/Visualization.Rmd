@@ -14,6 +14,74 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+## Visualizing Data and Results  
+
+One of the primary purposes of AKaerial is to provide report-quality figures and tables.  AKaerial's visualization functions fall into 3 basic categories:  
+
+  1. __Map-making__ - The "ShowMe" functions [ShowMe](../help/ShowMe), [ShowMeDesign](../help/ShowMeDesign), [ShowMeUncut](../help/ShowMeUncut), [ShowMeYears](../help/ShowMeYears), and [ShowMeTrackDesign](../help/ShowMeTrackDesign).  These functions (with the exception of ShowMeYears) are generalized to take the file paths to design files and data and provide interactive maps using Leaflet to display spatial data.  Some potential uses would be for plotting observations by latitude and longitude ([ShowMe](../help/ShowMe)), pre-flight transect design mapping ([ShowMeDesign](../help/ShowMeDesign)), and quickly pulling up multiple years of observations by species ([ShowMeYears](../help/ShowMeYears)).  In addition, [ShowMeTrackDesign](../help/ShowMeTrackDesign) and [ShowMeUncut](../help/ShowMeUncut) can be used in quality assurance and control of the actual track flown and design transects.  
+  
+  2. __Table generation__ - [ReportTable](../help/ReportTable) will create an .html table of historic estimate objects in AKaerial ([ACPHistoric](../help/ACPHistoric), [CRDHistoric](../help/CRDHistoric), [YKDHistoric](../help/YKDHistoric), [YKDVHistoric](../help/YKDVHistoric), and [YKGHistoric](../help/YKGHistoric)).  
+
+
+```{r tabs, echo = TRUE, message=FALSE, warning = FALSE, fig.width = 6, fig.asp=.8}
 library(AKaerial)
+
+
+
+ReportTable(data=YKDHistoric$combined, 
+            species="SPEI", 
+            index=c("itotal", "itotal.var"),
+            year=c(1988:2019), 
+            yr.avg=3, 
+            cap="Indicated total spectacled eiders on the Yukon-Kuskokwim Delta, 1988-2019.", 
+            new.names=c("Year", "Indicated Total", "SE", "3-yr Avg", "SE"))
+
+
+ReportTable(data=CRDHistoric$combined, 
+            species="DCGO", 
+            index=c("total", "total.var", "itotal", "itotal.var"),
+            year=c(1995:2019), 
+            yr.avg=3, 
+            cap="Total and indicated total dusky Canada geese on the Copper River Delta, 1995-2019.", 
+            new.names=c("Year", "Total", "SE", "3-yr Avg", "SE", "Indicated Total", "SE", "3-yr Avg", "SE"))
+
+```
+
+
+  3. __Figure generation__ - [ReportFigure](../help/ReportFigure) will create a ggplot line graph of historic estimate objects in AKaerial ([ACPHistoric](../help/ACPHistoric), [CRDHistoric](../help/CRDHistoric), [YKDHistoric](../help/YKDHistoric), [YKDVHistoric](../help/YKDVHistoric), and [YKGHistoric](../help/YKGHistoric)). 
+
+
+
+```{r figs, echo = TRUE, message=FALSE, warning = FALSE, fig.width = 6, fig.asp=.8}
+library(AKaerial)
+
+
+ReportFigure(data=YKGHistoric$combined, 
+             species="EMGO", 
+             index=c("total", "total.var", "itotal", "itotal.var", "ibb", "ibb.var"),
+             year=c(2007:2019), 
+             title="Emperor goose population indices from the \nYukon-Kuskokwim Delta, 2007-2019", 
+             x.label = "Year", 
+             y.label="Index Estimate", 
+             leg.values = c(3,2,1), 
+             leg.labels = c("Total", "Indicated Total", "Indicated Breeding"), 
+             leg.limits = c("total", "itotal", "ibb"),
+             test.out = FALSE)
+
+
+ReportFigure(data=ACPHistoric$combined, 
+             species="SPEI", 
+             index=c("itotal", "itotal.var"),
+             year=c(2007:2019),
+             yr.avg=3,
+             title="Indicated total spectacled eiders (and 3-year average) on the \nArctic Coastal Plain, 2007-2019", 
+             x.label = "Year", 
+             y.label="Indicated Total", 
+             leg.values = c(2,1), 
+             leg.labels = c("Indicated Total", "3-year Avg"), 
+             leg.limits = c("itotal", "avg1"),
+             test.out = FALSE)
+
+
+
 ```
