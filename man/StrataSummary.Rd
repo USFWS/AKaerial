@@ -16,7 +16,7 @@ data frame summary of stratification
 StrataSummary will provide the overall study area spatial characteristics for analysis
 }
 \details{
-Stratasummary will compute areas of each strata in a design strata file as well as calculate the maximum possible transects in
+Stratasummary will compute areas of each strata (in km^2) in a design strata file as well as calculate the maximum possible transects in
 a sample (M) using FindVoids.
 }
 \references{

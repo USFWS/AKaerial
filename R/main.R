@@ -29,11 +29,12 @@
 #' @param transect.path The location of the transect design .shp file
 #' @param threshold The distance in kilometers from a design file where observations are no longer counted.  Defaults to 0.5 km.
 #'
-#' @return List object with 4 elements: \enumerate{
+#' @return List object with 5 elements: \enumerate{
 #' \item obs The original data file with corrected transect and stratification information
 #' \item flight The flown transects for the observer with corrected numbering
 #' \item design The split design information
 #' \item strata The spatial polygon summary for the stratification layer
+#' \item transect Observations summarized at the transect level
 #' }
 #'
 #' @export
@@ -1855,7 +1856,7 @@ FixTavs=function(selected.data){
 #'
 #' StrataSummary will provide the overall study area spatial characteristics for analysis
 #'
-#' Stratasummary will compute areas of each strata in a design strata file as well as calculate the maximum possible transects in
+#' Stratasummary will compute areas of each strata (in km^2) in a design strata file as well as calculate the maximum possible transects in
 #' a sample (M) using FindVoids.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
@@ -2832,3 +2833,54 @@ CombineByStrata=function(counts.final1, counts.final2){
   return(combined)
 
 }
+
+
+
+
+
+
+
+
+#' Update the 4 input .rda objects for streamlined package function
+#'
+#' Update the 4 input .rda objects for streamlined package function
+#'
+#' This function was added to streamline any updates to the 4 package objects that define the core inputs for estimate generation.  The
+#' 4 objects are:
+#' \itemize{
+#'  \item MasterFileList - A list of each year/area/strata/transect/observer combination for the ACP, CRD, YKD, YKG, and 10-02 surveys and the
+#'  location of all associated clean input files that produce an index estimate.
+#'  \item MasterFileList_WBPHS - A list of each year/observer combination for the WBPHS surve and the
+#'  location of all associated clean input files that produce an index estimate.
+#'  \item sppntable - A list of the accepted species code, common name, and scientific name of all avian species used in the package.  These are
+#'  separated by project.
+#'  \item WBPHSsppntable - A list of the accepted species code, common name, and scientific name of all avian species used on the WBPHS survey.
+#'  }
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/cfrost3/AKaerial}
+#'
+#' @param folder.path The path to the R package data folder containing the 4 objects to be updated.
+#'
+#' @return The 4 objects are updated and saved in the data folder of the package.
+#'
+#' @export
+UpdateAllObjects=function(folder.path){
+
+  MasterFileList=read.csv(paste(folder.path, "/AerialSurveyFileMatrix.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  MasterFileList_WBPHS=read.csv(paste(folder.path, "/AerialSurveyFileMatrix_WBPHS.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  sppntable=read.csv(paste(folder.path, "/AKAerialSpeciesAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  WBPHSsppntable=read.csv(paste(folder.path, "/AKAerialWBPHSAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+
+
+  save(MasterFileList, file=paste(folder.path, "/MasterFileList.rda", sep=""))
+  save(MasterFileList_WBPHS, file=paste(folder.path, "/MasterFileList_WBPHS.rda", sep=""))
+  save(sppntable, file=paste(folder.path, "/sppntable.rda", sep=""))
+  save(WBPHSsppntable, file=paste(folder.path, "/WBPHSsppntable.rda", sep=""))
+
+
+}
+
+
+
+

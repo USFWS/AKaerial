@@ -1,8 +1,8 @@
 
 
-#' Apply \code{\link{Greenlight}} function to an entire folder
+#' Apply \code{\link{GreenLight}} function to an entire folder
 #'
-#' MassReport will scan a folder for .csv data files and apply the \code{\link{Greenlight}}
+#' MassReport will scan a folder for .csv data files and apply the \code{\link{GreenLight}}
 #' function to each.
 #'
 #' MassReport is designed to produce QAQC reports for a large number of files based on a set of established criteria for data integrity.
@@ -25,9 +25,9 @@
 #'  }
 #' @param method Specify \code{greenlight}, \code{data}, or \code{both}.
 #'  \itemize{
-#'  \item \code{method=greenlight} will run the standard \code{\link{Greenlight}} report for each data file
+#'  \item \code{method=greenlight} will run the standard \code{\link{GreenLight}} report for each data file
 #'  \item \code{method=data} will generate the QAQC data file (if possible) for each data file
-#'  \item \code{method=both} will run the standard \code{\link{Greenlight}} report for each data file and produce each associated QAQC data file
+#'  \item \code{method=both} will run the standard \code{\link{GreenLight}} report for each data file and produce each associated QAQC data file
 #'  }
 #'
 #' @return None

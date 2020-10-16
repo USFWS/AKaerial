@@ -2,7 +2,7 @@
 % Please edit documentation in R/MassReport.R
 \name{MassReport}
 \alias{MassReport}
-\title{Apply \code{\link{Greenlight}} function to an entire folder}
+\title{Apply \code{\link{GreenLight}} function to an entire folder}
 \usage{
 MassReport(folder.path = NA, area = NA, method = "both")
 }
@@ -21,16 +21,16 @@ Either folder.path or area must be specified.}
 
 \item{method}{Specify \code{greenlight}, \code{data}, or \code{both}.
 \itemize{
-\item \code{method=greenlight} will run the standard \code{\link{Greenlight}} report for each data file
+\item \code{method=greenlight} will run the standard \code{\link{GreenLight}} report for each data file
 \item \code{method=data} will generate the QAQC data file (if possible) for each data file
-\item \code{method=both} will run the standard \code{\link{Greenlight}} report for each data file and produce each associated QAQC data file
+\item \code{method=both} will run the standard \code{\link{GreenLight}} report for each data file and produce each associated QAQC data file
 }}
 }
 \value{
 None
 }
 \description{
-MassReport will scan a folder for .csv data files and apply the \code{\link{Greenlight}}
+MassReport will scan a folder for .csv data files and apply the \code{\link{GreenLight}}
 function to each.
 }
 \details{

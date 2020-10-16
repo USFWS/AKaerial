@@ -8,7 +8,9 @@
 #'  time-dependent state of the system and imperfect time-dependent observations.
 #'  The states change with time so that the state at time t depends on the state at time t-1
 #'  (and potentially other factors).  Here, the state is defined as the unobserved total population of geese or ducks in the survey area, and observations depend just on the state.
-#'  A formal description is contained in GenericStateSpaceModel.Rmd, which is provided as the output to this function
+#'  A formal description is contained in GenericStateSpaceModel.Rmd, which is provided as the output to this function.
+#'
+#' The current index objects in the package are ACPHistoric, CRDHistoric, YKDHistoric, and YKGHistoric.
 #'
 #' @author \itemize{
 #' \item{Charles Frost, \email{charles_frost@@fws.gov}}
@@ -45,7 +47,20 @@
 #'
 #' @export
 StateSpace=function(area, index, years, species, N1=c(1000,100000), r=c(-.3,.3), sigma=c(0,.3),
-                    n.chains = 3, n.thin = 1, n.iter = 5000, n.burnin = 1000){
+                    n.chains = 3, n.thin = 1, n.iter = 5000, n.burnin = 1000, output = "object"){
+
+args.input= list("area"=area,
+                       "index"=index,
+                       "years"=years,
+                       "species"=species,
+                       "N1"=N1,
+                       "r"=r,
+                       "sigma"=sigma,
+                       "n.chains"=n.chains,
+                       "n.thin"=n.thin,
+                       "n.iter"=n.iter,
+                       "n.burnin"=n.burnin,
+                       "output"=output)
 
 if(area=="ACP"){data=ACPHistoric$combined}
 if(area=="CRD"){data=CRDHistoric$combined}
@@ -143,6 +158,8 @@ if(index=="ibb"){N=data$ibb[data$Year %in% years & data$Species %in% species]
       td <- density(mean.r)
       maxDens <- which.max(td$y)
 
+      if(output == "report"){
+
       r.plot= ggplot2::ggplot(as.data.frame(out$BUGSoutput$sims.list), ggplot2::aes(x=mean.r)) +
               ggplot2::geom_density(fill="gray") +
               ggplot2::geom_vline(xintercept = 0) +
@@ -156,7 +173,7 @@ if(index=="ibb"){N=data$ibb[data$Year %in% years & data$Species %in% species]
         ggplot2::ylab("Density") +
         ggplot2::theme(plot.title = ggplot2::element_text(size=20, face="bold", hjust=0.5))
 
-
+      }
 
       # hist(out$BUGSoutput$sims.list$sigma.proc, xlim=c(0,0.3), xlab="", col="lightgray",
       #      main=expression(paste("Posterior of process standard deviation (",sigma["1"],")")))
@@ -176,20 +193,23 @@ if(index=="ibb"){N=data$ibb[data$Year %in% years & data$Species %in% species]
                             "index"=N,
                             "l95index"=N-1.96*SE,
                             "u95index"=N+1.96*SE,
-                            "indexSE"=SE)
+                            "indexSE"=SE,
+                            "Area"=area,
+                            "Index"=index,
+                            "Species"=species)
 
        # knitr::kable(out.data, caption="State Space and Index Population Estimates",
        #                    col.names = c("Year", "N_S", "2.5 %", "97.5 %", "SD", "N(index)", "2.5 %", "97.5 %", "SE(index)" ), escape=FALSE) %>%
        #    kableExtra::kable_styling("striped", full_width = F)
 
-
+      if(output == "report"){
          rmd.path=system.file("rmd/GenericStateSpaceModel.Rmd", package="AKaerial")
 
          rmarkdown::render(rmd.path, output_dir=getwd(), output_file=paste(species, "_SSM_", Sys.Date(), ".html", sep=''))
+      }
 
 
-
-
+      return(list("out.data"=out.data, "BUGSoutput"=out$BUGSoutput, "args.input"=args.input ))
 
 
 }

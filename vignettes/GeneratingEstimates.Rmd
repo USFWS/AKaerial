@@ -1,0 +1,106 @@
+---
+title: "Generating Estimates"
+author: "Charles Frost"
+date: "28 September 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GeneratingEstimates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, echo=FALSE}
+library(AKaerial)
+```
+
+
+## The Ratio Estimator
+The classical ratio estimator (Cochran 1977) is a straightforward approach that can be used to estimate the density of birds on a landscape, given an adequate sampling design.  The Alaska Region employs a stratified strip transect design for the majority of its surveys of breeding waterfowl.  Study areas are separated into spatial strata based on underlying habitat types and assumed suitability as waterfowl breeding habitat.  Strata are then sampled by low-level flights along a series of strip transects, with one or two observers searching 200 meters out from the transect.  Observations and sampled areas are then summed across transects within each stratum to produce strata-specific density estimates.  These densities are then multiplied by associated strata areas to produce stratum-specific population indices that are summed to produce the overall breeding population index.  
+
+
+$$E[\hat Y] = \displaystyle\sum_{i}^{S} \frac{\bar y_i}{\bar a_i} A_i = \displaystyle\sum_{i}^{S} \hat D_i A_i$$
+where $y_i$ are observations and $a_i$ are sampled areas in strata $i$ and 
+$$A_i = \displaystyle\sum_{j}^{M_i} a_{ij}.$$ 
+with estimated variance from Williams et al. (2002) 
+$$Var(\hat Y) = \displaystyle\sum_{i}^{S} M_i^2 \frac{(1-m_i / M_i)}{m_i} ( s^2_{iy} + \hat {D^2}_i s^2_{ia} - 2 \hat {D_i} s_{iay} ),$$
+where $m_i$ and $M_i$ are the number of sampled and total plots in strata $i$, respectively, and there are $S$ total strata; 
+$$s^2_{ix} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )/(m_i -1), $$
+and 
+$$s^2_{ixy} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )(y_{ij} - \bar y )/(m_i -1).$$ 
+
+The resulting population index generally remains an index to an unknown, larger population.  For some species, visibility correction factors (VCFs) are applied to calculate a population estimate.  In these cases, concurrent studies have estimated the proportion of birds that are available to be seen along a transect, but are missed by an observer.  For example, a VCF of 2.0 would indicate that for every bird seen along a transect, another bird is available to be seen, but goes unseen.  
+
+## Preparing the data
+The 4 requirements for an AKaerial estimate are:
+
+  1. `area` - the MBM code for the area designation (the same value the data were GreenLighted under).  One important note here is that DataSelect is *not* the appropriate function to prepare Waterfowl Breeding Population and Habitat Survey (WBPHS, BPOP, "North American") data for analysis.  Instead, use [ReadWBPHS](../help/ReadWBPHS).
+  1. `data.path` - the directory path to the clean (GreenLight) data file.
+  1. `strata.path` - the directory path to the ESRI .shp file representing the study area and stratification polygons.
+  1. `transect.path` - the directory path to the ESRI .shp file representing the design transects.
+  
+In order for AKaerial to attempt to generate an estimate, these 3 files must be passed to the function [DataSelect](../help/DataSelect), with `threshold` as an optional argument defining the maximum distance (in kilometers) an observation can be from a transect before being thrown out as an intentional deviation from the design.  The programmatic standard (and default) is 0.5 km.  
+
+```{r eval=FALSE}
+my.data = DataSelect(data.path = "C:/data/data2020.csv",
+                     strata.path = "C:/strata/strata2020.shp",
+                     transect.path = "C:/transects/transects2020.shp",
+                     area = "YKD")
+  
+```
+
+The following sequence of events will occur:
+
+  * Observations where `code != 1`, or those that were collected for some other purpose than standard estimates, will be filtered out.  
+  * All observations with `Obs_Type, Num` of `open, 1` are changed to `single, 1` by programmatic decision in 2019.
+  * Strata and transect numbering is checked and crossreferenced with [SplitDesign](../help/SplitDesign).  This is one of the most important functions in the entire process.  Historic design files have uniformly incorrect transect numbering (for spatial reference and sample size purposes).  This is due to partly to constraints placed on the design file by the navigation system in the planes and partly to retention of incorrect numbering schemes in previous surveys.  SplitDesign will correct the numbering scheme by determining which transects need to be combined into a single record (for example, multiple segments on the same line that pass through the same stratum more than once or transects that were split solely to mark the location of a navigational hazard) and which need to be split into multiple transects (for instance, those that cross into a new stratum).  After the correct numbering scheme is determined, the data file is crossreferenced with the original numbering scheme to determine what the "corrected transect" or `ctran` value should be.  
+  * The data, strata, and SplitDesign are passed to [CorrectTrans](../help/CorrectTrans) to add the column `ctran` to the data with the corrected transect number.
+  * Flight information is summarized to determine what design transects were not flown by the crew using [TransSummary](../help/TransSummary).
+  * Observation files are filtered again for focal species by [SpeciesByProject](../help/SpeciesByProject).
+  * If the analysis is done for a Copper River Delta (CRD) survey, data are trimmed to the boundaries of the study area since design transects incorrectly and intentionally extend outside of the study area.  Other study areas are limited by the `threshold` value as to what points are considered "in" the design, even though they extend outside of the stratum boundaries.  This was a programmatic decision in 2018 after hearing accounts of "trailing" observations when finishing a transect that may take several seconds to finish recording combined with potential GPS inaccuracy.  
+  * Counts (`Num` by `Obs_Type`) are adjusted with [AdjustCounts](../help/AdjustCounts) and new columns are created for the 5 standard programmatic indices:
+      + itotal - Indicated total.  Singles doubled, pairs doubled, opens added, flkdrake 1-4 doubled, flkdrake 5+ added.
+      + ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
+      + total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
+      + sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
+      + flock - Flocks.  Singles removed, pairs removed, opens added, flkdrake added.
+  * Strata properties are summarized (areas in km^2^ and maximum possible transects M) using [StrataSummary](../help/StrataSummary).
+  
+The returned object will be a list of 5 elements appropriate for use in [Densities](../help/Densities):
+
+  1. `obs` - The original data file with corrected spatial information and indices.
+  1. `flight` - Summarized flight information (omitting design transects not flown).
+  1. `design` - SplitDesign output.
+  1. `strata` - Polygon areas in km^2^ and maximum possible transects (M).
+  1. `transect` - Observations summarized at the transect level.
+
+
+## Generating estimates
+Once the list object has been created using [DataSelect](../help/DataSelect), a table of estimates is created by calling [Densities](../help/Densities) with the list object and area as the only arguments.  
+
+``` {r eval=FALSE}
+my.estimates = Densities(my.dataselect, area = "YKD")
+```
+
+[Densities](../help/Densities) will sum the indices at the stratum level and divide by the sum of the sampled transect areas in each stratum to estimate the density of each species in each stratum by the observer.  These densities are then multiplied by the corresponding strata areas and summed to estimate the number of birds in the study area across all strata.  
+
+The resulting return object is a list with 2 elements:
+
+  1. `estimates` - Data frame of estimates by species, along with their corresponding variances and standard errors.
+  1. `counts.final` - More detailed data frame that includes variance components and densities broken down by stratum and species.
+  
+``` {r echo=FALSE}
+print(YKDHistoric$output.table[YKDHistoric$output.table$Year==2019,])
+```
+
+## References
+
+Cochran, W.G. 1977. _Sampling techniques_. New York: John Wiley & Sons.
+
+Williams, B.K., J.D. Nichols, and M.J. Conroy. 2002. _Analysis and management of animal populations_.  Academic Press, New York, 817 pp. 

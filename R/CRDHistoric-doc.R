@@ -1,0 +1,112 @@
+#' Current table of historic estimates for the Copper River Delta study area
+#'
+#' Population indices for the USFWS Region 11 Migratory Bird Management Copper River Delta study area.
+#' The survey consists of low-level aerial observations of waterfowl on a stratified strip transect design.
+#' For more information on how the estimates are generated, see \code{\link[AKaerial]{DataSelect}} or \code{\link[AKaerial]{Densities}}.
+#' For definitions of the indices, see \code{\link[AKaerial]{AdjustCounts}}.  For a complete list of input files, see \code{\link[AKaerial]{MasterFileList}}.
+#'
+#'
+#' @docType data
+#'
+#' @usage data(CRDHistoric)
+#'
+#' @format A list object with 3 data frames:
+#' \describe{
+#'   \item{output.table}{Data frame of observer-specific estimates for the years 1986-2019, with the exception of 2013,
+#'   currently 217 rows of the following 19 variables:
+#'   \describe{
+#'     \item{Year}{The 4-digit integer year of the survey, range from 1986 to 2019 (no survey in 2013).}
+#'     \item{Observer}{The 3-character code representing the initials of the observer.}
+#'     \item{Species}{The 4-character code for the species represented, see \code{\link[AKaerial]{sppntable}}.}
+#'     \item{total.est}{Total estimated birds (floating point decimal).}
+#'     \item{itotal.est}{Estimated indicated total birds (floating point decimal).}
+#'     \item{ibbtotal.est}{Total estimated indicated breeding birds (floating point decimal).}
+#'     \item{sing1pair2.est}{Total estimated singles and pairs (floating point decimal).}
+#'     \item{flock.est}{Total estimated flocked birds (floating point decimal).}
+#'     \item{var.N}{Variance of total.est (floating point decimal).}
+#'     \item{var.Ni}{Variance of itotal.est (floating point decimal).}
+#'     \item{var.Nib}{Variance of ibbtotal.est (floating point decimal).}
+#'     \item{var.Nsing1pair2}{Variance of sing1pair2.est (floating point decimal).}
+#'     \item{var.Nflock}{Variance of flock.est (floating point decimal).}
+#'     \item{SE}{Standard error of total.est (floating point decimal).}
+#'     \item{SE.i}{Standard error of itotal.est (floating point decimal).}
+#'     \item{SE.ibb}{Standard error of ibbtotal.est (floating point decimal).}
+#'     \item{SE.sing1pair2}{Standard error of sing1pair2.est (floating point decimal).}
+#'     \item{SE.flock}{Standard error of flock.est (floating point decimal).}
+#'     \item{area}{The character string project code (CRD - Copper River Delta).}
+#'   }
+#'   }
+#'   \item{expanded.table}{Data frame of observer-specific estimates broken down to the stratum level for the years 1986-2019,
+#'    with the exception of 2013, currently 651 rows of the following 40 variables:
+#'   \describe{
+#'     \item{strata}{The character string representing the stratum.}
+#'     \item{Year}{The 4-digit integer year of the survey, range from 1986 to 2019 (no survey in 2013).}
+#'     \item{Observer}{The 3-character code representing the initials of the observer.}
+#'     \item{Species}{The 4-character code for the species represented, see \code{\link[AKaerial]{sppntable}}.}
+#'     \item{total}{Total observed birds (integer).}
+#'     \item{itotal}{Indicated total observed birds (integer).}
+#'     \item{ibb}{Total observed indicated breeding birds (integer).}
+#'     \item{sing1pair2}{Total observed singles and pairs (integer).}
+#'     \item{flock}{Total observed flocked birds (integer).}
+#'     \item{total.v}{Variance of the counts of total birds (floating point decimal).}
+#'     \item{itotal.v}{Variance of the counts of indicated total birds (floating point decimal).}
+#'     \item{ibb.v}{Variance of the counts of indicated breeding birds (floating point decimal).}
+#'     \item{sing1pair2.v}{Variance of the counts of singles and pairs (floating point decimal).}
+#'     \item{flock.v}{Variance of the counts of flocked birds (floating point decimal).}
+#'     \item{total.cov}{Covariance of the counts of total birds and transect areas (floating point decimal).}
+#'     \item{itotal.cov}{Covariance of the counts of indicated total birds and transect areas (floating point decimal).}
+#'     \item{var.N}{Variance of total.est (floating point decimal).}
+#'     \item{var.Ni}{Variance of itotal.est (floating point decimal).}
+#'     \item{ibb.cov}{Covariance of the counts of indicated breeding birds and transect areas (floating point decimal).}
+#'     \item{var.Nib}{Variance of ibbtotal.est (floating point decimal).}
+#'     \item{sing1pair2.cov}{Covariance of the counts of singles and pairs and transect areas (floating point decimal).}
+#'     \item{var.Nsing1pair2}{Variance of sing1pair2.est (floating point decimal).}
+#'     \item{flock.cov}{Covariance of the counts of flocked birds and transect areas (floating point decimal).}
+#'     \item{var.Nflock}{Variance of flock.est (floating point decimal).}
+#'     \item{total.area}{Total sampled area in km^2^, specific to strata-Year-Observer combinations (floating point decimal).}
+#'     \item{total.area.var}{Variance of the sampled areas (floating point decimal).}
+#'     \item{density.total}{Observed density of total birds (birds per km^2^, floating point decimal).}
+#'     \item{density.itotal}{Observed density of indicated total birds (birds per km^2^, floating point decimal).}
+#'     \item{density.ibb}{Observed density of indicated breeding birds (birds per km^2^, floating point decimal).}
+#'     \item{density.sing1pair2}{Observed density of singles and pairs (birds per km^2^, floating point decimal).}
+#'     \item{density.flock}{Observed density of flocked birds (birds per km^2^, floating point decimal).}
+#'     \item{layer.area}{Total area in km^2^ of the stratum (floating point decimal).}
+#'     \item{diff}{Total north-south extent of the survey in km excluding any water-only breaks, used to determine the maximum possible
+#'     number of transects that could be in design (floating point decimal).}
+#'     \item{M}{The maximum number of 0.2 km strip transects that could occur simultaneously in a stratum (floating point decimal).}
+#'     \item{total.est}{Total estimated birds (floating point decimal).}
+#'     \item{itotal.est}{Estimated indicated total birds (floating point decimal).}
+#'     \item{ibbtotal.est}{Total estimated indicated breeding birds (floating point decimal).}
+#'     \item{sing1pair2.est}{Total estimated singles and pairs (floating point decimal).}
+#'     \item{flock.est}{Total estimated flocked birds (floating point decimal).}
+#'     \item{area}{The character string project code (CRD - Copper River Delta).}
+#'   }
+#'
+#'   }
+#'   \item{combined}{Data frame of combined observer estimates (or single observer in years where estimates were not combined) for the
+#'   years 1986-2019, with the exception of 2013, currently 132 rows of the following 18 variables:
+#'   \describe{
+#'     \item{Year}{The 4-digit integer year of the survey, range from 1986 to 2019 (no survey in 2013).}
+#'     \item{Species}{The 4-character code for the species represented, see \code{\link[AKaerial]{sppntable}}.}
+#'     \item{total}{Total estimated birds (floating point decimal).}
+#'     \item{total.var}{Variance of total (floating point decimal).}
+#'     \item{total.se}{Standard error of total (floating point decimal).}
+#'     \item{itotal}{Estimated indicated total birds (floating point decimal).}
+#'     \item{itotal.var}{Variance of itotal (floating point decimal).}
+#'     \item{itotal.se}{Standard error of itotal (floating point decimal).}
+#'     \item{ibb}{Total estimated indicated breeding birds (floating point decimal).}
+#'     \item{ibb.var}{Variance of ibb (floating point decimal).}
+#'     \item{ibb.se}{Standard error of ibb (floating point decimal).}
+#'     \item{sing1pair2}{Total estimated singles and pairs (floating point decimal).}
+#'     \item{sing1pair2.var}{Variance of sing1pair2 (floating point decimal).}
+#'     \item{sing1pair2.se}{Standard error of sing1pair2 (floating point decimal).}
+#'     \item{flock}{Total estimated flocked birds (floating point decimal).}
+#'     \item{flock.var}{Variance of flock (floating point decimal).}
+#'     \item{flock.se}{Standard error of flock (floating point decimal).}
+#'     \item{area}{The character string project code (CRD - Copper River Delta).}
+#'   }
+#'  }
+#' }
+#'
+#'
+"CRDHistoric"
