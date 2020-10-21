@@ -24,17 +24,15 @@ transparent, repeatable, and defensible alternative to past
 estimate-generating processes.
 
 The most likely use of AKaerial would be to take advantage of the
-historic tables of estimates for projects on the Arctic Coastal Plain (
-[ACPHistoric](../help/ACPHistoric), 2007-2019), Copper River Delta (
-[CRDHistoric](../help/CRDHistoric), 1986-2019), and Yukon-Kuskokwim
-River Delta for ducks ( [YKDHistoric](../help/YKDHistoric), 1988-2019)
-and geese ( [YKGHistoric](../help/YKGHistoric), 1985-2019). AKaerial
+historic tables of estimates contained as data objects within the package for projects on the Arctic Coastal Plain (ACPHistoric, 2007-2019), Copper River Delta (CRDHistoric, 1986-2019), and Yukon-Kuskokwim
+River Delta for ducks (YKDHistoric), 1988-2019)
+and geese (YKGHistoric, 1985-2019). AKaerial
 includes figure-, table-, and map-generating functions that are designed
 to visualize data, design files, and estimates as a quality control step
 as well as for the production of reports, presentations, and
 manuscripts.
 
-AKaerial also includes a function ( [GreenLight](../help/GreenLight))
+AKaerial also includes a function (GreenLight)
 that provides a rigorous and documented quality control process. This
 results in a structured and consistent treatment of both raw transcribed
 and archived data files throughout the data life cycle.
