@@ -17,7 +17,7 @@
 #'   \item{VCF}{Floating point decimal visibility correction factor; represents the number of birds missed for every bird seen on the survey.}
 #'   \item{VCF_SE}{Floating point decimal standard error of the associated VCF.}
 #'   }
-#' }
+#'
 #'
 #'
 "WBPHS_VCF"

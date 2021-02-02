@@ -158,7 +158,7 @@ GatherData=function(area = "none", drive = "K:", ouput.folder = "none"){
     for(j in 1:length(data$transect$Year)){
 
       data$transect$Unique[j]=paste(data$design@data$UNIQUE[data$design@data$STRATNAME==data$transect$strata[j] &
-                                                              data$design@data$SPLIT==data$transect$ctran[j]][1], year.panel$panel[year.panel$year==data$transect$Year[j], sep="")
+                                                              data$design@data$SPLIT==data$transect$ctran[j]][1], year.panel$panel[year.panel$year==data$transect$Year[j]], sep="")
       data$transect$Trans_Lat[j]=data$design@data$mid.Lat[data$design@data$STRATNAME==data$transect$strata[j] &
                                                             data$design@data$SPLIT==data$transect$ctran[j]][1]
 
