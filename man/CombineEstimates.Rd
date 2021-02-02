@@ -19,7 +19,7 @@ CombineEstimates will take observer-specific estimates and summarize them as a c
 CombineEstimates will take observer-specific estimates and summarize them as a crew estimate for a given year
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

@@ -114,7 +114,7 @@ report = FALSE before generating a QCobs file will stop another preliminary repo
 
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

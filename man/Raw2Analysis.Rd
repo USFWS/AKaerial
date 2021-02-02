@@ -21,7 +21,7 @@ Raw2Analysis checks to see if any of the common fixes need to be applied to a da
 Raw2Analysis is a QA/QC check in GreenLight that will check for and apply common fixes to a data set through CommonFix.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

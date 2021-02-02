@@ -26,7 +26,7 @@ Currently there are 5 indices that are created: \enumerate{
 }
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

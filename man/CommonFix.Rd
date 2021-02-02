@@ -28,7 +28,7 @@ Commonfix will take "yellow light" issues and apply a known treatment to fix off
   \item Species - changes incorrect or outdated species codes to current ones}
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

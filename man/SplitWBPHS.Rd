@@ -24,7 +24,7 @@ It will also add the columns Behavior, Distance, Code, and Notes that aren't use
 the standard in Alaska Region aerial surveys.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

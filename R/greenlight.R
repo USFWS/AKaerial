@@ -76,7 +76,7 @@
 #'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param path.name The path to the raw data file to be checked.
 #' @param area The area code for dedicated MBM Alaska region surveys.
@@ -320,7 +320,9 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
 
 
     print(write.path)
-    write.csv(data.new[,1:25], write.path, quote=FALSE, row.names=FALSE )
+
+    if(area=="WBPHS"){write.csv(data.new[,1:25], write.path, quote=FALSE, row.names=FALSE, na="")
+    }else{write.csv(data.new[,1:25], write.path, quote=FALSE, row.names=FALSE) }
 
     if(area!="VIS" & archive.dir != "default"){rmarkdown::render(rmd.path, output_dir=archive.dir, output_file=paste(proj,"_", yr, "_QCLog_",name, ".html", sep=''))}
     if(area=="VIS" & archive.dir != "default"){rmarkdown::render(rmd.path, output_dir=archive.dir, output_file=paste(proj, "_", yr, "_", region, "_", aircraft, "_QCLog_", name, ".html", sep=''))}
@@ -342,7 +344,7 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
 #' yr, se, mo, strat, da, grp, and sppn exists.  If TRUE, then ColSwitch can be used to overwrite to the current headings.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be checked.
 #'
@@ -365,7 +367,7 @@ SwitchMatch=function(data){
 #' so the analysis is not split among upper and lowercase versions of the same observer.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be checked.
 #'
@@ -386,7 +388,7 @@ ObserverCheck=function(data){
 #' This function was written to quickly allow an old data file to be formatted for analysis, but probably won't be used in the future.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be checked.
 #'
@@ -414,7 +416,7 @@ ColSwitch=function(data){
 #' the function will throw an error and end abruptly.  For the current list of acceptable names, see \code{\link{GreenLight}}
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be checked.
 #'
@@ -434,7 +436,7 @@ ColMatch=function(data, necessary){
 #' ShouldBeNumeric is a GreenLight QA/QC check performed on a data set.  If the column entries are not numeric values it will return a "red" status.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param col.data The column to be checked.
 #'
@@ -460,7 +462,7 @@ return(list("fail"=any(bad),"bad"=bad))
 #' UnitCheck is a GreenLight QA/QC check performed on a data set.  If the Obs_Type entries are not single, pair, flkdrake, or open, it will return a "red" status.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param col.data The column to be checked.
 #'
@@ -485,7 +487,7 @@ return(list("fail"=(length(bad[,1])!=0), "bad"=bad))
 #' SeatCheck is a GreenLight QA/QC check performed on a data set.  If the Seat entries are not LF, RF, LR, or RR, it will return a "red" status.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param col.data The column to be checked.
 #'
@@ -520,7 +522,7 @@ SeatCheck=function(data){
 #' will result in a "red" status.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param col.data The column to be checked.
 #'
@@ -591,7 +593,7 @@ if(area!="WBPHS"){
 #' else will result in "yellow" status if the treatment of the data type is known, and "red" if unknown.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be checked.
 #'
@@ -643,7 +645,7 @@ SwanCheck=function(data){
 #' the files default to the directory "Q:/Waterfowl/Parsed/ACP_" and would need recoding for any other survey.  Individual .csv files are written to the directory.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param path.name The path to the combined file.
 #'
@@ -699,7 +701,7 @@ ObsByYear=function(path.name){
 #'   \item Species - changes incorrect or outdated species codes to current ones}
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be fixed.
 #' @param fix The character string vector of the names of the fixes to be applied.
@@ -829,7 +831,7 @@ CommonFix=function(data, fix, area){
 #' Raw2Analysis is a QA/QC check in GreenLight that will check for and apply common fixes to a data set through CommonFix.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The data frame to be checked.
 #' @param area The project area designation.

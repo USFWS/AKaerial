@@ -20,7 +20,7 @@ Stratasummary will compute areas of each strata (in km^2) in a design strata fil
 a sample (M) using FindVoids.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

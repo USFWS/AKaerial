@@ -21,7 +21,7 @@ PointsToStrata will attribute each observation in a file to underlying strata
 PointsToStrata will sample the polygon layer under each observation and replace the Strata column entry with the appropriate strata.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

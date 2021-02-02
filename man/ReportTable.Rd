@@ -52,7 +52,7 @@ ReportTable(data=ACPHistoric$combined, species="SPEI", year = c(2007:2019), inde
 
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

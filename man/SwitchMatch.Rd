@@ -20,7 +20,7 @@ SwitchMatch is designed to check if the old style of column headings is present 
 yr, se, mo, strat, da, grp, and sppn exists.  If TRUE, then ColSwitch can be used to overwrite to the current headings.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

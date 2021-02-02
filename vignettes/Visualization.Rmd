@@ -48,7 +48,9 @@ ReportTable(data=CRDHistoric$combined,
 ```
 
 
+
   3. __Figure generation__ - [ReportFigure](../help/ReportFigure) will create a ggplot line graph of historic estimate objects in AKaerial ([ACPHistoric](../help/ACPHistoric), [CRDHistoric](../help/CRDHistoric), [YKDHistoric](../help/YKDHistoric), [YKDVHistoric](../help/YKDVHistoric), and [YKGHistoric](../help/YKGHistoric)). 
+
 
 
 

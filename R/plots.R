@@ -13,7 +13,7 @@
 #' transect number \emph{reported by the pilot or observer.}
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.  Must be in a format
 #' accepted by \code{\link{SplitDesign}}.
@@ -109,7 +109,7 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
     leaflet::addProviderTiles("Esri.WorldImagery")
 
 
-  if(bounds.which>0){
+  if(!is.na(bounds.which) & bounds.which>0){
 
 
     map = map %>%
@@ -138,7 +138,7 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
 #' but with no option to include observations.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.  Must be in a format
 #' accepted by \code{\link{SplitDesign}}.
@@ -159,7 +159,7 @@ ShowMeDesign=function(strata.path, transect.path){
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.path, type="proj")
 
-  split.design <- sp::spTransform(split.design, "+proj=longlat +ellps=WGS84")
+  split.design <- sp::spTransform(split.design, "+proj=longlat +ellps=WGS84 +datum=NAD83")
   strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
 
@@ -179,7 +179,7 @@ ShowMeDesign=function(strata.path, transect.path){
 
     leaflet::addPolylines(data=split.design,
                  color="black",
-                 weight=4,
+                 weight=2,
                  opacity=.9,
                  label=~split.design$OBJECTID,
                  popup = paste("Strata: ", split.design$STRATNAME, "<br>",
@@ -190,7 +190,9 @@ ShowMeDesign=function(strata.path, transect.path){
 
     leaflet::addScaleBar() %>%
 
-    leaflet::addProviderTiles("Esri.WorldImagery")
+    leaflet::addProviderTiles("Esri.WorldImagery") %>%
+
+    addMouseCoordinates()
 
 
   print(map)
@@ -215,7 +217,7 @@ ShowMeDesign=function(strata.path, transect.path){
 #' if they fall outside strata boundaries.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.
 #' @param transect.path The path name to the .shp file of lines designating the transect design.
@@ -336,7 +338,7 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
 #' transect number \emph{reported by the pilot or observer.}, and year of the observation.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param area The area code for dedicated MBM Alaska region surveys.
 #'    Acceptable values include:
@@ -468,7 +470,7 @@ ShowMeYears=function(area, year, species="all"){
 #' but with no option to include observations.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.  Must be in a format
 #' accepted by \code{\link{SplitDesign}}.
@@ -607,7 +609,7 @@ factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.pro
 #' entered by the user once the table is created
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The estimates object.  Must be in a format with Year, Species, index, and index variance if not one of
 #' the included package data objects (ACPHistoric, CRDHistoric, YKDHistoric, YKDVHistoric, or YKGHistoric).
@@ -780,7 +782,7 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 #' entered by the user as the figure is generated.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The estimates object.  Must be in a format with Year, Species, index, and index variance if not one of
 #' the included package data objects (ACPHistoric, CRDHistoric, YKDHistoric, YKDVHistoric, or YKGHistoric).
@@ -802,7 +804,7 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 #' @param leg.labels The desired legend labels in the new desired order.  These should be entered as text and separated only by a comma.
 #' @param leg.limits The internal data object references in the new order.  This specifies the mapping of the newly-defined labels and orders.
 #' The easiest way to get these is to look at the FIRST figure generated by the function and enter them as they appear in the legend, only in the
-#' new order.
+#' new order.  They MUST match the original figure names/column names.
 #' @param test.out Should the figure progression output in the plot window?  If FALSE, the object is only returned.
 #'
 #' @return Renders and returns a ggplot figure

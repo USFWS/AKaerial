@@ -35,7 +35,7 @@ in modified stratum 9 (see Cut9) are:
  Default strip width is 0.25 mi for 2 observers, each viewing 0.125 mi.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

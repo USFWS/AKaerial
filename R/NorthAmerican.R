@@ -19,7 +19,7 @@
 #'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data An R data frame of observations in a given year of the survey
 #'
@@ -69,7 +69,7 @@ ReadWBPHS= function(full.data){
 #'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data An R data frame of observations in a given year of the survey
 #'
@@ -131,7 +131,7 @@ Cut9= function(full.data){
 #'  Default strip width is 0.25 mi for 2 observers, each viewing 0.125 mi.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A clean (greenlight) file of observations
 #' @param strip.width The sampled strip width in miles
@@ -227,7 +227,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 #' summarizes it at the Segment, Transect, and Stratum level.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param selected.data An R data frame of observations in a given year of the survey
 #'
@@ -261,7 +261,7 @@ TransDataWBPHS=function(selected.data){
 #' summarizes it at the Transect and Stratum levels. It uses already adjusted counts by Obs_Type (see AdjustCounts).
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param adj.counts An R data frame of observations in a given year of the survey
 #'
@@ -301,7 +301,7 @@ CountsWBPHS=function(adj.counts) {
 #'  each transect.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The ReadWBPHS list object to be analyzed
 #' @param flight Flight summary from SummaryWBPHS
@@ -561,7 +561,7 @@ EstimatesWBPHS=function(data, flight){
 #' the standard in Alaska Region aerial surveys.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param folder.path The directory path to the folder for input and output files.
 #'
@@ -654,7 +654,7 @@ SplitWBPHS= function(folder.path){
 #' The resulting data frame is appended onto the master WBPHS results table.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param estimates WBPHS index estimates from EstimatesWBPHS.
 #'
@@ -715,7 +715,7 @@ CombineEstimatesByStrata=function(estimates){
 #' I am unsure of the origin and accuracy of the segments.  Segments and observations are drawn using leaflet.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data WBPHS clean (greenlighted) observations.
 #' @param trans.file Directory path to the WBPHS segment shape file (default to Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp)
@@ -774,7 +774,7 @@ print(map)
 #' estimate.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param year Four digit year of the WBPHS survey to use
 #'

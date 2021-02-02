@@ -27,7 +27,7 @@ the polygons and lines to renumber the design file appropriately.  It will catch
 incorrect numbering scheme for a given sample, and incorrectly attributed strata to lines.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

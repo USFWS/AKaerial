@@ -20,7 +20,7 @@ This function takes standard greenlight data for the WBPHS (Waterfowl Breeding P
 summarizes it at the Segment, Transect, and Stratum level.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

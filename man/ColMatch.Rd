@@ -20,7 +20,7 @@ ColMatch is the first GreenLight QA/QC check performed on a data set.  If the co
 the function will throw an error and end abruptly.  For the current list of acceptable names, see \code{\link{GreenLight}}
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

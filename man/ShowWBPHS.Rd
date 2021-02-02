@@ -25,7 +25,7 @@ ShowWBPHS provides a quick spatial overview of a set of observations and the Wat
 I am unsure of the origin and accuracy of the segments.  Segments and observations are drawn using leaflet.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

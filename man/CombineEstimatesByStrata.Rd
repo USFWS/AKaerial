@@ -20,7 +20,7 @@ CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merge
 The resulting data frame is appended onto the master WBPHS results table.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

@@ -30,7 +30,7 @@ In addition, due to inconsistencies in interpretation of the field protocol for 
 and pair 1, respectively, across the entire data set.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

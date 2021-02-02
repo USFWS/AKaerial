@@ -20,7 +20,7 @@ This function was added for detection estimation of flocks based on flock size. 
 specifies small or large flocks.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

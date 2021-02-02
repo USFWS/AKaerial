@@ -33,7 +33,7 @@ EstimatesTable will calculate index estimates over a range of years for a given 
 EstimatesTable is coded to use a single observer some years and pool more than 2 observers in other years.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

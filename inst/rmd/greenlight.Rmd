@@ -7,14 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(plyr)
+library(tidyverse)
 ```
 
 ## Introduction
 
-This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (BPOP).
+This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (WBPHS).
 
-All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/cfrost3/AKaerial>.
+All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the USFWS Alaska Region MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/USFWS/AKaerial>.
 
 
 You have chosen the file:
@@ -125,8 +125,7 @@ Status - RED
 `r if(length(test.seat$bad[,1]) == 0) {"\\end{comment}"}`
 
 ## Species Codes
-The current list of acceptable species codes can be found at:
-<https://github.com/cfrost3/AKaerial/tree/master/data/AKAerialSpeciesAOUCodes.csv>
+The current list of acceptable species codes can be found in the object [sppntable](../help/sppntable).
 
 `r if(s.species != "green") {"\\begin{comment}"}`
 All species codes appear to be recorded correctly, or at least an acceptable substitute is known (for any YELLOW status codes entered).
@@ -370,3 +369,25 @@ print(sp_plot)
 print(num_plot)
 
 ```
+
+
+## Transect Summary
+
+The following section provides a table of all reported transects in the data file.  These are NOT checked against the design transects or stratification and should be used as an extra QA/QC step for the transcriber only. 
+
+
+trans=sort(unique(data$Transect))
+
+trans %>%
+  
+  kableExtra::kable(format="html",
+                    col.names = c("Transect"),
+                    escape = F
+                    ) %>%
+  
+  
+  kableExtra::kable_styling("bordered",
+                            full_width=FALSE,
+                            font_size = 14)  %>%
+
+  kableExtra::scroll_box(height = "250px")

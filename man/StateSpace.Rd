@@ -71,7 +71,7 @@ A state-space model is a general term that usually refers to a model containing 
 The current index objects in the package are ACPHistoric, CRDHistoric, YKDHistoric, and YKGHistoric.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 \itemize{

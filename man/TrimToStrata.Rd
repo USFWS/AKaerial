@@ -22,7 +22,7 @@ TrimToStrata is especially important on the Copper River Delta (CRD) study area,
 of the area of inference.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

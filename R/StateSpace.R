@@ -16,7 +16,7 @@
 #' \item{Charles Frost, \email{charles_frost@@fws.gov}}
 #' \item{Erik Osnas, \email{erik_osnas@@fws.gov}}}
 #'
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param area The area code for dedicated MBM Alaska region surveys.  Either folder.path or area must be specified.
 #'    Acceptable values include:

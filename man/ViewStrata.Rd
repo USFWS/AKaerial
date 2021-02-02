@@ -36,7 +36,7 @@ ViewStrata uses ggplot2 to display a stratification map.
 This function was replaced with a series of ShowMe functions and is no longer used.  See \code{ShowMe}.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

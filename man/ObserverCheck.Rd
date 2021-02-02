@@ -20,7 +20,7 @@ ObserverCheck checks to see if the observer initials were entered consistently i
 so the analysis is not split among upper and lowercase versions of the same observer.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

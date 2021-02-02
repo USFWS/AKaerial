@@ -25,7 +25,7 @@ SummaryWBPHS for spatial design summary, TransDataWBPHS to table observations ap
 estimate.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

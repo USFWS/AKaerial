@@ -20,7 +20,7 @@ Findvoids is used in the maximum available transect (M) calculation in the varia
 in strata from the maximum-minimum latitude calculation.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

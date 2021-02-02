@@ -10,7 +10,7 @@
 #' for different indices at the row level. The resulting list object is the primary currency for design-based ratio estimator analysis.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param area The area code for dedicated MBM Alaska region surveys.
 #'    Acceptable values include:
@@ -91,7 +91,7 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA, thr
 #' SpeciesByProject is designed to alter species codes by area specifications. Current lists can be found in \code{sppntable}.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data The data frame containing the observations
 #' @param area The area code for dedicated MBM Alaska region surveys.
@@ -184,7 +184,7 @@ SpeciesByProject=function(full.data, area){
 #' combination of year, observer, species, transect, and Obs_Type.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param selected.data The data object from DataSelect
 #'
@@ -255,7 +255,7 @@ return(agg[order(agg$Year, agg$Observer, agg$Species, as.numeric(agg$ctran), agg
 #' incorrect numbering scheme for a given sample, and incorrectly attributed strata to lines.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.file The location of the analysis stratification .shp file
 #' @param transect.file The location of the design transect .shp file (currently only supports east-west transects)
@@ -270,12 +270,12 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 
   #read and project transects
   design=rgdal::readOGR(transect.file, layer=tools::file_path_sans_ext(basename(transect.file)), verbose=FALSE)
-  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84")
+  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84 +datum=NAD83")
   design.proj <- smoothr::drop_crumbs(design.proj, threshold=.1)
 
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.file, type="proj")
-  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84")
+  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
@@ -289,7 +289,7 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
   newlines@data$id=rownames(newlines@data)
   newlines.proj=sp::spTransform(newlines, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
-  midpoints=as.data.frame(sp::spTransform(maptools::SpatialLinesMidPoints(newlines.proj), "+proj=longlat +ellps=WGS84"))
+  midpoints=as.data.frame(sp::spTransform(maptools::SpatialLinesMidPoints(newlines.proj), "+proj=longlat +ellps=WGS84 +datum=NAD83"))
   newlines.fort=ggplot2::fortify(newlines, region="STRAT")
   newlines.df=plyr::join(newlines.fort, newlines@data, by="id")
   newlines.df$ROUNDED=round(newlines.df$lat, digits=3)
@@ -377,7 +377,7 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 #' WGS84 surface.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param map.file The path to the .shp file to be read in
 #' @param type Either "df" to return a data frame or "proj" to return a WGS84 projected spatial object
@@ -418,7 +418,7 @@ LoadMap <- function(map.file, type="df") {
 #' This function was replaced with a series of ShowMe functions and is no longer used.  See \code{ShowMe}.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param map The LoadMap object to be displayed
 #' @param year The year of the desired transect panel
@@ -474,7 +474,7 @@ if(strata=="all"){
     trans.layer=file_path_sans_ext(basename(trans.file))
 
     trans.obj=rgdal::readOGR(trans.file, trans.layer, verbose=FALSE)
-    trans.proj <- sp::spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+    trans.proj <- sp::spTransform(trans.obj, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
     GIS.proj = LoadMap(map, type="proj")
 
@@ -529,7 +529,7 @@ if(strata=="all"){
 #'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A clean (greenlight) file containing observation history
 #'
@@ -613,7 +613,7 @@ AdjustCounts <- function(full.data){
 #' CountsTable is designed to be run on an adjusted data file (has been run through AdjustCounts to create indices).  It will return a tabular summary of counts.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param adj.counts A data frame that has been through AdjustCounts
 #'
@@ -656,7 +656,7 @@ CountsTable=function(adj.counts) {
 #' PointsToStrata will sample the polygon layer under each observation and replace the Strata column entry with the appropriate strata.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A data frame of observations.
 #' @param area The project area
@@ -677,7 +677,7 @@ PointsToStrata=function(full.data, area){
 
   sp=sp::SpatialPoints(sp)
 
-  sp::proj4string(sp)=sp::CRS("+proj=longlat +ellps=WGS84")
+  sp::proj4string(sp)=sp::CRS("+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   sp=sp::spTransform(sp, "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0
                      +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
@@ -761,7 +761,7 @@ PointsToStrata=function(full.data, area){
 #'  each transect.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The DataSelect list object to be analyzed
 #' @param area The area code for dedicated MBM Alaska region surveys.
@@ -1060,7 +1060,7 @@ Densities=function(data, area, output=FALSE) {
 #' CombineEstimates will take observer-specific estimates and summarize them as a crew estimate for a given year
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param estimates The \code{estimates} element of the list returned in Densities
 #'
@@ -1302,7 +1302,7 @@ CombineEstimates=function(estimates){
 #' Convert degrees to radians
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param deg Input number in degrees
 #'
@@ -1317,7 +1317,7 @@ deg2rad <- function(deg) return(deg*pi/180)
 #' Calculates the geodesic distance between two points specified by radian latitude/longitude using the Spherical Law of Cosines (slc)
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param long1 Longitude of point 1 in degrees
 #' @param lat1 Latitude of point 1 in degrees
@@ -1348,7 +1348,7 @@ gcd.slc <- function(long1, lat1, long2, lat2) {
 #' in strata from the maximum-minimum latitude calculation.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param pieces Polygons within a given stratum
 #'
@@ -1424,7 +1424,7 @@ FindVoids= function(pieces) {
 #' CorrectTrans uses SplitDesign output to overwrite potentially incorrect navigational transect numbering with sample-appropriate numbering.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A clean (greenlight) file of observations
 #' @param threshold The distance in kilometers from a design file where observations are no longer counted.  Defaults to 0.5 km.
@@ -1482,7 +1482,7 @@ for (t in 1:length(full.data$Lon)){
 
 sp::coordinates(full.data)=~Lon+Lat
 
-sp::proj4string(full.data)=sp::CRS("+proj=longlat +ellps=WGS84")
+sp::proj4string(full.data)=sp::CRS("+proj=longlat +ellps=WGS84 +datum=NAD83")
 
 
 # if(area=="CRD"){
@@ -1516,7 +1516,7 @@ if(area=="CRD"){
   }
 
   full.data$dist = full.data$dist/1000
-  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84")
+  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
 
 }
@@ -1528,7 +1528,7 @@ if(area != "CRD"){
 
   #convert from meters to km, then re-project to lat/lon
   full.data$dist = full.data$dist/1000
-  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84")
+  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   full.data$ctran[full.data$dist>threshold]=NA
 
@@ -1626,7 +1626,7 @@ return(as.data.frame(full.data))
 #' with the corrected transect number (ctran) in split design to develop a flight record for the pilot/observer.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A clean (greenlight) file of observations
 #' @param split.design SplitDesign output object of corrected transect lines
@@ -1790,7 +1790,7 @@ TransSummary=function(full.data, split.design, area){
 #' CorrectionFactor currently only works for dusky Canada geese (DCGO).
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param estimates The estimates list object from a Densities output list
 #' @param species The character string or vector representing the species to be corrected.
@@ -1824,7 +1824,7 @@ CorrectionFactor=function(estimates, species){
 #' FixTavs runs near the end of DataSelect to overwrite species codes from CCGO to TAVS.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param selected.data A nearly complete DataSelect object from the Yukon Kuskokwim Delta
 #'
@@ -1860,7 +1860,7 @@ FixTavs=function(selected.data){
 #' a sample (M) using FindVoids.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.file The path to the design stratification .shp file
 #'
@@ -1872,7 +1872,7 @@ StrataSummary=function(strata.file){
 
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.file, type="proj")
-  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
+  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   strata.proj@data$AREA=raster::area(strata.proj)
 
@@ -1942,7 +1942,7 @@ StrataSummary=function(strata.file){
 #' of the area of inference.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A clean (greenlight) file of observations
 #' @param strata.path The path to the design stratification .shp file
@@ -1954,10 +1954,10 @@ TrimToStrata=function(full.data, strata.path){
 
 
   sp::coordinates(full.data)=~Lon+Lat
-  sp::proj4string(full.data)=sp::CRS("+proj=longlat +ellps=WGS84")
+  sp::proj4string(full.data)=sp::CRS("+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   strata.proj=LoadMap(strata.path, type="proj")
-  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84")
+  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   full.data=raster::intersect(full.data, strata.proj)
 
@@ -1975,7 +1975,7 @@ TrimToStrata=function(full.data, strata.path){
 #' EstimatesTable is coded to use a single observer some years and pool more than 2 observers in other years.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param area The area code for dedicated MBM Alaska region surveys.
 #'    Acceptable values include:
@@ -2139,7 +2139,7 @@ EstimatesTable=function(area, year){
 #' PoolData uses MasterFileList to iterate through and appropriately pool observers in certain years
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param year The year to pool
 #' @param area The area code for dedicated MBM Alaska region surveys.
@@ -2211,7 +2211,7 @@ PoolData=function(year, area){
 #' SpeciesTransect is used to provide a full record of a species on an area for a range of years, by transect and strata.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param area The area code for dedicated MBM Alaska region surveys.
 #'    Acceptable values include:
@@ -2504,7 +2504,7 @@ SpeciesTransect=function(area, year, species, strata.overwrite="none"){
 #' specifies small or large flocks.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data A clean (greenlight) file of observations
 #'
@@ -2554,7 +2554,7 @@ AddClass=function(full.data){
 #' Iterate over all species and projects and create input files for use in StateSpace.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param folder.path The output folder to send newly generated files to
 #'
@@ -2841,12 +2841,12 @@ CombineByStrata=function(counts.final1, counts.final2){
 
 
 
-#' Update the 4 input .rda objects for streamlined package function
+#' Update the 6 input .rda objects for streamlined package function
 #'
-#' Update the 4 input .rda objects for streamlined package function
+#' Update the 6 input .rda objects for streamlined package function
 #'
-#' This function was added to streamline any updates to the 4 package objects that define the core inputs for estimate generation.  The
-#' 4 objects are:
+#' This function was added to streamline any updates to the 6 package objects that define the core inputs for estimate generation.  The
+#' 6 objects are:
 #' \itemize{
 #'  \item MasterFileList - A list of each year/area/strata/transect/observer combination for the ACP, CRD, YKD, YKG, and 10-02 surveys and the
 #'  location of all associated clean input files that produce an index estimate.
@@ -2855,28 +2855,36 @@ CombineByStrata=function(counts.final1, counts.final2){
 #'  \item sppntable - A list of the accepted species code, common name, and scientific name of all avian species used in the package.  These are
 #'  separated by project.
 #'  \item WBPHSsppntable - A list of the accepted species code, common name, and scientific name of all avian species used on the WBPHS survey.
+#'  \item WBPHS_VCF - A list of visibility correction factors (VCFs) by species and stratum for the WBPHS survey.
+#'  \item WBPHS_PoolSpecies - A list of species and selected associated guilds (eider, grebe, merganser, scoter) for pooling WBPHS estimates.
 #'  }
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
-#' @param folder.path The path to the R package data folder containing the 4 objects to be updated.
+#' @param input.path The path to the folder containing the .csv data to convert to .rda objects.
+#' @param output.path The path to the R package data folder to hold the updated objects.
 #'
-#' @return The 4 objects are updated and saved in the data folder of the package.
+#' @return The 6 objects are updated and saved in the data folder of the package.
 #'
 #' @export
-UpdateAllObjects=function(folder.path){
+UpdateAllObjects=function(input.path, output.path){
 
-  MasterFileList=read.csv(paste(folder.path, "/AerialSurveyFileMatrix.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
-  MasterFileList_WBPHS=read.csv(paste(folder.path, "/AerialSurveyFileMatrix_WBPHS.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
-  sppntable=read.csv(paste(folder.path, "/AKAerialSpeciesAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
-  WBPHSsppntable=read.csv(paste(folder.path, "/AKAerialWBPHSAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  MasterFileList=read.csv(paste(input.path, "/AerialSurveyFileMatrix.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  MasterFileList_WBPHS=read.csv(paste(input.path, "/AerialSurveyFileMatrix_WBPHS.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  sppntable=read.csv(paste(input.path, "/AKAerialSpeciesAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  WBPHSsppntable=read.csv(paste(input.path, "/AKAerialWBPHSAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  WBPHS_VCF=read.csv(paste(input.path, "/WBPHS_VCF.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  WBPHS_PoolSpecies=read.csv(paste(input.path, "/WBPHS_PoolSpecies.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
 
 
-  save(MasterFileList, file=paste(folder.path, "/MasterFileList.rda", sep=""))
-  save(MasterFileList_WBPHS, file=paste(folder.path, "/MasterFileList_WBPHS.rda", sep=""))
-  save(sppntable, file=paste(folder.path, "/sppntable.rda", sep=""))
-  save(WBPHSsppntable, file=paste(folder.path, "/WBPHSsppntable.rda", sep=""))
+  save(MasterFileList, file=paste(output.path, "/MasterFileList.rda", sep=""))
+  save(MasterFileList_WBPHS, file=paste(output.path, "/MasterFileList_WBPHS.rda", sep=""))
+  save(sppntable, file=paste(output.path, "/sppntable.rda", sep=""))
+  save(WBPHSsppntable, file=paste(output.path, "/WBPHSsppntable.rda", sep=""))
+  save(WBPHS_VCF, file=paste(output.path, "/WBPHS_VCF.rda", sep=""))
+  save(WBPHS_PoolSpecies, file=paste(output.path, "/WBPHS_PoolSpecies.rda", sep=""))
+
 
 
 }

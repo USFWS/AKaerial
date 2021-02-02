@@ -19,7 +19,7 @@ Iterate over all species and projects and create input files for use in StateSpa
 Iterate over all species and projects and create input files for use in StateSpace.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}
