@@ -49,7 +49,7 @@ DataSelect <- function(area, data.path=NA, strata.path=NA, transect.path=NA, thr
 
   data$Obs_Type[data$Obs_Type=="open" & data$Num==1 & data$Species!="SWANN"]="single"
 
-  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE)
+  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE, area=area)
 
   data=CorrectTrans(full.data=data, area=area, split.design=split.design, strata.file=strata.path, threshold=threshold)
 
@@ -1660,9 +1660,6 @@ TransSummary=function(full.data, split.design, area){
       if(area=="YKG" || area=="YKD" || area=="ACP" || area=="CRD" || area=="YKDV" || area=="KIG" || area=="BLSC"){
 
 
-        #if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
-
-
           obs.flown=full.data[!duplicated(full.data[c("Year","Observer", "Transect", "ctran")]),]
 
           obs.flown=obs.flown[obs.flown$Observer==observers[j],]
@@ -1671,6 +1668,7 @@ TransSummary=function(full.data, split.design, area){
           yr=obs.flown$Year
           obs=as.character(obs.flown$Observer)
           renum=as.numeric(as.character(obs.flown$ctran))
+          seat=as.character(obs.flown$Seat)
 
 
           #orig=as.numeric(as.character(obs.flown$Transect))
@@ -1693,87 +1691,15 @@ TransSummary=function(full.data, split.design, area){
           } #end k
 
 
-          tsum=data.frame(Year=yr, Observer=obs, Original=orig, Length=len, PartOf=renum, Strata=strata)
+          tsum=data.frame(Year=yr, Observer=obs, Seat=seat, Original=orig, Length=len, PartOf=renum, Strata=strata)
 
-          #temp.frame=temp.frame[order(part.of),]
-
-          #tsum=rbind(tsum, temp.frame)
-
-        #} # end year loop
-
-      } # end ykg/ykd loop
+      }
+      } # end j loop
 
 
-
-
-#
-#       if(area == "crd" || area=="acp"){
-#
-#
-#         if(length(full.data$long[full.data$obs==observers[j] & full.data$yr==years[i]])>0){
-#
-#           obs.flown=full.data[!duplicated(full.data[c("yr","obs","tran","ctran")]),]
-#
-#           obs.flown=obs.flown[obs.flown$yr==years[i] & obs.flown$obs==observers[j],]
-#
-#
-#           yr=obs.flown$yr
-#           obs=obs.flown$obs
-#           orig=as.numeric(as.character(obs.flown$tran))
-#           len=array(0,length(orig))
-#           strata=array(0,length(orig))
-#           part.of=as.numeric(as.character(obs.flown$ctran))
-#
-#           for (k in 1:length(orig)){
-#
-#             if (years[i]>2011){
-#               len[k]=sum(trans.obj@data$len[trans.obj@data$ORIGID==orig[k] & trans.obj@data$OBJECTID==part.of[k]])
-#             }
-#
-#             if (years[i]<=2011){
-#               len[k]=sum(trans.obj@data$len[trans.obj@data$OBJECTID==part.of[k]])
-#             }
-#
-#             #strata[k]=names(sort(table(tpoints$strata[tpoints$OBJECTID==part.of[k]]),decreasing=TRUE)[1])
-#             #strata[k]=names(which.max(table(tpoints$STRATNAME[tpoints$OBJECTID==part.of[k]])))
-#             strata[k]=names(which.max(table(full.data$strat[full.data$yr==years[i] & full.data$ctran==part.of[k]])))
-#
-#
-#           } #end k
-#
-#
-#
-#           temp.frame=data.frame(yr=yr, obs=obs, orig=orig, len=len, part.of=part.of, strata=strata)
-#
-#           temp.frame=temp.frame[order(orig),]
-#
-#           if (years[i]<=2011 & area=="acp"){
-#
-#             temp.frame=temp.frame[!duplicated(temp.frame[c("obs","len","part.of")]),]
-#
-#           }
-#
-#           tsum=rbind(tsum, temp.frame)
-#
-#
-#         } #end if any obs/yr
-#
-#       } #end if not ykg
-
-    } #end j observers
-
-  #} #end i years
 
   tsum$SampledArea=.2*tsum$Length
-#
-#   if(area=="ykg" || area=="crd"){tsum=tsum[!duplicated(tsum[,c("yr", "obs", "part.of")]),]}
-#
-#   if(area=="acp"){
-#
-#     tsum.agg=aggregate(list("len"=tsum$len,"sampled.area"=tsum$sampled.area), by=list("yr"=tsum$yr,"obs"=tsum$obs,"part.of"=tsum$part.of,"strata"=tsum$strata), FUN=sum)
-#     return(tsum.agg)
-#
-# }
+
 
   return(tsum)
 

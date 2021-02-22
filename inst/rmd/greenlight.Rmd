@@ -125,7 +125,7 @@ Status - RED
 `r if(length(test.seat$bad[,1]) == 0) {"\\end{comment}"}`
 
 ## Species Codes
-The current list of acceptable species codes can be found in the object [sppntable](../help/sppntable).
+The current list of acceptable species codes can be found in the object [sppntable](../help/sppntable), or for WBPHS, [WBPHSsppntable](../help/WBPHSsppntable).
 
 `r if(s.species != "green") {"\\begin{comment}"}`
 All species codes appear to be recorded correctly, or at least an acceptable substitute is known (for any YELLOW status codes entered).
@@ -134,7 +134,7 @@ Status - GREEN
 `r if(s.species != "green") {"\\end{comment}"}`
 
 `r if(length(test.species$change[,1]) == 0) {"\\begin{comment}"}`
-The following species codes are not acceptable and will be updated:
+The following species codes are not acceptable and will be updated in the QC_Obs file:
 
 ```{r spec_missing}
 kableExtra::kable_styling(kableExtra::kable(table(test.species$change$Species)))
@@ -373,7 +373,7 @@ print(num_plot)
 
 ## Transect Summary
 
-The following section provides a table of all reported transects in the data file.  These are NOT checked against the design transects or stratification and should be used as an extra QA/QC step for the transcriber only. 
+The following section provides a table of all REPORTED NAVIGATIONAL transects in the data file.  These are NOT checked against the design transects or stratification and should be used ONLY as an extra QA/QC step for the transcriber. Navigational transects are numbered incorrectly according to the design and get changed before any analysis.
 
 
 trans=sort(unique(data$Transect))

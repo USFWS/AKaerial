@@ -4,7 +4,7 @@
 \alias{GatherData}
 \title{Gather all data for a project and add unique design panel information}
 \usage{
-GatherData(area = "none", drive = "K:", ouput.folder = "none")
+GatherData(area = "none", drive = "K:", output.folder = "none")
 }
 \arguments{
 \item{area}{The abbreviation for the project.}

@@ -144,6 +144,8 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
 #' accepted by \code{\link{SplitDesign}}.
 #' @param transect.path The path name to the .shp file of lines designating the transect design.
 #' Must be in a format accepted by \code{\link{SplitDesign}}.
+#' @param area The area for the prject represented.  This only matters for the area CRD where there are vertical transects
+#' to be passed to SplitDesign.
 #'
 #' @return None
 #'
@@ -151,10 +153,10 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
 #'  ShowMeDesign(strata.path="C:/Habitat.shp", transect.path="My2016Transects.shp")
 #'
 #' @export
-ShowMeDesign=function(strata.path, transect.path){
+ShowMeDesign=function(strata.path, transect.path, area="Not CRD"){
 
 
-  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE)
+  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE, area=area)
 
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.path, type="proj")

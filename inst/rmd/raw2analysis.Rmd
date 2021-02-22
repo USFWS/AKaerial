@@ -13,11 +13,11 @@ library(plyr)
 
 ## Introduction
 
-This document provides a log file of changes made to raw observer data collected by Region 7 MBM Waterfowl Division aerial surveys in the creation of a file suitable for standard ratio estimation in the package **AKaerial**.  Historical data must meet quality checks against the current data dictionary for R7 MBM aerial surveys (found at <https://github.com/cfrost3/AKaerial/tree/master/data/AKAerialDataDictionary.csv>).
+This document provides a log file of changes made to raw observer data collected by Region 7 MBM Waterfowl Division aerial surveys in the creation of a file suitable for standard ratio estimation in the package **AKaerial**.  Historical data must meet quality checks against the current data dictionary for R7 MBM aerial surveys.
 
-Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (BPOP).
+Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (WBPHS).
 
-All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/cfrost3/AKaerial>.
+All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/USFWS/AKaerial>.
 
 
 You have chosen the file:
@@ -83,10 +83,10 @@ The observer initials must be uppercase.  Observer initials in the raw file were
 `r if(!("Species" %in% fix)) {"\\begin{comment}"}`
 
 ## Species Codes
-The current list of acceptable species codes can be found at:
-<https://github.com/cfrost3/AKaerial/tree/master/data/AKAerialSpeciesAOUCodes.csv>
+The current list of acceptable species codes can be found in the object [sppntable](../help/sppntable), or for the WBPHS survey, [WBPHSsppntable](../help/WBPHSsppntable).
 
-The following species codes are not acceptable and were updated:
+
+The following species codes are not acceptable and were updated from the raw observations to the QC_Obs file:
 
 ```{r spec_missing}
 kableExtra::kable_styling(kableExtra::kable(table(test.species$change$Species)))
