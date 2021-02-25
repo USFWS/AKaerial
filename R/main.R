@@ -279,6 +279,9 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 
   strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
+  if("NAME" %in% colnames(strata.proj@data)){
+  colnames(strata.proj@data)[colnames(strata.proj@data)=="NAME"]="STRATNAME"
+  }
 
   #intersect transects with strata, create new attribute SPLIT that is a unique
   #numbering system for latitude/strata combos
@@ -297,10 +300,18 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 
   if(area=="CRD"){
 
+
     for(i in 1:length(newlines.df$STRATNAME)){
-    if(newlines.df$STRATNAME[i]=="Egg Island"){newlines.df$ROUNDED[i]= round(newlines.df$long[i], digits=2)}
+    if(newlines.df$STRATNAME[i]=="Egg Island" || newlines.df$STRATNAME[i] == "egg"){newlines.df$ROUNDED[i]= round(newlines.df$long[i], digits=2)}
     }
-  }
+
+
+    }
+
+
+
+
+
 
 
   newlines.df$SPLIT=as.numeric(factor(interaction(newlines.df$STRATNAME, newlines.df$ROUNDED)))
@@ -395,7 +406,9 @@ LoadMap <- function(map.file, type="df") {
   strata.proj <- sp::spTransform(strata, "+proj=longlat +ellps=WGS84 +datum=WGS84")
   #strata<- rgeos::gBuffer(strata, byid=TRUE, width=0)
 
-
+  if("NAME" %in% colnames(strata.proj@data)){
+    colnames(strata.proj@data)[colnames(strata.proj@data)=="NAME"]="STRATNAME"
+  }
 
   strata.proj@data$id = rownames(strata.proj@data)
 
@@ -1847,10 +1860,10 @@ StrataSummary=function(strata.file){
 
  strata.area=merge(strata.area, diff.lat)
 
- if("Egg Island" %in% strata.area$strata){
+ if("Egg Island" %in% strata.area$strata || "egg" %in% strata.area$strata){
 
-   strata.area$diff[strata.area$strata=="Egg Island"]=10
-   strata.area$M[strata.area$strata=="Egg Island"]=50
+   strata.area$diff[strata.area$strata=="Egg Island" || strata.area$strata=="egg"]=10
+   strata.area$M[strata.area$strata=="Egg Island" || strata.area$strata=="egg"]=50
 
 
  }
