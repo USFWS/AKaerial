@@ -1520,22 +1520,22 @@ for (j in seq_along(full.data$closest)){
 }
 
 
-if(area=="CRD"){
+# if(area=="CRD"){
+#
+#
+#   for (k in 1:length(full.data$ctran)){
+#   full.data$ctran[k]=split.design$SPLIT[split.design$ORIGID==full.data$Transect[k]][1]
+#
+#   }
+#
+#   full.data$dist = full.data$dist/1000
+#   full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84 +datum=NAD83")
+#
+#
+# }
 
 
-  for (k in 1:length(full.data$ctran)){
-  full.data$ctran[k]=split.design$SPLIT[split.design$ORIGID==full.data$Transect[k]][1]
-
-  }
-
-  full.data$dist = full.data$dist/1000
-  full.data=sp::spTransform(full.data, "+proj=longlat +ellps=WGS84 +datum=NAD83")
-
-
-}
-
-
-if(area != "CRD"){
+# if(area != "CRD"){
 
   full.data$ctran=full.data$closest
 
@@ -1545,7 +1545,7 @@ if(area != "CRD"){
 
   full.data$ctran[full.data$dist>threshold]=NA
 
-}
+#}
 
 
 full.data=full.data[!(is.na(full.data$ctran)), ]
