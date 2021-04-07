@@ -275,7 +275,7 @@ SplitDesign <- function(strata.file, transect.file, SegCheck=FALSE, area="other"
 
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.file, type="proj")
-  design.proj <- sp::spTransform(design, "+proj=longlat +ellps=WGS84 +datum=NAD83")
+  strata.proj <- sp::spTransform(strata.proj, "+proj=longlat +ellps=WGS84 +datum=NAD83")
 
   strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
@@ -408,6 +408,10 @@ LoadMap <- function(map.file, type="df") {
 
   if("NAME" %in% colnames(strata.proj@data)){
     colnames(strata.proj@data)[colnames(strata.proj@data)=="NAME"]="STRATNAME"
+  }
+
+  if("DESCRIPTIO" %in% colnames(strata.proj@data)){
+    colnames(strata.proj@data)[colnames(strata.proj@data)=="DESCRIPTIO"]="STRATNAME"
   }
 
   strata.proj@data$id = rownames(strata.proj@data)
@@ -999,11 +1003,15 @@ Densities=function(data, area, output=FALSE) {
   #See equation 12.9, p. 249 in "Analysis and Management of Animal Populations"
   #Williams, Nichols, Conroy; 2002
 
+  counts.final$m=0
+
   for (j in 1:length(counts.final$Species)){
 
     M=data$strata$M[data$strata$Year==counts.final$Year[j] & data$strata$Observer==counts.final$Observer[j] & data$strata$strata==counts.final$strata[j]]
     m=data$strata$m[data$strata$Year==counts.final$Year[j] & data$strata$Observer==counts.final$Observer[j] & data$strata$strata==counts.final$strata[j]]
     prop.m=((1-(m/M))/m)
+
+    counts.final$m[j]=m
 
     #if(counts.final$sppn[j]=="SPEI"){print((counts.final$total.v[j]+(counts.final$density.total[j]^2)*(counts.final$total.area.var[j])-(2*counts.final$density.total[j]*counts.final$total.cov[j])))}
 

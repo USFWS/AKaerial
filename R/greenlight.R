@@ -752,7 +752,10 @@ CommonFix=function(data, fix, area){
 
     for(j in swan.probs$bad.index){
       data$Obs_Type[j]="open"
+
+      if(data$Year > 1998 || area != "WBPHS"){
       data$Num[j]=1
+        }
 
     }
 
