@@ -1942,7 +1942,7 @@ TrimToStrata=function(full.data, strata.path){
 #' }
 #'
 #' @export
-EstimatesTable=function(area, year){
+EstimatesTable=function(area, year, sample="full", n=0, seed=0){
 
   entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
 
@@ -2056,6 +2056,15 @@ EstimatesTable=function(area, year){
     print(data.path)
 
     data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+
+    if(sample != "full"){
+
+      data = TransectSample(data, sample=sample, n=n, seed=seed, plot="off")
+
+    }
+
+
+
     est=Densities(data, area=entries$AREA[i])
 
     if(i==1){output.table=est$estimates
