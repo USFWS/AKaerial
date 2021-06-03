@@ -625,13 +625,14 @@ factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.pro
 #' @param cap The overall table caption.  If nothing entered as an argument, the user will be prompted to enter a caption in the function.
 #' @param new.names The desired column names for the final table.  If these are not specified the user will be prompted to
 #' input within the function.
+#' @param missing Any missing years of data to be displayed as NA
 #'
 #' @return Renders an .html table and also returns it in data frame format
 #'
 #' @examples ReportTable(data=ACPHistoric$combined, species="SPEI", year = c(2007:2019), index = c("total", "total.var"), yr.avg=3, cap="Test table!", new.names=c("Year", "Total Birds", "SE", "3-year Avg", "SE"))
 #'
 #' @export
-ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new.names="none"){
+ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new.names="none", missing=NULL){
 
   library(dplyr)
 
@@ -662,6 +663,21 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
   if("Species" %in% colnames(data)){data = data %>% select(-"Species")}
   if("Observer" %in% colnames(data)){data = data %>% relocate("Observer")}
   if("Year" %in% colnames(data)){data = data %>% relocate("Year")}
+
+
+  if(yr.avg == 0 & length(index) == 2){
+
+    data[,which(colnames(data)==index[2])]=round(sqrt(data[,which(colnames(data)==index[2])]),0)
+
+  }
+
+  if(yr.avg == 0 & length(index) > 2){
+
+    data[,which(colnames(data)==index[2])]=round(sqrt(data[,which(colnames(data)==index[2])]),0)
+    data[,which(colnames(data)==index[4])]=round(sqrt(data[,which(colnames(data)==index[4])]),0)
+
+
+  }
 
   if(yr.avg > 1 & length(index) > 1){
 
@@ -745,8 +761,18 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 
   #table1 = data %>%
 
+  if(missing){
+    for(i in 1:length(missing)){
+
+      data = data %>%
+        add_row(Year=missing[i], .after = which(data$Year==missing[i]-1))
+    }
+
+  }
+
 
   data %>%
+
 
     kableExtra::kable(format="html",
           escape = F,

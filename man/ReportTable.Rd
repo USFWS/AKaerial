@@ -11,7 +11,8 @@ ReportTable(
   index = "none",
   yr.avg,
   cap = "none",
-  new.names = "none"
+  new.names = "none",
+  missing = NULL
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ If no index is specified, the user will be prompted with choices from the data.}
 
 \item{new.names}{The desired column names for the final table.  If these are not specified the user will be prompted to
 input within the function.}
+
+\item{missing}{Any missing years of data to be displayed as NA}
 }
 \value{
 Renders an .html table and also returns it in data frame format

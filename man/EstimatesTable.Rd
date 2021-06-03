@@ -4,7 +4,7 @@
 \alias{EstimatesTable}
 \title{Create a master table of estimates for an area}
 \usage{
-EstimatesTable(area, year)
+EstimatesTable(area, year, sample = "full", n = 0, seed = 0)
 }
 \arguments{
 \item{area}{The area code for dedicated MBM Alaska region surveys.
