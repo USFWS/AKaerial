@@ -293,9 +293,9 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
     proj=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][1]
     yr=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][2]
     type="QCObs"
-    #name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
+    name=strsplit(basename(tools::file_path_sans_ext(path.name)),"_")[[1]][4]
     #fix initials cut off on initials containing "_"
-    name=substr(basename(tools::file_path_sans_ext(path.name)), nchar(basename(tools::file_path_sans_ext(path.name)))-2, nchar(basename(tools::file_path_sans_ext(path.name))))
+    #name=substr(basename(tools::file_path_sans_ext(path.name)), nchar(basename(tools::file_path_sans_ext(path.name)))-2, nchar(basename(tools::file_path_sans_ext(path.name))))
 
     if(archive.dir != "default"){
     write.path=paste(archive.dir, "/", proj, "_", yr, "_QCObs_", name, ".csv", sep='')
@@ -577,7 +577,6 @@ if(area!="WBPHS"){
 
 
   }
-
 
   return(list("fail"=(length(bad[,1])!=0), "bad"=bad, "change"=change))
 

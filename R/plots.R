@@ -759,7 +759,6 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
   }
 
 
-  #table1 = data %>%
 
   if(missing){
     for(i in 1:length(missing)){
@@ -770,28 +769,22 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 
   }
 
+data$Year=as.character(data$Year)
 
   data %>%
 
 
-    kableExtra::kable(format="html",
+    kableExtra::kable(format="latex",
+                      format.args = list(big.mark = ","),
           escape = F,
           col.names = new.names,
 
           caption = cap) %>%
 
+    kableExtra::row_spec(0,bold=TRUE) %>%
 
-    kableExtra::kable_styling("bordered",
-                  full_width=FALSE,
-                  font_size = 14)
 
-  #print(table1)
-
-  # data = data.frame(matrix(unlist(data), length(data$Year), byrow=F),stringsAsFactors=FALSE)
-  #
-  # colnames(data)=new.names
-  #
-  # return(data)
+    kableExtra::kable_styling(full_width=FALSE)
 
 }
 
@@ -1060,6 +1053,8 @@ ReportFigure= function(data,
     ggplot2::coord_cartesian(xlim=c(min(plot.data$Year),max(plot.data$Year)), ylim=c(0, 1.5*max(plot.data$estimate)))
 
 
+  return(plot.base)
+
   if(test.out==TRUE){print(plot.base)}
 
 
@@ -1108,6 +1103,9 @@ ReportFigure= function(data,
                       values = leg.values,
                       labels = leg.labels,
                       limits = leg.limits) +
+
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = estimate - 1.96 * error, ymax = estimate + 1.96 * error, fill=index),
+                         alpha = 0.2) +
 
     ggplot2::scale_x_continuous(x.label, labels = c(min(sub.frame$Year):max(sub.frame$Year)), breaks = c(min(sub.frame$Year):max(sub.frame$Year))) +
 

@@ -375,7 +375,7 @@ print(num_plot)
 
 The following section provides a table of all REPORTED NAVIGATIONAL transects in the data file.  These are NOT checked against the design transects or stratification and should be used ONLY as an extra QA/QC step for the transcriber. Navigational transects are numbered incorrectly according to the design and get changed before any analysis.
 
-
+```{r transects}
 trans=sort(unique(data$Transect))
 
 trans %>%
@@ -391,3 +391,5 @@ trans %>%
                             font_size = 14)  %>%
 
   kableExtra::scroll_box(height = "250px")
+
+```
