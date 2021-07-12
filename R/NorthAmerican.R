@@ -97,7 +97,7 @@ Cut9= function(full.data){
   names(long.cut) <- c("strata","tran","lon")
 
   augment.data = full.data %>%
-    filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
+    #filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
     filter(Stratum == 9) %>%
     filter((Transect == long.cut$tran[1] & Lon > long.cut$lon[1]) |
              (Transect == long.cut$tran[2] & Lon > long.cut$lon[2]) |
@@ -122,7 +122,7 @@ Cut9= function(full.data){
   seg.cut$trans.seg = paste(seg.cut$Transect, seg.cut$Segment, sep=".")
 
   augment.data = full.data %>%
-    filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
+    #filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
     filter(Stratum == 9) %>%
     filter(!(trans.seg %in% seg.cut$trans.seg))
 
