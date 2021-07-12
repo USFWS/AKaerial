@@ -30,13 +30,19 @@ ReadWBPHS= function(full.data){
 
   full.data=full.data[full.data$Code==1,]
 
-  full.data=Cut9(full.data)
+  full.data$Observer=paste(full.data$Observer, full.data$Seat, sep=".")
 
-  full.data=full.data[full.data$keep==1,]
+  full.data=Cut9(full.data)
 
   full.data$Obs_Type[full.data$Obs_Type=="open" & full.data$Num==1 & full.data$Species!="SWANN"]="single"
 
-  full.data$Obs_Type[full.data$Obs_Type=="open" & full.data$Num==2]="pair"
+  for (i in 1:length(full.data$Obs_Type)){
+  if(full.data$Obs_Type[i]=="open" & full.data$Num[i]==2){
+    full.data$Obs_Type[i]="pair"
+  full.data$Num[i]=1
+  }
+  }
+
 
   full.data=AdjustCounts(full.data)
 
@@ -78,32 +84,54 @@ ReadWBPHS= function(full.data){
 #' @export
 Cut9= function(full.data){
 
-  full.data$keep=1
+  #full.data$keep=1
 
-  long.cut <- data.frame(cbind(rep(9,8),
+  full.data$trans.seg = paste(full.data$Transect, full.data$Segment, sep=".")
+
+  if(full.data$Year[1] >= 1999){
+
+    long.cut <- data.frame(cbind(rep(9,8),
                                seq(12,19,1),
                                c(-163.559,-163.738,-164.388,-164.130,-164.440,-164.995,-164.938,-164.810)))
 
-  names(long.cut) <- c("strata","tran","long")
+  names(long.cut) <- c("strata","tran","lon")
 
+  augment.data = full.data %>%
+    filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
+    filter(Stratum == 9) %>%
+    filter((Transect == long.cut$tran[1] & Lon > long.cut$lon[1]) |
+             (Transect == long.cut$tran[2] & Lon > long.cut$lon[2]) |
+             (Transect == long.cut$tran[3] & Lon > long.cut$lon[3]) |
+             (Transect == long.cut$tran[4] & Lon > long.cut$lon[4]) |
+             (Transect == long.cut$tran[5] & Lon > long.cut$lon[5]) |
+             (Transect == long.cut$tran[6] & Lon > long.cut$lon[6]) |
+             (Transect == long.cut$tran[7] & Lon > long.cut$lon[7]) |
+             (Transect == long.cut$tran[8] & Lon > long.cut$lon[8]) |
+             (!(Transect %in% long.cut$tran)))
 
-  for(i in 1:length(full.data$Species)){
-
-    if(full.data$Species[i] %in% c("CCGO", "GWFG", "SWAN") &
-       full.data$Stratum[i]==9 &
-       full.data$Transect[i] %in% long.cut$tran){
-
-      full.data$Stratum[i]=99
-      if(full.data$Lon[i]<long.cut$long[full.data$Transect[i]==long.cut$tran]){full.data$keep[i]=0}
-
-
-
-    }
-
-
+  if(length(augment.data[,1])>0){augment.data$Stratum = 99}
 
 
   }
+
+
+ if(full.data$Year[1] < 1999) {
+
+  seg.cut <- data.frame("Transect"=c(13,14,16,17,17,18,18,19,19), "Segment"=c(11,11,8,5,6,5,6,5,6))
+
+  seg.cut$trans.seg = paste(seg.cut$Transect, seg.cut$Segment, sep=".")
+
+  augment.data = full.data %>%
+    filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
+    filter(Stratum == 9) %>%
+    filter(!(trans.seg %in% seg.cut$trans.seg))
+
+    if(length(augment.data[,1])>0){augment.data$Stratum = 99}
+
+ }
+
+
+ full.data=rbind(full.data, augment.data)
 
 
   return(full.data)
@@ -145,7 +173,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     Year=numeric(),
     Observer=character(),
-    Strata=character(),
+    Stratum=character(),
     Transect=character(),
     n.segs=numeric(),
     Length=numeric(),
@@ -180,7 +208,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
       Year=rep(temp.data$Year[1], length(st.sets[,1])),
       Observer=rep(temp.data$Observer[1], length(st.sets[,1])),
-      Strata=st.sets$Stratum,
+      Stratum=st.sets$Stratum,
       Transect=st.sets$Transect,
       n.segs=st.sets$n.segs,
       Length=st.sets$Length, stringsAsFactors = FALSE
@@ -194,18 +222,18 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
   }
 
 
-  for (i in 1:length(flight$Strata)){
+  for (i in 1:length(flight$Stratum)){
 
-    if(flight$Strata[i]==99){
+    if(flight$Stratum[i]==99 && flight$Year >= 1999){
 
-      if(flight$Transect[i]==12){flight$SampledArea[i]=22 * (strip.width/2)}
-      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763* (strip.width/2)}
-      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32* (strip.width/2)}
-      if(flight$Transect[i]==15){flight$SampledArea[i]=12* (strip.width/2)}
-      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543* (strip.width/2)}
-      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395* (strip.width/2)}
-      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663* (strip.width/2)}
-      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372* (strip.width/2)}
+      if(flight$Transect[i]==12){flight$SampledArea[i]=22}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
 
 
 
@@ -849,3 +877,145 @@ EstimatesTableWBPHS=function(year){
 }
 
 
+
+
+WBPHStidy = function(adj, flight){
+
+  trans.f = flight %>%
+    group_by(Year, Stratum, Transect) %>%
+    summarise(SampledArea = sum(SampledArea))
+
+  trans.adj = adj %>%
+    group_by(Year, Stratum, Transect, Species) %>%
+    filter(!(Species %in% c("START", "END", "NoBirdsSeen"))) %>%
+    summarise(total = sum(total), itotal = sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+
+  trans.merge = merge(trans.adj, trans.f) %>%
+    complete(Year,  nesting(Stratum, Transect), Species, fill=list(total=0, itotal=0, ibb=0, sing1pair2=0, flock=0)) %>%
+    group_by(Stratum, Transect) %>%
+    fill(SampledArea, .direction=c("updown"))
+
+  eider = trans.merge %>%
+    filter(Species %in% c("COEI", "STEI", "KIEI", "SPEI", "UNEI")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Eider", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+
+  merganser = trans.merge %>%
+    filter(Species %in% c("COME", "RBME", "UNME")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Merganser", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+
+  scoter = trans.merge %>%
+    filter(Species %in% c("SCOT", "WWSC", "SUSC", "BLSC")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Scoter", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+
+  grebe = trans.merge %>%
+    filter(Species %in% c("HOGR", "RNGR", "UNGR")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Grebe", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+
+
+  trans.merge = rbind(trans.merge, eider, merganser, scoter, grebe)
+
+  by.stratum = trans.merge %>%
+    group_by(Year, Stratum, Species) %>%
+    summarise(total.density = sum(total)/sum(SampledArea),
+              itotal.density = sum(itotal)/sum(SampledArea),
+              ibb.density = sum(ibb)/sum(SampledArea),
+              sing1pair2.density = sum(sing1pair2)/sum(SampledArea),
+              flock.density = sum(flock)/sum(SampledArea),
+              n = length(Transect),
+              total.numerator = sum(total^2)-2*sum(total)*sum(total*SampledArea)/sum(SampledArea)+((sum(total)/sum(SampledArea))^2)*sum(SampledArea^2),
+              itotal.numerator = sum(itotal^2)-2*sum(itotal)*sum(itotal*SampledArea)/sum(SampledArea)+((sum(itotal)/sum(SampledArea))^2)*sum(SampledArea^2),
+              ibb.numerator = sum(ibb^2)-2*sum(ibb)*sum(ibb*SampledArea)/sum(SampledArea)+((sum(ibb)/sum(SampledArea))^2)*sum(SampledArea^2),
+              sing1pair2.numerator = sum(sing1pair2^2)-2*sum(sing1pair2)*sum(sing1pair2*SampledArea)/sum(SampledArea)+((sum(sing1pair2)/sum(SampledArea))^2)*sum(SampledArea^2),
+              flock.numerator = sum(flock^2)-2*sum(flock)*sum(flock*SampledArea)/sum(SampledArea)+((sum(flock)/sum(SampledArea))^2)*sum(SampledArea^2),
+              denominator= n*(n-1)*(mean(SampledArea)^2))
+
+  strata.area=data.frame("Stratum"=c(1, 2,3,4,5,6,7,8,9,99,10,11,12), "Area"=c(2200,3900,9300,10800,3400,4100,400,9900,26600,21637.937,3850,5350,1970))
+
+  by.stratum = merge(by.stratum, strata.area)
+
+  estimates = by.stratum %>%
+    mutate(total.est = total.density * Area,
+           total.var = Area^2 * total.numerator / denominator,
+           total.se = sqrt(total.var),
+           itotal.est = itotal.density * Area,
+           itotal.var = Area^2 * itotal.numerator / denominator,
+           ibb.est = ibb.density * Area,
+           ibb.var = Area^2 * ibb.numerator / denominator,
+           sing1pair2.est = sing1pair2.density * Area,
+           sing1pair2.var = Area^2 * sing1pair2.numerator / denominator,
+           flock.est = flock.density * Area,
+           flock.var = Area^2 * flock.numerator / denominator)
+
+
+  vcf = WBPHS_VCF %>%
+    select(SPECIES, STRATUM, VCF, VCF_SE) %>%
+    mutate(VCF.var = VCF_SE^2) %>%
+    rename(Species=SPECIES, Stratum = STRATUM)
+
+  estimates = merge(estimates, vcf, all.x=TRUE)
+
+
+  estimates = estimates %>%
+    mutate(adj.total = total.est * VCF,
+           adj.total.se = sqrt((VCF^2*total.var+total.density*VCF.var-total.var*VCF.var)),
+           adj.itotal = itotal.est * VCF ,
+           adj.itotal.se = sqrt((VCF^2*itotal.var+itotal.density*VCF.var-itotal.var*VCF.var)) )
+
+  return(estimates)
+
+}
+
+
+
+
+WBPHSbyYear = function(year){
+
+  entries = MasterFileList_WBPHS %>%
+    filter(YEAR==year)
+
+  for (i in 1:length(entries$YEAR)){
+
+    if(i == 1){full.data=read.csv(paste(entries$DRIVE[i], entries$OBS[i], sep=""), header=TRUE, stringsAsFactors = FALSE)}
+
+    if(i != 1){temp.data=read.csv(paste(entries$DRIVE[i], entries$OBS[i], sep=""), header=TRUE, stringsAsFactors = FALSE)
+    full.data=rbind(full.data, temp.data)
+    }
+
+  }
+
+
+  processed = ReadWBPHS(full.data)
+
+  flight = SummaryWBPHS(processed)
+
+  est = WBPHStidy(processed, flight)
+
+  return(est)
+}
+
+
+WBPHSMultipleYear= function(years){
+
+  for (i in years){
+    if (!(i %in% MasterFileList_WBPHS$YEAR)){next}
+    if (i %in% MasterFileList_WBPHS$YEAR){
+      if(i == years[1]){
+        print(i)
+        EstimatesTableWBPHS=WBPHSbyYear(i)
+      }
+      if(i != years[1]){
+        print(i)
+        temp.table=WBPHSbyYear(i)
+        EstimatesTableWBPHS=rbind(EstimatesTableWBPHS, temp.table)
+      }
+
+    }
+  }
+
+  write.csv(EstimatesTableWBPHS, "EstimatesTableWBPHS.csv", row.names = FALSE, quote=FALSE)
+
+}
