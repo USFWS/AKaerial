@@ -232,9 +232,9 @@ CompositeIndices = function(tavs.year = c(1985:2021),
 
 
   if(versioning==TRUE){
-    acp.version = file.info("./data/ACPHistoric.rda")$ctime
-    ykg.version = file.info("./data/YKGHistoric.rda")$ctime
-    wbphs.version = file.info("./data/WBPHSHistoric.rda")$ctime
+    acp.version = file.info("./data/ACPHistoric.rda")$mtime
+    ykg.version = file.info("./data/YKGHistoric.rda")$mtime
+    wbphs.version = file.info("./data/WBPHSHistoric.rda")$mtime
 
     versions = data.frame("Survey"=c("ACP", "WBPHS", "YKG"), "Version"=c(acp.version, wbphs.version, ykg.version))
 
