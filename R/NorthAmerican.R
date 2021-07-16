@@ -239,6 +239,58 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     }
 
+    #2015 had 2 segments on transect 12 that were not sampled
+
+    if(flight$Stratum[i]==99 && flight$Year == 2015){
+
+      if(flight$Transect[i]==12){flight$SampledArea[i]=18}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
+
+
+
+    }
+
+    #2008 sampled areas different
+
+    if(flight$Stratum[i]==99 && flight$Year == 2008){
+
+      if(flight$Transect[i]==12){flight$SampledArea[i]=22}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=20.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
+
+
+
+    }
+
+
+    #2017 sampled areas different
+
+    if(flight$Stratum[i]==99 && flight$Year == 2017){
+
+      if(flight$Transect[i]==12){flight$SampledArea[i]=16}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
+
+
+
+    }
+
   }
 
 
@@ -943,12 +995,16 @@ WBPHStidy = function(adj, flight){
            total.se = sqrt(total.var),
            itotal.est = itotal.density * Area,
            itotal.var = Area^2 * itotal.numerator / denominator,
+           itotal.se = sqrt(itotal.var),
            ibb.est = ibb.density * Area,
            ibb.var = Area^2 * ibb.numerator / denominator,
+           ibb.se = sqrt(ibb.var),
            sing1pair2.est = sing1pair2.density * Area,
            sing1pair2.var = Area^2 * sing1pair2.numerator / denominator,
+           sing1pair2.se = sqrt(sing1pair2.var),
            flock.est = flock.density * Area,
-           flock.var = Area^2 * flock.numerator / denominator)
+           flock.var = Area^2 * flock.numerator / denominator,
+           flock.se = sqrt(flock.var))
 
 
   vcf = WBPHS_VCF %>%
