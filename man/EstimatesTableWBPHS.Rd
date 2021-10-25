@@ -2,7 +2,7 @@
 % Please edit documentation in R/NorthAmerican.R
 \name{EstimatesTableWBPHS}
 \alias{EstimatesTableWBPHS}
-\title{Calculate index estimates for a given year of WBPHS data}
+\title{Deprecated function to calculate index estimates for a given year of WBPHS data}
 \usage{
 EstimatesTableWBPHS(year)
 }
@@ -16,7 +16,7 @@ List object with 2 elements: \enumerate{
 }
 }
 \description{
-EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator
+EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator.  This function is deprecated and replaced by WBPHStidy.
 }
 \details{
 EstimatesTableWBPHS provides a shortcut to running piecewise functions for creating an annual index estimate for the WBPHS survey.

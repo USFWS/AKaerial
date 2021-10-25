@@ -7,7 +7,7 @@
 SummaryWBPHS(full.data, strip.width = 0.25)
 }
 \arguments{
-\item{full.data}{A clean (greenlight) file of observations}
+\item{full.data}{A clean (greenlight) file of observations by stratum, transect, and segment}
 
 \item{strip.width}{The sampled strip width in miles}
 }

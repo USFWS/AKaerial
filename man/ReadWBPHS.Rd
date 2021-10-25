@@ -25,6 +25,7 @@ other MBM coastal zone surveys (YKG).  This function also adjusts the counts for
 \item ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
 \item total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
 \item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
+\item flock - Flocks.  Opens and flkdrakes of 5 or more.
 }
 In addition, due to inconsistencies in interpretation of the field protocol for data collection, open 1 and open 2 are changed to single 1
 and pair 1, respectively, across the entire data set.

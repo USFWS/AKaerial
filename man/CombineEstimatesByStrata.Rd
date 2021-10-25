@@ -2,7 +2,7 @@
 % Please edit documentation in R/NorthAmerican.R
 \name{CombineEstimatesByStrata}
 \alias{CombineEstimatesByStrata}
-\title{Combine WBPHS estimates by strata}
+\title{Combine WBPHS estimates by stratum}
 \usage{
 CombineEstimatesByStrata(estimates)
 }
@@ -10,13 +10,13 @@ CombineEstimatesByStrata(estimates)
 \item{estimates}{WBPHS index estimates from EstimatesWBPHS.}
 }
 \value{
-Data frame of combined index estimates by species at the strata level
+Data frame of combined index estimates by species at the stratum level
 }
 \description{
-CombineEstimatesByStrata will combine multiple observer estimates at the strata level
+CombineEstimatesByStrata will combine multiple observer estimates at the stratum level
 }
 \details{
-CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the strata level.
+CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the stratum level.
 The resulting data frame is appended onto the master WBPHS results table.
 }
 \references{

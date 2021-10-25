@@ -13,6 +13,7 @@
 #' \item ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
 #' \item total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
 #' \item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
+#' \item flock - Flocks.  Opens and flkdrakes of 5 or more.
 #' }
 #' In addition, due to inconsistencies in interpretation of the field protocol for data collection, open 1 and open 2 are changed to single 1
 #' and pair 1, respectively, across the entire data set.
@@ -161,7 +162,7 @@ Cut9= function(full.data){
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
 #' @references \url{https://github.com/USFWS/AKaerial}
 #'
-#' @param full.data A clean (greenlight) file of observations
+#' @param full.data A clean (greenlight) file of observations by stratum, transect, and segment
 #' @param strip.width The sampled strip width in miles
 #'
 #' @return Data frame containing strata, transect, and segment information by observer
@@ -726,11 +727,11 @@ SplitWBPHS= function(folder.path){
 
 
 
-#' Combine WBPHS estimates by strata
+#' Combine WBPHS estimates by stratum
 #'
-#' CombineEstimatesByStrata will combine multiple observer estimates at the strata level
+#' CombineEstimatesByStrata will combine multiple observer estimates at the stratum level
 #'
-#' CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the strata level.
+#' CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the stratum level.
 #' The resulting data frame is appended onto the master WBPHS results table.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
@@ -738,7 +739,7 @@ SplitWBPHS= function(folder.path){
 #'
 #' @param estimates WBPHS index estimates from EstimatesWBPHS.
 #'
-#' @return Data frame of combined index estimates by species at the strata level
+#' @return Data frame of combined index estimates by species at the stratum level
 #'
 #' @export
 CombineEstimatesByStrata=function(estimates){
@@ -844,9 +845,9 @@ print(map)
 
 
 
-#' Calculate index estimates for a given year of WBPHS data
+#' Deprecated function to calculate index estimates for a given year of WBPHS data
 #'
-#' EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator
+#' EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator.  This function is deprecated and replaced by WBPHStidy.
 #'
 #' EstimatesTableWBPHS provides a shortcut to running piecewise functions for creating an annual index estimate for the WBPHS survey.
 #' The function uses MasterFileList_WBPHS as a lookup table to locate the appropriate raw observation files, then calls ReadWBPHS to concatenate,
@@ -929,8 +930,29 @@ EstimatesTableWBPHS=function(year){
 }
 
 
-
-
+#' Calculate index estimates for specified WBPHS count and transect data
+#'
+#' WBPHStidy uses annual WBPHS adjusted count data and flown transects to calculate an index estimate using a ratio estimator
+#'
+#' WBPHStidy provides a method for creating an annual index estimate for the WBPHS survey.  Individual observations and sampled areas are summed first at the transect level.
+#' Groups are created for eiders, mergansers, scoters, and grebes that pool species as: \enumerate{
+#' \item Eider COEI, KIEI, SPEI, STEI, UNEI
+#' \item Merganser COME, RBME, UNME
+#' \item Scoter BLSC, SCOT, SUSC, WWSC
+#' \item Grebe HOGR, RNGR, UNGR
+#' }
+#' Transect-level counts are summarized at the stratum level to produce densities of index groupings and variance according to the classic ratio estimator (Cochran 1977),
+#' then index estimates are adjusted according to historical visual correction factors (VCFs, see WBPHS_VCF) in an attempt to correct for incomplete detection.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param adj Adjusted counts for a given year of the WBPHS survey (see ReadWBPHS)
+#' @param flight Flight summary for a given year of the WBPHS survey (see SummaryWBPHS)
+#'
+#' @return Data frame of counts, densities, areas, index estimates, and adjusted index estimates.
+#'
+#' @export
 WBPHStidy = function(adj, flight){
 
   trans.f = flight %>%
@@ -1016,10 +1038,17 @@ WBPHStidy = function(adj, flight){
 
 
   estimates = estimates %>%
-    mutate(adj.total = total.est * VCF,
+    mutate(adj.total.est = total.est * VCF,
            adj.total.se = sqrt((VCF^2*total.var+total.density*VCF.var-total.var*VCF.var)),
-           adj.itotal = itotal.est * VCF ,
-           adj.itotal.se = sqrt((VCF^2*itotal.var+itotal.density*VCF.var-itotal.var*VCF.var)) )
+           adj.itotal.est = itotal.est * VCF ,
+           adj.itotal.se = sqrt((VCF^2*itotal.var+itotal.density*VCF.var-itotal.var*VCF.var)),
+           adj.ibb.est = ibb.est * VCF,
+           adj.ibb.se = sqrt((VCF^2*ibb.var+ibb.density*VCF.var-ibb.var*VCF.var)),
+           adj.sing1pair2.est = sing1pair2.est * VCF,
+           adj.sing1pair2.se = sqrt((VCF^2*sing1pair2.var+sing1pair2.density*VCF.var-sing1pair2.var*VCF.var)),
+           adj.flock.est = flock.est * VCF,
+           adj.flock.se = sqrt((VCF^2*flock.var+flock.density*VCF.var-flock.var*VCF.var))
+           )
 
   return(estimates)
 
@@ -1027,7 +1056,21 @@ WBPHStidy = function(adj, flight){
 
 
 
-
+#' Calculate index estimates for a given year of WBPHS count and transect data
+#'
+#' WBPHSbyYear pulls annual WBPHS data specified by MasterFileList_WBPHS to calculate an index estimate using a ratio estimator
+#'
+#' WBPHSbyYear provides a wrapper for WBPHStidy that will select the appropriate data files for generating an annual index estimate for the WBPHS survey.
+#' MasterFileList_WBPHS contains a list of "official" files and folder paths for data used in WBPHS estimates tables.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param year The 4-digit year requested to estimate generation
+#'
+#' @return Data frame of counts, densities, areas, index estimates, and adjusted index estimates.
+#'
+#' @export
 WBPHSbyYear = function(year){
 
   entries = MasterFileList_WBPHS %>%
@@ -1054,6 +1097,31 @@ WBPHSbyYear = function(year){
 }
 
 
+
+
+
+#' Calculate index estimates for a given year of WBPHS count and transect data
+#'
+#' WBPHSMultipleYear iterates over a range of years to produce multiple years of index estimates using a ratio estimator
+#'
+#' WBPHSMultipleYear provides a wrapper for WBPHSbyYear that will select the appropriate data files for generating annual index estimates for the WBPHS survey.
+#' MasterFileList_WBPHS contains a list of "official" files and folder paths for data used in WBPHS estimates tables. The final table includes year- and species-specific
+#' deletions based on annual variation in, changes to, and interpretations of the standardized protocol.  The unavailable estimates include: \enumerate{
+#' \item BRAN, EMGO, SACR, SNGO, SWAN, SWANN from 1957 to 1963
+#' \item COLO, PALO, RBLO, UNLO, YBLO from 1957 to 1970
+#' \item HOGR, RNGR, UNGR from 1957 to 1990
+#' \item CCGO, GWFG from 1957 to 1963, other than total estimates (augmented indices unavailable)
+#' }
+#'
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param years The range of years requested to estimate generation, currently available for 1957-2021.
+#'
+#' @return Data frame of counts, densities, areas, index estimates, and adjusted index estimates.
+#'
+#' @export
 WBPHSMultipleYear= function(years){
 
   for (i in years){
@@ -1071,6 +1139,29 @@ WBPHSMultipleYear= function(years){
 
     }
   }
+
+
+
+
+  EstimatesTableWBPHS = EstimatesTableWBPHS %>%
+    complete(Species, nesting(Year, Stratum), fill=list(total.est=0, itotal.est=0, ibb.est=0, sing1pair2.est=0, flock.est=0)) %>%
+    filter(Species != "NONE")
+
+  ## Clip conditions for exceptions to regular data collection
+
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("BRAN", "EMGO", "SACR", "SNGO", "SWAN", "SWANN") & EstimatesTableWBPHS$Year %in% c(1957:1963), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("COLO", "PALO", "RBLO", "UNLO", "YBLO") & EstimatesTableWBPHS$Year %in% c(1957:1970), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("HOGR", "RNGR", "UNGR") & EstimatesTableWBPHS$Year %in% c(1957:1990), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("CCGO", "GWFG") & EstimatesTableWBPHS$Year %in% c(1957:1963), c("itotal.density", "ibb.density", "sing1pair2.density", "flock.density",
+                                                                                                                         "itotal.numerator", "ibb.numerator", "sing1pair2.numerator", "flock.numerator",
+                                                                                                                         "itotal.est", "ibb.est", "sing1pair2.est", "flock.est",
+                                                                                                                         "itotal.var", "ibb.var", "sing1pair2.var", "flock.var",
+                                                                                                                         "itotal.se", "ibb.se", "sing1pair2.se", "flock.se",
+                                                                                                                         "adj.itotal.est", "adj.ibb.est", "adj.sing1pair2.est", "adj.flock.est",
+                                                                                                                         "adj.itotal.se", "adj.ibb.se", "adj.sing1pair2.se", "adj.flock.se"
+                                                                                                                         )] = NA
+
+
 
   write.csv(EstimatesTableWBPHS, "EstimatesTableWBPHS.csv", row.names = FALSE, quote=FALSE)
 

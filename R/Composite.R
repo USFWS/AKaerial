@@ -1,5 +1,34 @@
 
-
+#' Compile index estimates for Pacific Flyway data book
+#'
+#' CompositeIndices compiles appropriate estimates from multiple surveys for Taverner's geese, Pacific whitefronts, mid-continent whitefronts, western tundra and Pacific coast trumpeter swans, and lesser Canada geese.
+#'
+#' USFWS-MBM-Alaska Region surveys are used in harvest management decisions by the Pacific Flyway.  Although management plans generally use a single survey index to decide
+#' appropriate management actions, 6 species require a composite index across 2 or more Alaska Region surveys.  These species and their composite indices are: \enumerate{
+#' \item Taverner's geese (TAVS) - All strata from the Arctic Coastal Plain (ACPHistoric), CCGO in the "low" stratum or at latitudes > 63 on the Yukon-Kuskokwim Delta (YKGHistoric), strata 10, 11, and 99 (clipped section of 9) on the WBPHS (WBPHSHistoric)
+#' \item Pacific white-fronted geese - GWFG on the Yukon-Kuskokwim Delta (YKGHistoric) or in strata 8 or 99 on the WBPHS (WBPHSHistoric)
+#' \item Western tundra swans (TUSW) - TUSW or SWAN on the Yukon-Kuskokwim Delta (YKGHistoric) or in strata 8, 99, 10, or 11 on the WBPHS (WBPHSHistoric)
+#' \item Lesser Canada geese - CCGO in strata 1, 2, 3, 4, or 12 on the WBPHS (WBPHSHistoric)
+#' \item Mid-continent white-fronted geese - GWFG in strata 3, 4, 5, 6, 10, or 11 on the WBPHS (WBPHSHistoric) and all GWFG on the Arctic Coastal Plain (ACPHistoric)
+#' \item Pacific coast trumpeter swans (TRSW) - TRSW or SWAN in strata 1, 2, 3, 4, 6, or 7 on the WBPHS (WBPHSHistoric)
+#' }
+#' Note that WBPHS stratum 9 is clipped and renamed 99 to avoid double counting birds in an area surveyed on the Yukon-Kuskokwim Delta surveys.
+#' The default range of years for each species is set to the earliest year in which all surveys that make up the index were conducted.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param tavs.year range of years for the Taverner's geese composite table, defaults to 1985-2021
+#' @param pw.year range of years for the Pacific white-fronted goose composite table, defaults to 1985-2021
+#' @param tusw.year range of years for the western tundra swan composite table, defaults to 1985-2021
+#' @param lesser.year range of years for the lesser Canada goose composite table, defaults to 1964-2021
+#' @param mcw.year range of years for the mid-continent white-fronted goose composite table, defaults to 1964-2021
+#' @param trsw.year range of years for the Pacific coast trumpeter swan composite table, defaults to 1964-2021
+#' @param versioning TRUE/FALSE should the time stamp of the data tables used be included with the composite table?
+#'
+#' @return Six .csv files are written to the current working directory (1 for each species) and optionally a .csv of the current version of the data files used
+#'
+#' @export
 CompositeIndices = function(tavs.year = c(1985:2021),
                             pw.year = c(1985:2021),
                             tusw.year = c(1985:2021),
