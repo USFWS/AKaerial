@@ -1108,7 +1108,7 @@ WBPHSbyYear = function(year){
 #' MasterFileList_WBPHS contains a list of "official" files and folder paths for data used in WBPHS estimates tables. The final table includes year- and species-specific
 #' deletions based on annual variation in, changes to, and interpretations of the standardized protocol.  The unavailable estimates include: \enumerate{
 #' \item BRAN, EMGO, SACR, SNGO, SWAN, SWANN from 1957 to 1963
-#' \item COLO, PALO, RBLO, UNLO, YBLO from 1957 to 1970
+#' \item COLO, PALO, RTLO, UNLO, YBLO from 1957 to 1970
 #' \item HOGR, RNGR, UNGR from 1957 to 1990
 #' \item CCGO, GWFG from 1957 to 1963, other than total estimates (augmented indices unavailable)
 #' }
@@ -1141,17 +1141,93 @@ WBPHSMultipleYear= function(years){
   }
 
 
+  EstimatesTableWBPHS = EstimatesTableWBPHS %>%
+    complete(Species, nesting(Year, Stratum), fill=list(
+                                                        total.est=0,
+                                                        total.density=0,
+                                                        total.numerator=0,
+                                                        total.var=0,
+                                                        total.se=0,
+                                                        adj.total.est=0,
+                                                        adj.total.se=0,
+                                                        itotal.est=0,
+                                                        itotal.density=0,
+                                                        itotal.numerator=0,
+                                                        itotal.var=0,
+                                                        itotal.se=0,
+                                                        adj.itotal.est=0,
+                                                        adj.itotal.se=0,
+                                                        ibb.est=0,
+                                                        ibb.density=0,
+                                                        ibb.numerator=0,
+                                                        ibb.var=0,
+                                                        ibb.se=0,
+                                                        adj.ibb.est=0,
+                                                        adj.ibb.se=0,
+                                                        sing1pair2.est=0,
+                                                        sing1pair2.density=0,
+                                                        sing1pair2.numerator=0,
+                                                        sing1pair2.var=0,
+                                                        sing1pair2.se=0,
+                                                        adj.sing1pair2.est=0,
+                                                        adj.sing1pair2.se=0,
+                                                        flock.est=0,
+                                                        flock.density=0,
+                                                        flock.numerator=0,
+                                                        flock.var=0,
+                                                        flock.se=0,
+                                                        adj.flock.est=0,
+                                                        adj.flock.se=0,
+                                                        n=0,
+                                                        denominator = -999,
+                                                        Area = -999,
+                                                        VCF = NA,
+                                                        VCF_SE = NA,
+                                                        VCF.var = NA)) %>%
+    filter(Species != "NONE")
 
+
+
+  vcf = WBPHS_VCF %>%
+    select(SPECIES, STRATUM, VCF, VCF_SE) %>%
+    mutate(VCF.var = VCF_SE^2) %>%
+    rename(Species=SPECIES, Stratum = STRATUM)
 
   EstimatesTableWBPHS = EstimatesTableWBPHS %>%
-    complete(Species, nesting(Year, Stratum), fill=list(total.est=0, itotal.est=0, ibb.est=0, sing1pair2.est=0, flock.est=0)) %>%
-    filter(Species != "NONE")
+    left_join(vcf, by = c("Species", "Stratum")) %>%
+    select(-c(VCF.x, VCF_SE.x, VCF.var.x)) %>%
+    rename(VCF=VCF.y, VCF_SE=VCF_SE.y, VCF.var=VCF.var.y) %>%
+    relocate(c(VCF, VCF_SE, VCF.var), .before = adj.total.est)
+
+
+   for (i in 1:length(EstimatesTableWBPHS$denominator)){
+
+     if(!(is.na(test$denominator[i]))){
+     if(EstimatesTableWBPHS$denominator[i] == -999){
+    thisyear=EstimatesTableWBPHS$Year[i]
+    thisspecies=EstimatesTableWBPHS$Species[i]
+    thisstratum=EstimatesTableWBPHS$Stratum[i]
+
+
+
+    denom = sort(unique(EstimatesTableWBPHS$denominator[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
+    area = sort(unique(EstimatesTableWBPHS$Area[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
+
+    EstimatesTableWBPHS$denominator[i] = denom
+    EstimatesTableWBPHS$Area[i] = area
+
+     }
+   }
+}
+
 
   ## Clip conditions for exceptions to regular data collection
 
   EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("BRAN", "EMGO", "SACR", "SNGO", "SWAN", "SWANN") & EstimatesTableWBPHS$Year %in% c(1957:1963), -c(1:3)] = NA
-  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("COLO", "PALO", "RBLO", "UNLO", "YBLO") & EstimatesTableWBPHS$Year %in% c(1957:1970), -c(1:3)] = NA
-  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("HOGR", "RNGR", "UNGR") & EstimatesTableWBPHS$Year %in% c(1957:1990), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("COLO", "PALO", "RTLO", "UNLO", "YBLO") & EstimatesTableWBPHS$Year %in% c(1957:1970), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("HOGR", "RNGR", "UNGR", "Grebe") & EstimatesTableWBPHS$Year %in% c(1957:1990), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("BAEA") & EstimatesTableWBPHS$Year %in% c(1957:1964), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("GOEA") & EstimatesTableWBPHS$Year %in% c(1957:2016), -c(1:3)] = NA
   EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("CCGO", "GWFG") & EstimatesTableWBPHS$Year %in% c(1957:1963), c("itotal.density", "ibb.density", "sing1pair2.density", "flock.density",
                                                                                                                          "itotal.numerator", "ibb.numerator", "sing1pair2.numerator", "flock.numerator",
                                                                                                                          "itotal.est", "ibb.est", "sing1pair2.est", "flock.est",
@@ -1162,6 +1238,8 @@ WBPHSMultipleYear= function(years){
                                                                                                                          )] = NA
 
 
+  EstimatesTableWBPHS = EstimatesTableWBPHS %>%
+    arrange(Species, Year, Stratum)
 
   write.csv(EstimatesTableWBPHS, "EstimatesTableWBPHS.csv", row.names = FALSE, quote=FALSE)
 
