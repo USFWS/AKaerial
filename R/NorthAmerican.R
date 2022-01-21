@@ -31,6 +31,10 @@ ReadWBPHS= function(full.data){
 
   full.data=full.data[full.data$Code==1,]
 
+  keepers=unique(WBPHSsppntable$WBPHS[WBPHSsppntable$WBPHS_EST==1])
+
+  full.data=full.data[full.data$Species %in% keepers,]
+
   full.data$Observer=paste(full.data$Observer, full.data$Seat, sep=".")
 
   full.data=Cut9(full.data)
@@ -1110,6 +1114,8 @@ WBPHSbyYear = function(year){
 #' \item BRAN, EMGO, SACR, SNGO, SWAN, SWANN from 1957 to 1963
 #' \item COLO, PALO, RTLO, UNLO, YBLO from 1957 to 1970
 #' \item HOGR, RNGR, UNGR from 1957 to 1990
+#' \item BAEA from 1957 to 1964
+#' \item GOEA from 1957 to 2016
 #' \item CCGO, GWFG from 1957 to 1963, other than total estimates (augmented indices unavailable)
 #' }
 #'
@@ -1178,7 +1184,7 @@ WBPHSMultipleYear= function(years){
                                                         flock.se=0,
                                                         adj.flock.est=0,
                                                         adj.flock.se=0,
-                                                        n=0,
+                                                        n=-999,
                                                         denominator = -999,
                                                         Area = -999,
                                                         VCF = NA,
@@ -1202,7 +1208,26 @@ WBPHSMultipleYear= function(years){
 
    for (i in 1:length(EstimatesTableWBPHS$denominator)){
 
-     if(!(is.na(test$denominator[i]))){
+
+     if(is.na(EstimatesTableWBPHS$VCF[i])){
+
+       EstimatesTableWBPHS$adj.total.est[i]=NA
+       EstimatesTableWBPHS$adj.total.se[i]=NA
+       EstimatesTableWBPHS$adj.itotal.est[i]=NA
+       EstimatesTableWBPHS$adj.itotal.se[i]=NA
+       EstimatesTableWBPHS$adj.ibb.est[i]=NA
+       EstimatesTableWBPHS$adj.ibb.se[i]=NA
+       EstimatesTableWBPHS$adj.flock.est[i]=NA
+       EstimatesTableWBPHS$adj.flock.se[i]=NA
+       EstimatesTableWBPHS$adj.sing1pair2.est[i]=NA
+       EstimatesTableWBPHS$adj.sing1pair2.se[i]=NA
+
+
+
+     }
+
+
+     if(!(is.na(EstimatesTableWBPHS$denominator[i]))){
      if(EstimatesTableWBPHS$denominator[i] == -999){
     thisyear=EstimatesTableWBPHS$Year[i]
     thisspecies=EstimatesTableWBPHS$Species[i]
@@ -1213,8 +1238,12 @@ WBPHSMultipleYear= function(years){
     denom = sort(unique(EstimatesTableWBPHS$denominator[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
     area = sort(unique(EstimatesTableWBPHS$Area[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
 
+    this.n = sort(unique(EstimatesTableWBPHS$n[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
+
     EstimatesTableWBPHS$denominator[i] = denom
     EstimatesTableWBPHS$Area[i] = area
+
+    EstimatesTableWBPHS$n[i] = this.n
 
      }
    }
