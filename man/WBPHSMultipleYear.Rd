@@ -20,8 +20,10 @@ WBPHSMultipleYear provides a wrapper for WBPHSbyYear that will select the approp
 MasterFileList_WBPHS contains a list of "official" files and folder paths for data used in WBPHS estimates tables. The final table includes year- and species-specific
 deletions based on annual variation in, changes to, and interpretations of the standardized protocol.  The unavailable estimates include: \enumerate{
 \item BRAN, EMGO, SACR, SNGO, SWAN, SWANN from 1957 to 1963
-\item COLO, PALO, RBLO, UNLO, YBLO from 1957 to 1970
+\item COLO, PALO, RTLO, UNLO, YBLO from 1957 to 1970
 \item HOGR, RNGR, UNGR from 1957 to 1990
+\item BAEA from 1957 to 1964
+\item GOEA from 1957 to 2016
 \item CCGO, GWFG from 1957 to 1963, other than total estimates (augmented indices unavailable)
 }
 }
