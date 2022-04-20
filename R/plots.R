@@ -428,6 +428,13 @@ ShowMeYears=function(area, year, species="all"){
 
     }
 
+    if(species[1] == "all"){
+      data=data[data$Species != "START", ]
+      data=data[data$Species != "END", ]
+
+
+    }
+
   }
 
   sp::coordinates(data)=~Lon+Lat

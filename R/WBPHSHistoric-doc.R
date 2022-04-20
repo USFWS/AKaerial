@@ -1,0 +1,62 @@
+#' Current table of historic estimates for the WBPHS survey
+#'
+#' Population indices for the USFWS Alaska Region Migratory Bird Management component of the WBPHS.
+#' The survey consists of low-level aerial observations of waterfowl on a stratified strip transect design.
+#' For more information on how the estimates are generated, see \code{\link[AKaerial]{ReadWBPHS}} or \code{\link[AKaerial]{WBPHStidy}}.
+#' For definitions of the indices, see \code{\link[AKaerial]{AdjustCounts}}.  For a complete list of input files, see \code{\link[AKaerial]{MasterFileList_WBPHS}}.
+#'
+#'
+#' @docType data
+#'
+#' @usage data(WBPHSHistoric)
+#'
+#' @format A data frame of 44 columns covering years 1957-2021:
+#' \describe{
+#'     \item{Species}{The 4-character code for the species represented, see \code{\link[AKaerial]{sppntableWBPHS}}.}
+#'     \item{Year}{The 4-digit integer year of the survey, range from 1957 to 2021 (no survey in 2020).}
+#'     \item{Stratum}{The 2-digit code representing the stratum of the estimate (1-12,99).}
+#'     \item{total.density}{Density of total birds (floating point decimal, birds per square mile).}
+#'     \item{itotal.density}{Density of indicated total birds (floating point decimal, birds per square mile).}
+#'     \item{ibb.density}{Density of indicated breeding birds (floating point decimal, birds per square mile).}
+#'     \item{sing1pair2.density}{Density of singles and pairs (floating point decimal, birds per square mile).}
+#'     \item{flock.density}{Density of flocked birds (floating point decimal, birds per square mile).}
+#'     \item{n}{Number of transects sampled in the stratum.}
+#'     \item{total.numerator}{Numerator component of the variance of total.est (floating point decimal, see \code{vignette("GeneratingWBPHSEstimates", package = "AKaerial")}).}
+#'     \item{itotal.numerator}{Numerator component of the variance of itotal.est (floating point decimal, see \code{vignette("GeneratingWBPHSEstimates", package = "AKaerial")}).}
+#'     \item{ibb.numerator}{Numerator component of the variance of ibbtotal.est (floating point decimal, see \code{vignette("GeneratingWBPHSEstimates", package = "AKaerial")}).}
+#'     \item{sing1pair2.numerator}{Numerator component of the variance of sing1pair2.est (floating point decimal, see \code{vignette("GeneratingWBPHSEstimates", package = "AKaerial")}).}
+#'     \item{flock.numerator}{Numerator component of the variance of flock.est (floating point decimal, see \code{vignette("GeneratingWBPHSEstimates", package = "AKaerial")}).}
+#'     \item{denominator}{Denominator component of the variances (floating point decimal, see \code{vignette("GeneratingWBPHSEstimates", package = "AKaerial")}).}
+#'     \item{Area}{Variance of total.est (floating point decimal).}
+#'     \item{total.est}{Estimate of total birds (floating point decimal).}
+#'     \item{total.var}{Variance of total.est (floating point decimal).}
+#'     \item{total.se}{Standard error of total.est (floating point decimal).}
+#'     \item{itotal.est}{Estimate of indicated total birds (floating point decimal).}
+#'     \item{itotal.var}{Variance of itotal.est (floating point decimal).}
+#'     \item{itotal.se}{Standard error of itotal.est (floating point decimal).}
+#'     \item{ibb.est}{Estimate of indicated breeding birds (floating point decimal).}
+#'     \item{ibb.var}{Variance of ibb.est (floating point decimal).}
+#'     \item{ibb.se}{Standard error of ibb.est (floating point decimal).}
+#'     \item{sing1pair2.est}{Estimate of singles and paired birds (floating point decimal).}
+#'     \item{sing1pair2.var}{Variance of sing1pair2.est (floating point decimal).}
+#'     \item{sing1pair2.se}{Standard error of sing1pair2.est (floating point decimal).}
+#'     \item{flock.est}{Estimate of flocked birds (floating point decimal).}
+#'     \item{flock.var}{Variance of flock.est (floating point decimal).}
+#'     \item{flock.se}{Standard error of flock.est (floating point decimal).}
+#'     \item{VCF}{Visibility correction factor (floating point decimal).}
+#'     \item{VCF_SE}{Standard error of VCF (floating point decimal).}
+#'     \item{VCF.var}{Variance of VCF (floating point decimal).}
+#'     \item{adj.total.est}{VCF-adjusted total birds estimate (floating point decimal).}
+#'     \item{adj.total.se}{Standard error of the VCF-adjusted total birds estimate (floating point decimal).}
+#'     \item{adj.itotal.est}{VCF-adjusted indicated total birds estimate (floating point decimal).}
+#'     \item{adj.itotal.se}{Standard error of the VCF-adjusted indicated total birds estimate (floating point decimal).}
+#'     \item{adj.ibb.est}{VCF-adjusted indicated breeding birds estimate (floating point decimal).}
+#'     \item{adj.ibb.se}{Standard error of the VCF-adjusted indicated breeding birds estimate (floating point decimal).}
+#'     \item{adj.sing1pair2.est}{VCF-adjusted single and paired birds estimate (floating point decimal).}
+#'     \item{adj.sing1pair2.se}{Standard error of the VCF-adjusted single and paired birds estimate (floating point decimal).}
+#'     \item{adj.flock.est}{VCF-adjusted flocked birds estimate (floating point decimal).}
+#'     \item{adj.flock.se}{Standard error of the VCF-adjusted flocked birds estimate (floating point decimal).}
+#'}
+#'
+#'
+"WBPHSHistoric"

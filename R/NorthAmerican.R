@@ -31,9 +31,6 @@ ReadWBPHS= function(full.data){
 
   full.data=full.data[full.data$Code==1,]
 
-  keepers=unique(WBPHSsppntable$WBPHS[WBPHSsppntable$WBPHS_EST==1])
-
-  full.data=full.data[full.data$Species %in% keepers,]
 
   full.data$Observer=paste(full.data$Observer, full.data$Seat, sep=".")
 
@@ -634,102 +631,6 @@ EstimatesWBPHS=function(data, flight){
 
 
 
-#' Combine and parse raw WBPHS data files
-#'
-#' SplitWBPHS will combine multiple observation files and split into annual observer files
-#'
-#' SplitWBPHS takes a folder of raw text files (generally at the transect or stratum level) and combines them into an annual data file
-#' for an observer using the naming convention: WBPHS_YYYY_RawObs_NNN.csv, where YYYY is the 4 digit year and NNN is 3 character initials.
-#' Columns must be in the following order: Year, Month, Day, Seat, Observer, Stratum, Transect, Segment, Flight_Dir, A_G_Name, Wind_Dir,
-#' Wind_Vel, Sky, Filename, Lat, Lon, Time, Delay, Species, Num, Obs_Type.
-#' It will also add the columns Behavior, Distance, Code, and Notes that aren't used in the standard WBPHS protocol, but have become
-#' the standard in Alaska Region aerial surveys.
-#'
-#' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/USFWS/AKaerial}
-#'
-#' @param folder.path The directory path to the folder for input and output files.
-#'
-#' @return Year-Observer combinations of data in csv format to folder.path
-#'
-#' @export
-SplitWBPHS= function(folder.path){
-
-  setwd(folder.path)
-
-  full.data=data.frame(
-    "Year"=numeric(),
-    "Month"=numeric(),
-    "Day"=numeric(),
-    "Seat"=character(),
-    "Observer"=character(),
-    "Stratum"=character(),
-    "Transect"=character(),
-    "Segment"=character(),
-    "Flight_Dir"=numeric(),
-    "A_G_Name"=character(),
-    "Wind_Dir"=character(),
-    "Wind_Vel"=numeric(),
-    "Sky"=character(),
-    "Filename"=character(),
-    "Lat"=numeric(),
-    "Lon"=numeric(),
-    "Time"=numeric(),
-    "Delay"=numeric(),
-    "Species"=character(),
-    "Num"=numeric(),
-    "Obs_Type"=character(), stringsAsFactors = FALSE)
-
-
-
-
-  file_list <- list.files(folder.path)
-
-  for (file in file_list){
-
-
-    type <- file_ext(file)
-
-    if(type == "docx" || type=="txt" || type=="csv") {
-      print(paste("Skipped", file))
-      next}
-
-
-    print(paste("Included file", file, "successfully."))
-
-    temp.data <-read.csv(file, header=FALSE)
-    colnames(temp.data)=colnames(full.data)
-    full.data<-rbind(full.data, temp.data)
-
-
-  }
-
-  full.data$Behavior=NA
-  full.data$Distance=NA
-  full.data$Code=1
-  full.data$Notes=NA
-  full.data$Observer=toupper(full.data$Observer)
-
-  obs.list=unique(full.data$Observer)
-
- for (i in 1:length(obs.list)){
-
-   temp.data=full.data[full.data$Observer==obs.list[i],]
-
-   yr.list=unique(temp.data$Year)
-
-   for (k in 1:length(yr.list)){
-
-   write.csv(temp.data[temp.data$Year==yr.list[k],], paste(folder.path, "/WBPHS_", yr.list[k], "_RawObs_", obs.list[i], ".csv", sep=""),
-             row.names=FALSE, quote=FALSE)
-
-   }
- }
-
-
-}
-
-
 
 #' Combine WBPHS estimates by stratum
 #'
@@ -792,146 +693,7 @@ CombineEstimatesByStrata=function(estimates){
 
 
 
-#' Display observations on WBPHS segments
-#'
-#' ShowWBPHS will load a leaflet display of WBPHS design segments and observations
-#'
-#' ShowWBPHS provides a quick spatial overview of a set of observations and the Waterfowl Breeding Population Habitat Survey segments.
-#' I am unsure of the origin and accuracy of the segments.  Segments and observations are drawn using leaflet.
-#'
-#' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/USFWS/AKaerial}
-#'
-#' @param data WBPHS clean (greenlighted) observations.
-#' @param trans.file Directory path to the WBPHS segment shape file (default to Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp)
-#'
-#' @return Interactive map of segment-level data
-#'
-#' @export
-ShowWBPHS=function(data, trans.file="Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp"){
 
-  trans.layer=file_path_sans_ext(basename(trans.file))
-
-  trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-  trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
-
-  pal=colorFactor(palette = c("red", "green", "yellow", "blue", "orange"), trans.proj$Segment)
-  pal2=colorFactor(palette = c("red", "yellow"), data$Observer)
-
-map= leaflet() %>%
-  addTiles() %>%
-
-  addPolylines(data=trans.proj,
-               color=~pal(Segment),
-               weight=4,
-               opacity=.9,
-               label=~trans.proj$Seq,
-               popup = paste("Strata: ", trans.proj$Seq, "<br>",
-                             "Transect: ", trans.proj$Transect, "<br>",
-                             "Segment: ", trans.proj$Segment, "<br>"))  %>%
-
-  addProviderTiles("Esri.WorldImagery") %>%
-
-  addCircleMarkers(data=data,
-                   radius = 3,
-                   color = ~pal2(Observer),
-                   stroke = FALSE,
-                   fillOpacity = 0.5,
-                   popup= paste(data$Observer, "<br>", data$Species,
-                                "<br>", data$Obs_Type, "<br>", data$Num)
-  ) %>%
-
-
-  addScaleBar()
-
-print(map)
-}
-
-
-
-#' Deprecated function to calculate index estimates for a given year of WBPHS data
-#'
-#' EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator.  This function is deprecated and replaced by WBPHStidy.
-#'
-#' EstimatesTableWBPHS provides a shortcut to running piecewise functions for creating an annual index estimate for the WBPHS survey.
-#' The function uses MasterFileList_WBPHS as a lookup table to locate the appropriate raw observation files, then calls ReadWBPHS to concatenate,
-#' SummaryWBPHS for spatial design summary, TransDataWBPHS to table observations appropriately, and finally EstimatesWBPHS to calculate the ratio
-#' estimate.
-#'
-#' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/USFWS/AKaerial}
-#'
-#' @param year Four digit year of the WBPHS survey to use
-#'
-#' @return List object with 2 elements: \enumerate{
-#' \item output.table Observer-specific estimates for the species indicated in the sppntable estimates column
-#' \item expanded.table Deeper level count information by transect, strata, species, and observer
-#' }
-#'
-#' @export
-EstimatesTableWBPHS=function(year){
-
-  entries=MasterFileList_WBPHS[MasterFileList_WBPHS$YEAR %in% year,]
-
-  by.year=aggregate(entries$DRIVE~entries$YEAR,FUN=length)
-  colnames(by.year)=c("YEAR", "COUNT")
-
-
-  for (i in 1:length(by.year$YEAR)){
-
-    temp.entries=entries[entries$YEAR==by.year$YEAR[i],]
-    print(temp.entries)
-
-    for (j in 1:by.year$COUNT[i]){
-
-      if(j==1){
-
-        data.path=paste(temp.entries$DRIVE[j], temp.entries$OBS[j], sep="")
-        if(!file.exists(data.path)){next}
-        data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
-
-      }
-
-      if(j != 1){
-
-        data.path=paste(temp.entries$DRIVE[j], temp.entries$OBS[j], sep="")
-        if(!file.exists(data.path)){next}
-        temp.data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
-
-        data=rbind(data, temp.data)
-      }
-
-      data$Observer=paste(unique(data$Observer), collapse="_")
-
-    }
-
-
-    formatted=ReadWBPHS(data)
-
-    flight=SummaryWBPHS(formatted)
-
-
-    transdata=TransDataWBPHS(formatted)
-
-    estimate=EstimatesWBPHS(transdata, flight=flight)
-
-
-    if(i==1){output.table=estimate$estimates
-    expanded.table=estimate$expanded}
-    if(i>1){output.table=rbind(output.table, estimate$estimates)
-    expanded.table=rbind(expanded.table, estimate$expanded)}
-
-  }
-
-  output.table$area="WBPHS"
-  expanded.table$area="WBPHS"
-
-
-
-  return(list(output.table=output.table, expanded.table=expanded.table))
-
-
-}
 
 
 #' Calculate index estimates for specified WBPHS count and transect data
@@ -1192,7 +954,9 @@ WBPHSMultipleYear= function(years){
                                                         VCF.var = NA)) %>%
     filter(Species != "NONE")
 
+  keepers=unique(WBPHSsppntable$WBPHS[WBPHSsppntable$WBPHS_EST==1])
 
+  EstimatesTableWBPHS=EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% keepers,]
 
   vcf = WBPHS_VCF %>%
     select(SPECIES, STRATUM, VCF, VCF_SE) %>%
@@ -1266,6 +1030,14 @@ WBPHSMultipleYear= function(years){
                                                                                                                          "adj.itotal.se", "adj.ibb.se", "adj.sing1pair2.se", "adj.flock.se"
                                                                                                                          )] = NA
 
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species == "SWANN" , c("itotal.density", "ibb.density", "sing1pair2.density", "flock.density",
+                                                                                                                                  "itotal.numerator", "ibb.numerator", "sing1pair2.numerator", "flock.numerator",
+                                                                                                                                  "itotal.est", "ibb.est", "sing1pair2.est", "flock.est",
+                                                                                                                                  "itotal.var", "ibb.var", "sing1pair2.var", "flock.var",
+                                                                                                                                  "itotal.se", "ibb.se", "sing1pair2.se", "flock.se",
+                                                                                                                                  "adj.itotal.est", "adj.ibb.est", "adj.sing1pair2.est", "adj.flock.est",
+                                                                                                                                  "adj.itotal.se", "adj.ibb.se", "adj.sing1pair2.se", "adj.flock.se"
+                                                                                                                  )] = NA
 
   EstimatesTableWBPHS = EstimatesTableWBPHS %>%
     arrange(Species, Year, Stratum)

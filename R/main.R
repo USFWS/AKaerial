@@ -2797,12 +2797,12 @@ CombineByStrata=function(counts.final1, counts.final2){
 
 
 
-#' Update the 6 input .rda objects for streamlined package function
+#' Update the 7 .rda objects for streamlined package function
 #'
-#' Update the 6 input .rda objects for streamlined package function
+#' Update the 7 .rda objects for streamlined package function
 #'
-#' This function was added to streamline any updates to the 6 package objects that define the core inputs for estimate generation.  The
-#' 6 objects are:
+#' This function was added to streamline any updates to the 7 package objects that define the core inputs for estimate generation.  The
+#' 7 objects are:
 #' \itemize{
 #'  \item MasterFileList - A list of each year/area/strata/transect/observer combination for the ACP, CRD, YKD, YKG, and 10-02 surveys and the
 #'  location of all associated clean input files that produce an index estimate.
@@ -2813,6 +2813,7 @@ CombineByStrata=function(counts.final1, counts.final2){
 #'  \item WBPHSsppntable - A list of the accepted species code, common name, and scientific name of all avian species used on the WBPHS survey.
 #'  \item WBPHS_VCF - A list of visibility correction factors (VCFs) by species and stratum for the WBPHS survey.
 #'  \item WBPHS_PoolSpecies - A list of species and selected associated guilds (eider, grebe, merganser, scoter) for pooling WBPHS estimates.
+#'  \item WBPHSHistoric - The master table of historic WBPHS estimates.
 #'  }
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
@@ -2821,7 +2822,7 @@ CombineByStrata=function(counts.final1, counts.final2){
 #' @param input.path The path to the folder containing the .csv data to convert to .rda objects.
 #' @param output.path The path to the R package data folder to hold the updated objects.
 #'
-#' @return The 6 objects are updated and saved in the data folder of the package.
+#' @return The 7 objects are updated and saved in the data folder of the package.
 #'
 #' @export
 UpdateAllObjects=function(input.path, output.path){
@@ -2832,6 +2833,7 @@ UpdateAllObjects=function(input.path, output.path){
   WBPHSsppntable=read.csv(paste(input.path, "/AKAerialWBPHSAOUCodes.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
   WBPHS_VCF=read.csv(paste(input.path, "/WBPHS_VCF.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
   WBPHS_PoolSpecies=read.csv(paste(input.path, "/WBPHS_PoolSpecies.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+  WBPHSHistoric=read.csv(paste(input.path, "/EstimatesTableWBPHS.csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
 
 
   save(MasterFileList, file=paste(output.path, "/MasterFileList.rda", sep=""))
@@ -2840,6 +2842,7 @@ UpdateAllObjects=function(input.path, output.path){
   save(WBPHSsppntable, file=paste(output.path, "/WBPHSsppntable.rda", sep=""))
   save(WBPHS_VCF, file=paste(output.path, "/WBPHS_VCF.rda", sep=""))
   save(WBPHS_PoolSpecies, file=paste(output.path, "/WBPHS_PoolSpecies.rda", sep=""))
+  save(WBPHSHistoric, file=paste(output.path, "/WBPHSHistoric.rda", sep=""))
 
 
 

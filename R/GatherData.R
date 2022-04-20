@@ -30,8 +30,8 @@ GatherData=function(area = "none", drive = "K:", output.folder = "none"){
 
   if(area %in% c("YKD", "YKG")){
     year.panel = data.frame(
-      year = c(1999:2019),
-      panel = c(rep(c("A","B","C","D"),5),"A")
+      year = c(1999:2019,2021),
+      panel = c(rep(c("A","B","C","D"),5),"A", "B")
       )
     }
 
@@ -191,16 +191,16 @@ GatherData=function(area = "none", drive = "K:", output.folder = "none"){
     data$transect$project=area
 
     if(i==1){
-      write.table(data$transect, paste(output.folder, "/transect.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
-      write.table(data$obs, paste(output.folder, "/obs.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
-      write.table(data$flight, paste(output.folder, "/flight.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
+      write.table(data$transect, paste(output.folder, "/", area, "transect.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
+      write.table(data$obs, paste(output.folder, "/", area, "obs.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
+      write.table(data$flight, paste(output.folder, "/", area, "flight.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
 
     }
 
     if(i>1){
-    write.table(data$transect, paste(output.folder, "/transect.csv", sep=""), quote=FALSE, row.names=FALSE, append=TRUE, col.names = FALSE, sep="," )
-    write.table(data$obs, paste(output.folder, "/obs.csv", sep=""), quote=FALSE, row.names=FALSE, append=TRUE, col.names = FALSE, sep="," )
-    write.table(data$flight, paste(output.folder, "/flight.csv", sep=""), quote=FALSE, row.names=FALSE, append=TRUE, col.names = FALSE, sep="," )
+    write.table(data$transect, paste(output.folder, "/", area, "transect.csv", sep=""), quote=FALSE, row.names=FALSE, append=TRUE, col.names = FALSE, sep="," )
+    write.table(data$obs, paste(output.folder, "/", area, "obs.csv", sep=""), quote=FALSE, row.names=FALSE, append=TRUE, col.names = FALSE, sep="," )
+    write.table(data$flight, paste(output.folder, "/", area, "flight.csv", sep=""), quote=FALSE, row.names=FALSE, append=TRUE, col.names = FALSE, sep="," )
     }
 
 
