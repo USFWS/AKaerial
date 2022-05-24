@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
+library(leaflet)
+library(tmap)
 ```
 
 ## Introduction
@@ -52,9 +54,23 @@ Status - RED
 
 ## Spatial
 
-There are no spatial checks provided here.  Spatial checks will be unique to the analysis.
+There are no spatial checks provided here, instead please review the plot of transect-level observations below for accuracy.
+
+```{r mapping}
+ 
+ tm <- tmap::tm_shape(basemap) + tmap::tm_polygons(col = "STRATNAME", alpha = 0.5) +
+    tmap::tm_shape(sf.lines, name="Flown Track") + tmap::tm_lines() +
+    tmap::tm_text("Transect", size=2) +
+    tmap::tm_shape(sf.obs, name="Bird Obs") + tmap::tm_dots(col="Day") +
+    tmap::tm_basemap(server = "Esri.WorldGrayCanvas") +
+    tmap::tm_scale_bar()
 
 
+leaf = tmap::tmap_leaflet(tm)
+
+leaf
+
+```
 
 ## Swans
 

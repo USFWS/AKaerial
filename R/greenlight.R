@@ -266,6 +266,32 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
   if(test.code$fail==TRUE){s.code="red"}else{s.code="green"}
 
 
+
+  ## E Osnas mapping function
+
+  sf.obs <- data %>% sf::st_as_sf(coords=c("Lon", "Lat"), crs=4326) %>%
+    sf::st_transform(crs=3338) %>%
+    filter(Code == 1) #remove any non-survey or special observations
+
+  sf.lines <- sf.obs %>%
+    sf::st_transform(crs=4326) %>%
+    group_split(Transect, Day) %>%
+    purrr::map(points2line) %>%
+    purrr::map_dfr(rbind)
+
+  if(area=="ACP"){basemap="K:/Waterfowl/ACP_Survey/Design_Files/Design_Strata/ACP_2007to2018_DesignStrata.shp"}
+  if(area %in% c("YKD", "YKG", "YKDV")){basemap="K:/Waterfowl/YKD_Coastal/Design_Files/Design_Strata/YK_DesignStrata.shp"}
+  if(area=="CRD"){basemap="K:/Waterfowl/CRD_Survey/Design_Files/Design_Strata/CRD_2018_DesignStrata.shp"}
+
+  basemap <- sf::st_read(dsn=basemap) %>%
+    sf::st_transform(crs=3338)
+
+  sf.obs <- sf.obs %>%  mutate(Day=as.character(Day))
+
+
+
+  ## End mapping, plot the object in markdown
+
   rmd.path=system.file("rmd/greenlight.Rmd", package="AKaerial")
 
  if(report == TRUE){
