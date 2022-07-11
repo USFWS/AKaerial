@@ -2851,3 +2851,144 @@ UpdateAllObjects=function(input.path, output.path){
 
 
 
+#' Update one of the 5 tables of historic estimates (.rda objects ACPHistoric, CRDHistoric, YKDHistoric, YKGHistoric, WBPHSHistoric)
+#'
+#' Update one of the historic estimates tables with one year of new data
+#'
+#' This function updates the historic tables (available as package data .rda objects) with one year of new data.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param area The area code for dedicated MBM Alaska region surveys.
+#'    Acceptable values include:
+#'  \itemize{
+#'  \item YKD - Yukon Kuskokwim Delta, ducks
+#'  \item YKG - Yukon Kuskokwim Delta, geese
+#'  \item ACP - Arctic Coastal Plain
+#'  \item CRD - Copper River Delta
+#'  \item YKDV - Yukon Kuskokwim Delta, ducks, visibility study strata
+#'  }
+#' @param year The year of estimates to add
+#'
+#' @return The associated object is updated and saved in the data folder of the package.
+#'
+#' @export
+AppendYear = function(area, year){
+
+  update=EstimatesTable(area=area, year=year)
+
+  if(area=="ACP"){
+    ACPHistoric$output.table=rbind(ACPHistoric$output.table, update$output.table)
+    ACPHistoric$expanded.table=rbind(ACPHistoric$expanded.table, update$expanded.table)
+    ACPHistoric$combined=rbind(ACPHistoric$combined, update$combined)
+    save(ACPHistoric, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/ACPHistoric.rda")
+
+  }
+
+  if(area=="CRD"){
+    CRDHistoric$output.table=rbind(CRDHistoric$output.table, update$output.table)
+    CRDHistoric$expanded.table=rbind(CRDHistoric$expanded.table, update$expanded.table)
+    CRDHistoric$combined=rbind(CRDHistoric$combined, update$combined)
+    save(CRDHistoric, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/CRDHistoric.rda")
+
+  }
+
+  if(area=="YKD"){
+    YKDHistoric$output.table=rbind(YKDHistoric$output.table, update$output.table)
+    YKDHistoric$expanded.table=rbind(YKDHistoric$expanded.table, update$expanded.table)
+    YKDHistoric$combined=rbind(YKDHistoric$combined, update$combined)
+    save(YKDHistoric, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/YKDHistoric.rda")
+
+  }
+
+  if(area=="YKG"){
+    YKGHistoric$output.table=rbind(YKGHistoric$output.table, update$output.table)
+    YKGHistoric$expanded.table=rbind(YKGHistoric$expanded.table, update$expanded.table)
+    YKGHistoric$combined=rbind(YKGHistoric$combined, update$combined)
+    save(YKGHistoric, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/YKGHistoric.rda")
+
+  }
+
+  if(area=="YKDV"){
+    YKDVHistoric$output.table=rbind(YKDVHistoric$output.table, update$output.table)
+    YKDVHistoric$expanded.table=rbind(YKDVHistoric$expanded.table, update$expanded.table)
+    YKDVHistoric$combined=rbind(YKDVHistoric$combined, update$combined)
+    save(YKDVHistoric, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/YKDVHistoric.rda")
+
+  }
+
+
+}
+
+
+
+
+#' Output .csv files of historic estimates
+#'
+#' Output a range of annual estimates for a given aerial survey
+#'
+#' This function will output .csv files representing estimates from the chosen survey, year(s), and species.
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param area The area code for dedicated MBM Alaska region surveys.
+#'    Acceptable values include:
+#'  \itemize{
+#'  \item YKD - Yukon Kuskokwim Delta, ducks
+#'  \item YKG - Yukon Kuskokwim Delta, geese
+#'  \item ACP - Arctic Coastal Plain
+#'  \item CRD - Copper River Delta
+#'  \item YKDV - Yukon Kuskokwim Delta, ducks, visibility study strata
+#'  }
+#' @param year The years of estimates to add
+#' @param species The species requested (defaults to all)
+#' @param output.folder The folder path for the resulting 3 .csv files
+#'
+#'
+#' @return The tables are generated and written to the output folder.
+#'
+#' @export
+WriteResults = function(area, year="all", species = "all", output.folder){
+
+  if(area=="YKD"){data=YKDHistoric}
+  if(area=="YKG"){data=YKGHistoric}
+  if(area=="ACP"){data=ACPHistoric}
+  if(area=="CRD"){data=CRDHistoric}
+  if(area=="YKDV"){data=YKDVHistoric}
+
+  if(year != "all"){
+    data$output.table = data$output.table %>%
+      filter(Year %in% year)
+    data$expanded.table = data$expanded.table %>%
+      filter(Year %in% year)
+    data$combined = data$combined %>%
+      filter(Year %in% year)
+
+  }
+
+  if(species != "all"){
+    data$output.table = data$output.table %>%
+      filter(Species %in% species)
+    data$expanded.table = data$expanded.table %>%
+      filter(Species %in% species)
+    data$combined = data$combined %>%
+      filter(Species %in% species)
+
+  }
+
+  outfile1 = paste(area, min(data$combined$Year), "to", max(data$combined$Year), sep="")
+
+  outfile2 = paste(outfile1, "Combined.csv", sep="")
+  write.csv(data$combined, paste(output.folder, outfile2, sep=""), quote=FALSE, row.names=FALSE)
+
+  outfile2 = paste(outfile1, "Expanded.csv", sep="")
+  write.csv(data$expanded.table, paste(output.folder, outfile2, sep=""), quote=FALSE, row.names=FALSE)
+
+  outfile2 = paste(outfile1, "Output.csv", sep="")
+  write.csv(data$output.table, paste(output.folder, outfile2, sep=""), quote=FALSE, row.names=FALSE)
+
+
+
+}

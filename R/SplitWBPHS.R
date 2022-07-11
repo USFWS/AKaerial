@@ -85,8 +85,11 @@ SplitWBPHS= function(folder.path){
 
     for (k in 1:length(yr.list)){
 
-      write.csv(temp.data[temp.data$Year==yr.list[k],], paste(folder.path, "/WBPHS_", yr.list[k], "_RawObs_", obs.list[i], ".csv", sep=""),
-                row.names=FALSE, quote=FALSE)
+    #  write.csv(temp.data[temp.data$Year==yr.list[k],], paste(folder.path, "/WBPHS_", yr.list[k], "_RawObs_", obs.list[i], ".csv", sep=""),
+    #            row.names=FALSE, quote=FALSE)
+
+      write.csv(temp.data[temp.data$Year==yr.list[k],], paste("K:/Waterfowl/WBPHS/Data/Raw_Survey_Data", "/WBPHS_", yr.list[k], "_RawObs_", obs.list[i], ".csv", sep=""),
+                          row.names=FALSE, quote=FALSE)
 
     }
   }
