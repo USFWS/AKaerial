@@ -20,7 +20,7 @@ This function takes standard greenlight data for the WBPHS (Waterfowl Breeding P
 summarizes it at the Transect and Stratum levels. It uses already adjusted counts by Obs_Type (see AdjustCounts).
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

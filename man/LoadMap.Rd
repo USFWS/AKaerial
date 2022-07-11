@@ -22,7 +22,7 @@ LoadMap is designed to read in a .shp file and attach the strata names to a data
 WGS84 surface.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

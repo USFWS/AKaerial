@@ -30,7 +30,7 @@ SpeciesByProject will look up species codes and potentially alter them based on 
 SpeciesByProject is designed to alter species codes by area specifications. Current lists can be found in \code{sppntable}.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

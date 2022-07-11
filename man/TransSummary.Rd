@@ -35,7 +35,7 @@ TransSummary uses what was declared by a pilot or observed as navigational trans
 with the corrected transect number (ctran) in split design to develop a flight record for the pilot/observer.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

@@ -33,7 +33,7 @@ Observations for CCGO, GWFG, and SWAN are trimmed past the western edge of the g
 stratum 99 for documentation and to avoid confusion with stratum 9.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

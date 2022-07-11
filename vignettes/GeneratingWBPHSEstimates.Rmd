@@ -1,0 +1,139 @@
+---
+title: "Generating WBPHS Estimates"
+author: "Charles Frost"
+date: "10 January 2022"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GeneratingWBPHSEstimates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, echo=FALSE}
+library(AKaerial)
+```
+
+## The Waterfowl Breeding Population and Habitat Survey
+
+The Waterfowl Breeding Population and Habitat Survey (WBPHS) has been conducted annually since 1955 (1957 in Alaska) by the U.S. Fish and Wildlife Service (FWS) and Canadian Wildlife Service to estimate the spring abundance of waterfowl in their principal breeding areas of North America. The survey results are used to establish annual hunting regulations in the United States and Canada, monitor population trends, and inform various conservation and management decisions at the state, flyway, and continental levels.
+
+The Waterfowl Program in the FWS Division of Migratory Bird Management-Alaska Region (MBM-Alaska) is responsible for surveying strata 1–12 of the WBPHS during May to June of each year (i.e., Alaska and Old Crow Flats, YT). In addition to recording the WBPHS targeted waterfowl species, the MBM-Alaska survey crew also records all goose species, sandhill cranes, loons (by species), and grebes (by species when possible). MBM-Alaska maintains an archived record of the strata 1-12 historical dataset (1957 to present), separate and independent from the main WBPHS dataset, which is managed by MBM-Headquarters Region.
+
+## The Ratio Estimator
+The classical ratio estimator (Cochran 1977) is a straightforward approach that can be used to estimate the density of birds on a landscape, given an adequate sampling design.  The Alaska Region employs a stratified strip transect design for the majority of its surveys of breeding waterfowl.  Study areas in the WBPHS are separated into spatial strata based on geography and assumed suitability as waterfowl breeding habitat, though much of the original definitions and justification are lost to history.  Strata are then sampled by low-level flights along a series of strip transects, which are further split into equal-length segments, with one or two observers searching 200 meters out from the transect.  This is a fixed design survey without rotating panel or variable length segments, in contrast to the other primary surveys (Arctic Coastal Plain, Copper River Delta, and Yukon-Kuskokwim Delta) conducted by the Alaska Region Division of Migratory Bird Management.  Observations and sampled areas are then summed across transects within each stratum to produce strata-specific density estimates.  These densities are then multiplied by associated strata areas to produce stratum-specific population indices.  
+
+
+$$E[\hat Y_i] = \displaystyle\ \frac{\bar y_i}{\bar a_i} A_i = \displaystyle\ \hat D_i A_i$$
+where $y_i$ are observations and $a_i$ are sampled areas in stratum $i$ and $$A_i$$ is the total area of stratum $i$, with estimated variance from Smith (1995)
+
+$$Var(\hat Y_i) = \displaystyle\ \frac{\sum_{j=1}^{m_i} N_{ij}^2 - 2\sum_{j=1}^{m_i}N_{ij} \displaystyle\ \frac{\sum_{j=1}^{m_i}N_{ij} a_{ij}}{\sum_{j=1}^{m_i}a_{ij}}+(\frac{\sum_{j=1}^{m_i}N_{ij}}{\sum_{j=1}^{m_i}a_{ij}})^2(\sum_{j=1}^{m_i}a_{ij}^2)}{m_i(m_i -1)(\hat {a_{ij}}^2)},$$
+where $m_i$ are the number of sampled transects in stratum $i$, $$N_{ij}$$ is the total (or augmented, for indicated totals) birds counted along transect $j$ in stratum $i$, and $$a_{ij}$$ is the sampled area of transect $j$ in stratum $i$. 
+
+The resulting population index generally remains an index to an unknown, larger population.  For some species, visibility correction factors (VCFs) are applied to calculate a population estimate.  In these cases, concurrent studies have estimated the proportion of birds that are available to be seen along a transect, but are missed by an observer.  For example, a VCF of 2.0 would indicate that for every bird seen along a transect, another bird is available to be seen, but goes unseen. See [WBPHS_VCF](../help/WBPHS_VCF) for a complete list of species names and associated VCFs.
+
+
+## Single-year vs. multiple-year estimates
+
+AKaerial is designed to streamline the generation of WBPHS estimates and provide a single-year approach to generating a table of estimates (detailed below), as well as a single-year wrapper, [WBPHSbyYear](../help/WBPHSbyYear), and a multiple-year wrapper, [WBPHSMultipleYear](../help/WBPHSMultipleYear). It is worth noting here that a table of estimates using the current version of the package are contained in the object [WBPHSHistoric](../help/WBPHSHistoric), and it is unlikely that an average user would need to reproduce these using the process below. 
+
+## Individual year: Preparing the data
+The only requirement for running a single-year AKaerial WBPHS estimate is access to an observer-specific data file in a given year, read in as a data frame in R. 
+
+In order for AKaerial to attempt to generate an estimate, the data frame must be passed to the function [ReadWBPHS](../help/ReadWBPHS).  The data frame is augmented to trim the observations in stratum 9 [Cut9](../help/Cut9), which adds duplicate observations for part of the transect as stratum 99, and then adjusts the counts according to [AdjustCounts](../help/AdjustCounts).
+
+The second component of an estimate is a summary of the sampled area, which is obtained by passing the adjusted data frame of observations to [SummaryWBPHS](../help/SummaryWBPHS) to append segment and transect numbers and lengths to the data.
+
+Running an estimate is as simple as passing the 2 components to the function [WBPHStidy](../help/WBPHStidy), which will augment the data by duplicating and pooling eiders, mergansers, scoters, and grebes, then generate densities at the transect and stratum levels, estimate population indices, and apply species- and stratum-specific VCFs as appropriate.
+
+
+```{r eval=FALSE}
+my.data = read.csv(file = "C:/data/data2020.csv")
+
+my.adjusted.data = ReadWBPHS(my.data)
+my.flight = SummaryWBPHS(my.adjusted.data)
+
+estimate = WBPHStidy(my.adjusted.data, my.flight)
+  
+```
+## Individual year wrapper
+
+In addition to the single year approach above, AKaerial includes a wrapper, [WBPHSbyYear](../help/WBPHSbyYear), that only requires a connection to, or mirror of, the current MBM data repository.  
+
+### Checking repository connection
+
+If you have access to the current repository, you only need to check that the drive letter of your network connection matches the drive letter in the object MasterFileList_WBPHS.  It is highly recommended that you work from either the current repository or a mirrored duplicate.  If you choose a mirrored duplicate, or your drive letter does not match the default value ("K:"), it can be changed to your drive easily:
+
+``` {r eval=FALSE}
+MasterFileList_WBPHS$DRIVE = "C:"
+MasterFileList_WBPHS$DRIVE = "C:/MyMirror"
+
+```
+
+
+If you are working from a mirror with a different folder structure, you will have to overwrite the year-specific values in MasterFileList_WBPHS$OBS for observation .csv files. Once the connection is established, the function can be called with just a specified year:
+
+``` {r eval=FALSE}
+
+estimates = WBPHSbyYear(2019)
+
+```
+
+The resulting return object from either method is a data frame of estimates by species, along with their corresponding variances and standard errors.
+
+
+## Multiple year: Preparing the data
+
+The multiple-year approach requires either a connection to the current USFWS-R7-MBM repository (as of 2022, AKaerial uses the internal airdata/Waterfowl/ directory, but will soon use the R7 Regional Data Repository), or access to a mirrored copy of it on a local drive.  If you choose the mirrored drive option, it will be _much_ easier if the folder structure within matches that of the Waterfowl repository.  
+
+## Generating the table of estimates
+
+Once you have a connection to your repository established (or have an appropriately overwritten MasterFileList_WBPHS object), you can generate a table using [WBPHSMultipleYear](../help/WBPHSMultipleYear):
+
+``` {r eval=FALSE}
+my.table = WBPHSMultipleYear(years = c(1971, 2019))
+
+```
+
+You can then save your estimates table to a local or network location:
+
+``` {r eval=FALSE}
+my.table = WBPHSMultipleYear(years = c(1971, 2019))
+
+write.csv(my.table, file="C:/Results/WBPHS_1971to2019.csv", quote=FALSE, row.names = FALSE)
+
+```
+
+See [WBPHSMultipleYear](../help/WBPHSMultipleYear) for more information on the resulting object. 
+
+
+## Some important notes
+
+  * Observations where `code != 1`, or those that were collected for some other purpose than standard estimates, will be filtered out.  
+  * All observations with `Obs_Type, Num` of `open, 1` are changed to `single, 1` by programmatic decision in 2019.
+  * All observations with `Obs_Type, Num` of `open, 2` are changed to `pair, 1` by programmatic decision in 2021.
+  * Counts (`Num` by `Obs_Type`) are adjusted with [AdjustCounts](../help/AdjustCounts) and new columns are created for the 5 standard programmatic indices:
+      + itotal - Indicated total.  Singles doubled, pairs doubled, opens added, flkdrake 1-4 doubled, flkdrake 5+ added.
+      + ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
+      + total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
+      + sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
+      + flock - Flocks.  Singles removed, pairs removed, opens added, flkdrake added.
+  * Strata areas (in square miles) are fixed, but spatial files to recreate these numbers are lost to history.
+  * Contrary to other surveys employed by Alaska Region MBM, the WBPHS lengths are in miles (instead of kilometers) and areas are in square miles (instead of square kilometers).
+  * The flight summaries in 1999, 2008, 2015, and 2017 have coded exceptions in SummaryWBPHS for area that was not sampled in those years.  
+  * The multiple year approach includes year-specific and index-specific treatments for BRAN, EMGO, SACR, SNGO, SWAN, SWANN, COLO, PALO, RTLO, UNLO, YBLO, HOGR, RNGR, UNGR, Grebe, BAEA, COEA, CCGO, and GWFG that are detailed in [WBPHSMultipleYear](../help/WBPHSMultipleYear) documentation.  Users of estimates for these species should be cognizant of inconsistencies in data collection for some years and indices.  
+
+
+## References
+
+Cochran, W.G. 1977. _Sampling techniques_. New York: John Wiley & Sons.
+
+Smith, G.W. 1995. _A Critical Review of the Aerial and Ground Surveys of Breeding Waterfowl in North America_. Biological Report 5, U.S. Department of the Interior, National Biological Service, Washington, D.C., 27 pp.  
+
+Williams, B.K., J.D. Nichols, and M.J. Conroy. 2002. _Analysis and management of animal populations_.  Academic Press, New York, 817 pp. 

@@ -4,7 +4,7 @@
 \alias{ShowMeDesign}
 \title{Display a combination of strata and transect design}
 \usage{
-ShowMeDesign(strata.path, transect.path)
+ShowMeDesign(strata.path, transect.path, area = "Not CRD")
 }
 \arguments{
 \item{strata.path}{The path name to the .shp file of the stratification.  Must be in a format
@@ -12,6 +12,9 @@ accepted by \code{\link{SplitDesign}}.}
 
 \item{transect.path}{The path name to the .shp file of lines designating the transect design.
 Must be in a format accepted by \code{\link{SplitDesign}}.}
+
+\item{area}{The area for the prject represented.  This only matters for the area CRD where there are vertical transects
+to be passed to SplitDesign.}
 }
 \value{
 None
@@ -33,7 +36,7 @@ but with no option to include observations.
 
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

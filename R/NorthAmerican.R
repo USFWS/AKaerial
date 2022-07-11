@@ -13,13 +13,14 @@
 #' \item ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
 #' \item total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
 #' \item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
+#' \item flock - Flocks.  Opens and flkdrakes of 5 or more.
 #' }
 #' In addition, due to inconsistencies in interpretation of the field protocol for data collection, open 1 and open 2 are changed to single 1
 #' and pair 1, respectively, across the entire data set.
 #'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data An R data frame of observations in a given year of the survey
 #'
@@ -30,13 +31,20 @@ ReadWBPHS= function(full.data){
 
   full.data=full.data[full.data$Code==1,]
 
-  full.data=Cut9(full.data)
 
-  full.data=full.data[full.data$keep==1,]
+  full.data$Observer=paste(full.data$Observer, full.data$Seat, sep=".")
+
+  full.data=Cut9(full.data)
 
   full.data$Obs_Type[full.data$Obs_Type=="open" & full.data$Num==1 & full.data$Species!="SWANN"]="single"
 
-  full.data$Obs_Type[full.data$Obs_Type=="open" & full.data$Num==2]="pair"
+  for (i in 1:length(full.data$Obs_Type)){
+  if(full.data$Obs_Type[i]=="open" & full.data$Num[i]==2){
+    full.data$Obs_Type[i]="pair"
+  full.data$Num[i]=1
+  }
+  }
+
 
   full.data=AdjustCounts(full.data)
 
@@ -69,7 +77,7 @@ ReadWBPHS= function(full.data){
 #'
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param full.data An R data frame of observations in a given year of the survey
 #'
@@ -78,32 +86,54 @@ ReadWBPHS= function(full.data){
 #' @export
 Cut9= function(full.data){
 
-  full.data$keep=1
+  #full.data$keep=1
 
-  long.cut <- data.frame(cbind(rep(9,8),
+  full.data$trans.seg = paste(full.data$Transect, full.data$Segment, sep=".")
+
+  if(full.data$Year[1] >= 1999){
+
+    long.cut <- data.frame(cbind(rep(9,8),
                                seq(12,19,1),
                                c(-163.559,-163.738,-164.388,-164.130,-164.440,-164.995,-164.938,-164.810)))
 
-  names(long.cut) <- c("strata","tran","long")
+  names(long.cut) <- c("strata","tran","lon")
 
+  augment.data = full.data %>%
+    #filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
+    filter(Stratum == 9) %>%
+    filter((Transect == long.cut$tran[1] & Lon > long.cut$lon[1]) |
+             (Transect == long.cut$tran[2] & Lon > long.cut$lon[2]) |
+             (Transect == long.cut$tran[3] & Lon > long.cut$lon[3]) |
+             (Transect == long.cut$tran[4] & Lon > long.cut$lon[4]) |
+             (Transect == long.cut$tran[5] & Lon > long.cut$lon[5]) |
+             (Transect == long.cut$tran[6] & Lon > long.cut$lon[6]) |
+             (Transect == long.cut$tran[7] & Lon > long.cut$lon[7]) |
+             (Transect == long.cut$tran[8] & Lon > long.cut$lon[8]) |
+             (!(Transect %in% long.cut$tran)))
 
-  for(i in 1:length(full.data$Species)){
-
-    if(full.data$Species[i] %in% c("CCGO", "GWFG", "SWAN") &
-       full.data$Stratum[i]==9 &
-       full.data$Transect[i] %in% long.cut$tran){
-
-      full.data$Stratum[i]=99
-      if(full.data$Lon[i]<long.cut$long[full.data$Transect[i]==long.cut$tran]){full.data$keep[i]=0}
-
-
-
-    }
-
-
+  if(length(augment.data[,1])>0){augment.data$Stratum = 99}
 
 
   }
+
+
+ if(full.data$Year[1] < 1999) {
+
+  seg.cut <- data.frame("Transect"=c(13,14,16,17,17,18,18,19,19), "Segment"=c(11,11,8,5,6,5,6,5,6))
+
+  seg.cut$trans.seg = paste(seg.cut$Transect, seg.cut$Segment, sep=".")
+
+  augment.data = full.data %>%
+    #filter(Species %in% c("CCGO", "GWFG", "SWAN")) %>%
+    filter(Stratum == 9) %>%
+    filter(!(trans.seg %in% seg.cut$trans.seg))
+
+    if(length(augment.data[,1])>0){augment.data$Stratum = 99}
+
+ }
+
+
+ full.data=rbind(full.data, augment.data)
 
 
   return(full.data)
@@ -131,9 +161,9 @@ Cut9= function(full.data){
 #'  Default strip width is 0.25 mi for 2 observers, each viewing 0.125 mi.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
-#' @param full.data A clean (greenlight) file of observations
+#' @param full.data A clean (greenlight) file of observations by stratum, transect, and segment
 #' @param strip.width The sampled strip width in miles
 #'
 #' @return Data frame containing strata, transect, and segment information by observer
@@ -145,7 +175,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     Year=numeric(),
     Observer=character(),
-    Strata=character(),
+    Stratum=character(),
     Transect=character(),
     n.segs=numeric(),
     Length=numeric(),
@@ -180,7 +210,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
       Year=rep(temp.data$Year[1], length(st.sets[,1])),
       Observer=rep(temp.data$Observer[1], length(st.sets[,1])),
-      Strata=st.sets$Stratum,
+      Stratum=st.sets$Stratum,
       Transect=st.sets$Transect,
       n.segs=st.sets$n.segs,
       Length=st.sets$Length, stringsAsFactors = FALSE
@@ -194,18 +224,70 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
   }
 
 
-  for (i in 1:length(flight$Strata)){
+  for (i in 1:length(flight$Stratum)){
 
-    if(flight$Strata[i]==99){
+    if(flight$Stratum[i]==99 && flight$Year >= 1999){
 
-      if(flight$Transect[i]==12){flight$SampledArea[i]=22 * (strip.width/2)}
-      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763* (strip.width/2)}
-      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32* (strip.width/2)}
-      if(flight$Transect[i]==15){flight$SampledArea[i]=12* (strip.width/2)}
-      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543* (strip.width/2)}
-      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395* (strip.width/2)}
-      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663* (strip.width/2)}
-      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372* (strip.width/2)}
+      if(flight$Transect[i]==12){flight$SampledArea[i]=22}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
+
+
+
+    }
+
+    #2015 had 2 segments on transect 12 that were not sampled
+
+    if(flight$Stratum[i]==99 && flight$Year == 2015){
+
+      if(flight$Transect[i]==12){flight$SampledArea[i]=18}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
+
+
+
+    }
+
+    #2008 sampled areas different
+
+    if(flight$Stratum[i]==99 && flight$Year == 2008){
+
+      if(flight$Transect[i]==12){flight$SampledArea[i]=22}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=20.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
+
+
+
+    }
+
+
+    #2017 sampled areas different
+
+    if(flight$Stratum[i]==99 && flight$Year == 2017){
+
+      if(flight$Transect[i]==12){flight$SampledArea[i]=16}
+      if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
+      if(flight$Transect[i]==14){flight$SampledArea[i]=21.32}
+      if(flight$Transect[i]==15){flight$SampledArea[i]=12}
+      if(flight$Transect[i]==16){flight$SampledArea[i]=14.543}
+      if(flight$Transect[i]==17){flight$SampledArea[i]=8.395}
+      if(flight$Transect[i]==18){flight$SampledArea[i]=7.663}
+      if(flight$Transect[i]==19){flight$SampledArea[i]=8.372}
 
 
 
@@ -227,7 +309,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 #' summarizes it at the Segment, Transect, and Stratum level.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param selected.data An R data frame of observations in a given year of the survey
 #'
@@ -261,7 +343,7 @@ TransDataWBPHS=function(selected.data){
 #' summarizes it at the Transect and Stratum levels. It uses already adjusted counts by Obs_Type (see AdjustCounts).
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param adj.counts An R data frame of observations in a given year of the survey
 #'
@@ -301,7 +383,7 @@ CountsWBPHS=function(adj.counts) {
 #'  each transect.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The ReadWBPHS list object to be analyzed
 #' @param flight Flight summary from SummaryWBPHS
@@ -549,116 +631,20 @@ EstimatesWBPHS=function(data, flight){
 
 
 
-#' Combine and parse raw WBPHS data files
+
+#' Combine WBPHS estimates by stratum
 #'
-#' SplitWBPHS will combine multiple observation files and split into annual observer files
+#' CombineEstimatesByStrata will combine multiple observer estimates at the stratum level
 #'
-#' SplitWBPHS takes a folder of raw text files (generally at the transect or stratum level) and combines them into an annual data file
-#' for an observer using the naming convention: WBPHS_YYYY_RawObs_NNN.csv, where YYYY is the 4 digit year and NNN is 3 character initials.
-#' Columns must be in the following order: Year, Month, Day, Seat, Observer, Stratum, Transect, Segment, Flight_Dir, A_G_Name, Wind_Dir,
-#' Wind_Vel, Sky, Filename, Lat, Lon, Time, Delay, Species, Num, Obs_Type.
-#' It will also add the columns Behavior, Distance, Code, and Notes that aren't used in the standard WBPHS protocol, but have become
-#' the standard in Alaska Region aerial surveys.
-#'
-#' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
-#'
-#' @param folder.path The directory path to the folder for input and output files.
-#'
-#' @return Year-Observer combinations of data in csv format to folder.path
-#'
-#' @export
-SplitWBPHS= function(folder.path){
-
-  setwd(folder.path)
-
-  full.data=data.frame(
-    "Year"=numeric(),
-    "Month"=numeric(),
-    "Day"=numeric(),
-    "Seat"=character(),
-    "Observer"=character(),
-    "Stratum"=character(),
-    "Transect"=character(),
-    "Segment"=character(),
-    "Flight_Dir"=numeric(),
-    "A_G_Name"=character(),
-    "Wind_Dir"=character(),
-    "Wind_Vel"=numeric(),
-    "Sky"=character(),
-    "Filename"=character(),
-    "Lat"=numeric(),
-    "Lon"=numeric(),
-    "Time"=numeric(),
-    "Delay"=numeric(),
-    "Species"=character(),
-    "Num"=numeric(),
-    "Obs_Type"=character(), stringsAsFactors = FALSE)
-
-
-
-
-  file_list <- list.files(folder.path)
-
-  for (file in file_list){
-
-
-    type <- file_ext(file)
-
-    if(type == "docx" || type=="txt" || type=="csv") {
-      print(paste("Skipped", file))
-      next}
-
-
-    print(paste("Included file", file, "successfully."))
-
-    temp.data <-read.csv(file, header=FALSE)
-    colnames(temp.data)=colnames(full.data)
-    full.data<-rbind(full.data, temp.data)
-
-
-  }
-
-  full.data$Behavior=NA
-  full.data$Distance=NA
-  full.data$Code=1
-  full.data$Notes=NA
-  full.data$Observer=toupper(full.data$Observer)
-
-  obs.list=unique(full.data$Observer)
-
- for (i in 1:length(obs.list)){
-
-   temp.data=full.data[full.data$Observer==obs.list[i],]
-
-   yr.list=unique(temp.data$Year)
-
-   for (k in 1:length(yr.list)){
-
-   write.csv(temp.data[temp.data$Year==yr.list[k],], paste(folder.path, "/WBPHS_", yr.list[k], "_RawObs_", obs.list[i], ".csv", sep=""),
-             row.names=FALSE, quote=FALSE)
-
-   }
- }
-
-
-}
-
-
-
-#' Combine WBPHS estimates by strata
-#'
-#' CombineEstimatesByStrata will combine multiple observer estimates at the strata level
-#'
-#' CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the strata level.
+#' CombineEstimatesByStrata takes an estimate object (See EstimatesWBPHS) and merges the estimates of 2 observers by species at the stratum level.
 #' The resulting data frame is appended onto the master WBPHS results table.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param estimates WBPHS index estimates from EstimatesWBPHS.
 #'
-#' @return Data frame of combined index estimates by species at the strata level
+#' @return Data frame of combined index estimates by species at the stratum level
 #'
 #' @export
 CombineEstimatesByStrata=function(estimates){
@@ -707,145 +693,355 @@ CombineEstimatesByStrata=function(estimates){
 
 
 
-#' Display observations on WBPHS segments
+
+
+
+#' Calculate index estimates for specified WBPHS count and transect data
 #'
-#' ShowWBPHS will load a leaflet display of WBPHS design segments and observations
+#' WBPHStidy uses annual WBPHS adjusted count data and flown transects to calculate an index estimate using a ratio estimator
 #'
-#' ShowWBPHS provides a quick spatial overview of a set of observations and the Waterfowl Breeding Population Habitat Survey segments.
-#' I am unsure of the origin and accuracy of the segments.  Segments and observations are drawn using leaflet.
+#' WBPHStidy provides a method for creating an annual index estimate for the WBPHS survey.  Individual observations and sampled areas are summed first at the transect level.
+#' Groups are created for eiders, mergansers, scoters, and grebes that pool species as: \enumerate{
+#' \item Eider COEI, KIEI, SPEI, STEI, UNEI
+#' \item Merganser COME, RBME, UNME
+#' \item Scoter BLSC, SCOT, SUSC, WWSC
+#' \item Grebe HOGR, RNGR, UNGR
+#' }
+#' Transect-level counts are summarized at the stratum level to produce densities of index groupings and variance according to the classic ratio estimator (Cochran 1977),
+#' then index estimates are adjusted according to historical visual correction factors (VCFs, see WBPHS_VCF) in an attempt to correct for incomplete detection.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
-#' @param data WBPHS clean (greenlighted) observations.
-#' @param trans.file Directory path to the WBPHS segment shape file (default to Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp)
+#' @param adj Adjusted counts for a given year of the WBPHS survey (see ReadWBPHS)
+#' @param flight Flight summary for a given year of the WBPHS survey (see SummaryWBPHS)
 #'
-#' @return Interactive map of segment-level data
+#' @return Data frame of counts, densities, areas, index estimates, and adjusted index estimates.
 #'
 #' @export
-ShowWBPHS=function(data, trans.file="Q:/Waterfowl/WBPHS/Design Files/Design_Transects/NAWBPS_segments.shp"){
+WBPHStidy = function(adj, flight){
 
-  trans.layer=file_path_sans_ext(basename(trans.file))
+  trans.f = flight %>%
+    group_by(Year, Stratum, Transect) %>%
+    summarise(SampledArea = sum(SampledArea))
 
-  trans.obj=readOGR(trans.file, trans.layer, verbose=FALSE)
-  trans.proj <- spTransform(trans.obj, "+proj=longlat +ellps=WGS84")
+  trans.adj = adj %>%
+    group_by(Year, Stratum, Transect, Species) %>%
+    filter(!(Species %in% c("START", "END", "NoBirdsSeen"))) %>%
+    summarise(total = sum(total), itotal = sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
-  pal=colorFactor(palette = c("red", "green", "yellow", "blue", "orange"), trans.proj$Segment)
-  pal2=colorFactor(palette = c("red", "yellow"), data$Observer)
+  trans.merge = merge(trans.adj, trans.f) %>%
+    complete(Year,  nesting(Stratum, Transect), Species, fill=list(total=0, itotal=0, ibb=0, sing1pair2=0, flock=0)) %>%
+    group_by(Stratum, Transect) %>%
+    fill(SampledArea, .direction=c("updown"))
 
-map= leaflet() %>%
-  addTiles() %>%
+  eider = trans.merge %>%
+    filter(Species %in% c("COEI", "STEI", "KIEI", "SPEI", "UNEI")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Eider", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
-  addPolylines(data=trans.proj,
-               color=~pal(Segment),
-               weight=4,
-               opacity=.9,
-               label=~trans.proj$Seq,
-               popup = paste("Strata: ", trans.proj$Seq, "<br>",
-                             "Transect: ", trans.proj$Transect, "<br>",
-                             "Segment: ", trans.proj$Segment, "<br>"))  %>%
+  merganser = trans.merge %>%
+    filter(Species %in% c("COME", "RBME", "UNME")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Merganser", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
-  addProviderTiles("Esri.WorldImagery") %>%
+  scoter = trans.merge %>%
+    filter(Species %in% c("SCOT", "WWSC", "SUSC", "BLSC")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Scoter", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
-  addCircleMarkers(data=data,
-                   radius = 3,
-                   color = ~pal2(Observer),
-                   stroke = FALSE,
-                   fillOpacity = 0.5,
-                   popup= paste(data$Observer, "<br>", data$Species,
-                                "<br>", data$Obs_Type, "<br>", data$Num)
-  ) %>%
+  grebe = trans.merge %>%
+    filter(Species %in% c("HOGR", "RNGR", "UNGR")) %>%
+    group_by(Year, Stratum, Transect, SampledArea) %>%
+    summarise(Species="Grebe", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
 
-  addScaleBar()
+  trans.merge = rbind(trans.merge, eider, merganser, scoter, grebe)
 
-print(map)
+  by.stratum = trans.merge %>%
+    group_by(Year, Stratum, Species) %>%
+    summarise(total.density = sum(total)/sum(SampledArea),
+              itotal.density = sum(itotal)/sum(SampledArea),
+              ibb.density = sum(ibb)/sum(SampledArea),
+              sing1pair2.density = sum(sing1pair2)/sum(SampledArea),
+              flock.density = sum(flock)/sum(SampledArea),
+              n = length(Transect),
+              total.numerator = sum(total^2)-2*sum(total)*sum(total*SampledArea)/sum(SampledArea)+((sum(total)/sum(SampledArea))^2)*sum(SampledArea^2),
+              itotal.numerator = sum(itotal^2)-2*sum(itotal)*sum(itotal*SampledArea)/sum(SampledArea)+((sum(itotal)/sum(SampledArea))^2)*sum(SampledArea^2),
+              ibb.numerator = sum(ibb^2)-2*sum(ibb)*sum(ibb*SampledArea)/sum(SampledArea)+((sum(ibb)/sum(SampledArea))^2)*sum(SampledArea^2),
+              sing1pair2.numerator = sum(sing1pair2^2)-2*sum(sing1pair2)*sum(sing1pair2*SampledArea)/sum(SampledArea)+((sum(sing1pair2)/sum(SampledArea))^2)*sum(SampledArea^2),
+              flock.numerator = sum(flock^2)-2*sum(flock)*sum(flock*SampledArea)/sum(SampledArea)+((sum(flock)/sum(SampledArea))^2)*sum(SampledArea^2),
+              denominator= n*(n-1)*(mean(SampledArea)^2))
+
+  strata.area=data.frame("Stratum"=c(1, 2,3,4,5,6,7,8,9,99,10,11,12), "Area"=c(2200,3900,9300,10800,3400,4100,400,9900,26600,21637.937,3850,5350,1970))
+
+  by.stratum = merge(by.stratum, strata.area)
+
+  estimates = by.stratum %>%
+    mutate(total.est = total.density * Area,
+           total.var = Area^2 * total.numerator / denominator,
+           total.se = sqrt(total.var),
+           itotal.est = itotal.density * Area,
+           itotal.var = Area^2 * itotal.numerator / denominator,
+           itotal.se = sqrt(itotal.var),
+           ibb.est = ibb.density * Area,
+           ibb.var = Area^2 * ibb.numerator / denominator,
+           ibb.se = sqrt(ibb.var),
+           sing1pair2.est = sing1pair2.density * Area,
+           sing1pair2.var = Area^2 * sing1pair2.numerator / denominator,
+           sing1pair2.se = sqrt(sing1pair2.var),
+           flock.est = flock.density * Area,
+           flock.var = Area^2 * flock.numerator / denominator,
+           flock.se = sqrt(flock.var))
+
+
+  vcf = WBPHS_VCF %>%
+    select(SPECIES, STRATUM, VCF, VCF_SE) %>%
+    mutate(VCF.var = VCF_SE^2) %>%
+    rename(Species=SPECIES, Stratum = STRATUM)
+
+  estimates = merge(estimates, vcf, all.x=TRUE)
+
+
+  estimates = estimates %>%
+    mutate(adj.total.est = total.est * VCF,
+           adj.total.se = sqrt((VCF^2*total.var+total.density*VCF.var-total.var*VCF.var)),
+           adj.itotal.est = itotal.est * VCF ,
+           adj.itotal.se = sqrt((VCF^2*itotal.var+itotal.density*VCF.var-itotal.var*VCF.var)),
+           adj.ibb.est = ibb.est * VCF,
+           adj.ibb.se = sqrt((VCF^2*ibb.var+ibb.density*VCF.var-ibb.var*VCF.var)),
+           adj.sing1pair2.est = sing1pair2.est * VCF,
+           adj.sing1pair2.se = sqrt((VCF^2*sing1pair2.var+sing1pair2.density*VCF.var-sing1pair2.var*VCF.var)),
+           adj.flock.est = flock.est * VCF,
+           adj.flock.se = sqrt((VCF^2*flock.var+flock.density*VCF.var-flock.var*VCF.var))
+           )
+
+  return(estimates)
+
 }
 
 
 
-#' Calculate index estimates for a given year of WBPHS data
+#' Calculate index estimates for a given year of WBPHS count and transect data
 #'
-#' EstimatesTableWBPHS will load a given year of greenlighted data and calculate an index estimate using a ratio estimator
+#' WBPHSbyYear pulls annual WBPHS data specified by MasterFileList_WBPHS to calculate an index estimate using a ratio estimator
 #'
-#' EstimatesTableWBPHS provides a shortcut to running piecewise functions for creating an annual index estimate for the WBPHS survey.
-#' The function uses MasterFileList_WBPHS as a lookup table to locate the appropriate raw observation files, then calls ReadWBPHS to concatenate,
-#' SummaryWBPHS for spatial design summary, TransDataWBPHS to table observations appropriately, and finally EstimatesWBPHS to calculate the ratio
-#' estimate.
+#' WBPHSbyYear provides a wrapper for WBPHStidy that will select the appropriate data files for generating an annual index estimate for the WBPHS survey.
+#' MasterFileList_WBPHS contains a list of "official" files and folder paths for data used in WBPHS estimates tables.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
-#' @param year Four digit year of the WBPHS survey to use
+#' @param year The 4-digit year requested to estimate generation
 #'
-#' @return List object with 2 elements: \enumerate{
-#' \item output.table Observer-specific estimates for the species indicated in the sppntable estimates column
-#' \item expanded.table Deeper level count information by transect, strata, species, and observer
-#' }
+#' @return Data frame of counts, densities, areas, index estimates, and adjusted index estimates.
 #'
 #' @export
-EstimatesTableWBPHS=function(year){
+WBPHSbyYear = function(year){
 
-  entries=MasterFileList_WBPHS[MasterFileList_WBPHS$YEAR %in% year,]
+  entries = MasterFileList_WBPHS %>%
+    filter(YEAR==year)
 
-  by.year=aggregate(entries$DRIVE~entries$YEAR,FUN=length)
-  colnames(by.year)=c("YEAR", "COUNT")
+  for (i in 1:length(entries$YEAR)){
 
+    if(i == 1){full.data=read.csv(paste(entries$DRIVE[i], entries$OBS[i], sep=""), header=TRUE, stringsAsFactors = FALSE)}
 
-  for (i in 1:length(by.year$YEAR)){
-
-    temp.entries=entries[entries$YEAR==by.year$YEAR[i],]
-    print(temp.entries)
-
-    for (j in 1:by.year$COUNT[i]){
-
-      if(j==1){
-
-        data.path=paste(temp.entries$DRIVE[j], temp.entries$OBS[j], sep="")
-        if(!file.exists(data.path)){next}
-        data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
-
-      }
-
-      if(j != 1){
-
-        data.path=paste(temp.entries$DRIVE[j], temp.entries$OBS[j], sep="")
-        if(!file.exists(data.path)){next}
-        temp.data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
-
-        data=rbind(data, temp.data)
-      }
-
-      data$Observer=paste(unique(data$Observer), collapse="_")
-
+    if(i != 1){temp.data=read.csv(paste(entries$DRIVE[i], entries$OBS[i], sep=""), header=TRUE, stringsAsFactors = FALSE)
+    full.data=rbind(full.data, temp.data)
     }
-
-
-    formatted=ReadWBPHS(data)
-
-    flight=SummaryWBPHS(formatted)
-
-
-    transdata=TransDataWBPHS(formatted)
-
-    estimate=EstimatesWBPHS(transdata, flight=flight)
-
-
-    if(i==1){output.table=estimate$estimates
-    expanded.table=estimate$expanded}
-    if(i>1){output.table=rbind(output.table, estimate$estimates)
-    expanded.table=rbind(expanded.table, estimate$expanded)}
 
   }
 
-  output.table$area="WBPHS"
-  expanded.table$area="WBPHS"
 
+  processed = ReadWBPHS(full.data)
 
+  flight = SummaryWBPHS(processed)
 
-  return(list(output.table=output.table, expanded.table=expanded.table))
+  est = WBPHStidy(processed, flight)
 
-
+  return(est)
 }
 
 
+
+
+
+#' Calculate index estimates for a given year of WBPHS count and transect data
+#'
+#' WBPHSMultipleYear iterates over a range of years to produce multiple years of index estimates using a ratio estimator
+#'
+#' WBPHSMultipleYear provides a wrapper for WBPHSbyYear that will select the appropriate data files for generating annual index estimates for the WBPHS survey.
+#' MasterFileList_WBPHS contains a list of "official" files and folder paths for data used in WBPHS estimates tables. The final table includes year- and species-specific
+#' deletions based on annual variation in, changes to, and interpretations of the standardized protocol.  The unavailable estimates include: \enumerate{
+#' \item BRAN, EMGO, SACR, SNGO, SWAN, SWANN from 1957 to 1963
+#' \item COLO, PALO, RTLO, UNLO, YBLO from 1957 to 1970
+#' \item HOGR, RNGR, UNGR from 1957 to 1990
+#' \item BAEA from 1957 to 1964
+#' \item GOEA from 1957 to 2016
+#' \item CCGO, GWFG from 1957 to 1963, other than total estimates (augmented indices unavailable)
+#' }
+#'
+#'
+#' @author Charles Frost, \email{charles_frost@@fws.gov}
+#' @references \url{https://github.com/USFWS/AKaerial}
+#'
+#' @param years The range of years requested to estimate generation, currently available for 1957-2021.
+#'
+#' @return Data frame of counts, densities, areas, index estimates, and adjusted index estimates.
+#'
+#' @export
+WBPHSMultipleYear= function(years){
+
+  for (i in years){
+    if (!(i %in% MasterFileList_WBPHS$YEAR)){next}
+    if (i %in% MasterFileList_WBPHS$YEAR){
+      if(i == years[1]){
+        print(i)
+        EstimatesTableWBPHS=WBPHSbyYear(i)
+      }
+      if(i != years[1]){
+        print(i)
+        temp.table=WBPHSbyYear(i)
+        EstimatesTableWBPHS=rbind(EstimatesTableWBPHS, temp.table)
+      }
+
+    }
+  }
+
+
+  EstimatesTableWBPHS = EstimatesTableWBPHS %>%
+    complete(Species, nesting(Year, Stratum), fill=list(
+                                                        total.est=0,
+                                                        total.density=0,
+                                                        total.numerator=0,
+                                                        total.var=0,
+                                                        total.se=0,
+                                                        adj.total.est=0,
+                                                        adj.total.se=0,
+                                                        itotal.est=0,
+                                                        itotal.density=0,
+                                                        itotal.numerator=0,
+                                                        itotal.var=0,
+                                                        itotal.se=0,
+                                                        adj.itotal.est=0,
+                                                        adj.itotal.se=0,
+                                                        ibb.est=0,
+                                                        ibb.density=0,
+                                                        ibb.numerator=0,
+                                                        ibb.var=0,
+                                                        ibb.se=0,
+                                                        adj.ibb.est=0,
+                                                        adj.ibb.se=0,
+                                                        sing1pair2.est=0,
+                                                        sing1pair2.density=0,
+                                                        sing1pair2.numerator=0,
+                                                        sing1pair2.var=0,
+                                                        sing1pair2.se=0,
+                                                        adj.sing1pair2.est=0,
+                                                        adj.sing1pair2.se=0,
+                                                        flock.est=0,
+                                                        flock.density=0,
+                                                        flock.numerator=0,
+                                                        flock.var=0,
+                                                        flock.se=0,
+                                                        adj.flock.est=0,
+                                                        adj.flock.se=0,
+                                                        n=-999,
+                                                        denominator = -999,
+                                                        Area = -999,
+                                                        VCF = NA,
+                                                        VCF_SE = NA,
+                                                        VCF.var = NA)) %>%
+    filter(Species != "NONE")
+
+  keepers=unique(WBPHSsppntable$WBPHS[WBPHSsppntable$WBPHS_EST==1])
+
+  EstimatesTableWBPHS=EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% keepers,]
+
+  vcf = WBPHS_VCF %>%
+    select(SPECIES, STRATUM, VCF, VCF_SE) %>%
+    mutate(VCF.var = VCF_SE^2) %>%
+    rename(Species=SPECIES, Stratum = STRATUM)
+
+  EstimatesTableWBPHS = EstimatesTableWBPHS %>%
+    left_join(vcf, by = c("Species", "Stratum")) %>%
+    select(-c(VCF.x, VCF_SE.x, VCF.var.x)) %>%
+    rename(VCF=VCF.y, VCF_SE=VCF_SE.y, VCF.var=VCF.var.y) %>%
+    relocate(c(VCF, VCF_SE, VCF.var), .before = adj.total.est)
+
+
+   for (i in 1:length(EstimatesTableWBPHS$denominator)){
+
+
+     if(is.na(EstimatesTableWBPHS$VCF[i])){
+
+       EstimatesTableWBPHS$adj.total.est[i]=NA
+       EstimatesTableWBPHS$adj.total.se[i]=NA
+       EstimatesTableWBPHS$adj.itotal.est[i]=NA
+       EstimatesTableWBPHS$adj.itotal.se[i]=NA
+       EstimatesTableWBPHS$adj.ibb.est[i]=NA
+       EstimatesTableWBPHS$adj.ibb.se[i]=NA
+       EstimatesTableWBPHS$adj.flock.est[i]=NA
+       EstimatesTableWBPHS$adj.flock.se[i]=NA
+       EstimatesTableWBPHS$adj.sing1pair2.est[i]=NA
+       EstimatesTableWBPHS$adj.sing1pair2.se[i]=NA
+
+
+
+     }
+
+
+     if(!(is.na(EstimatesTableWBPHS$denominator[i]))){
+     if(EstimatesTableWBPHS$denominator[i] == -999){
+    thisyear=EstimatesTableWBPHS$Year[i]
+    thisspecies=EstimatesTableWBPHS$Species[i]
+    thisstratum=EstimatesTableWBPHS$Stratum[i]
+
+
+
+    denom = sort(unique(EstimatesTableWBPHS$denominator[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
+    area = sort(unique(EstimatesTableWBPHS$Area[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
+
+    this.n = sort(unique(EstimatesTableWBPHS$n[EstimatesTableWBPHS$Year==thisyear & EstimatesTableWBPHS$Stratum == thisstratum]), decreasing=TRUE)[1]
+
+    EstimatesTableWBPHS$denominator[i] = denom
+    EstimatesTableWBPHS$Area[i] = area
+
+    EstimatesTableWBPHS$n[i] = this.n
+
+     }
+   }
+}
+
+
+  ## Clip conditions for exceptions to regular data collection
+
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("BRAN", "EMGO", "SACR", "SNGO", "SWAN", "SWANN") & EstimatesTableWBPHS$Year %in% c(1957:1963), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("COLO", "PALO", "RTLO", "UNLO", "YBLO") & EstimatesTableWBPHS$Year %in% c(1957:1970), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("HOGR", "RNGR", "UNGR", "Grebe") & EstimatesTableWBPHS$Year %in% c(1957:1990), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("BAEA") & EstimatesTableWBPHS$Year %in% c(1957:1964), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("GOEA") & EstimatesTableWBPHS$Year %in% c(1957:2016), -c(1:3)] = NA
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species %in% c("CCGO", "GWFG") & EstimatesTableWBPHS$Year %in% c(1957:1963), c("itotal.density", "ibb.density", "sing1pair2.density", "flock.density",
+                                                                                                                         "itotal.numerator", "ibb.numerator", "sing1pair2.numerator", "flock.numerator",
+                                                                                                                         "itotal.est", "ibb.est", "sing1pair2.est", "flock.est",
+                                                                                                                         "itotal.var", "ibb.var", "sing1pair2.var", "flock.var",
+                                                                                                                         "itotal.se", "ibb.se", "sing1pair2.se", "flock.se",
+                                                                                                                         "adj.itotal.est", "adj.ibb.est", "adj.sing1pair2.est", "adj.flock.est",
+                                                                                                                         "adj.itotal.se", "adj.ibb.se", "adj.sing1pair2.se", "adj.flock.se"
+                                                                                                                         )] = NA
+
+  EstimatesTableWBPHS[EstimatesTableWBPHS$Species == "SWANN" , c("itotal.density", "ibb.density", "sing1pair2.density", "flock.density",
+                                                                                                                                  "itotal.numerator", "ibb.numerator", "sing1pair2.numerator", "flock.numerator",
+                                                                                                                                  "itotal.est", "ibb.est", "sing1pair2.est", "flock.est",
+                                                                                                                                  "itotal.var", "ibb.var", "sing1pair2.var", "flock.var",
+                                                                                                                                  "itotal.se", "ibb.se", "sing1pair2.se", "flock.se",
+                                                                                                                                  "adj.itotal.est", "adj.ibb.est", "adj.sing1pair2.est", "adj.flock.est",
+                                                                                                                                  "adj.itotal.se", "adj.ibb.se", "adj.sing1pair2.se", "adj.flock.se"
+                                                                                                                  )] = NA
+
+  EstimatesTableWBPHS = EstimatesTableWBPHS %>%
+    arrange(Species, Year, Stratum)
+
+  write.csv(EstimatesTableWBPHS, "EstimatesTableWBPHS.csv", row.names = FALSE, quote=FALSE)
+
+}

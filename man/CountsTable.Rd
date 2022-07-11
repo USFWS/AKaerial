@@ -19,7 +19,7 @@ CountsTable will summarize an AdjustCounts data frame into a table
 CountsTable is designed to be run on an adjusted data file (has been run through AdjustCounts to create indices).  It will return a tabular summary of counts.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

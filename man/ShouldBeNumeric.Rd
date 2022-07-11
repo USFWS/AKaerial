@@ -19,7 +19,7 @@ ShouldBeNumeric checks to see if column entries are numeric values needed for an
 ShouldBeNumeric is a GreenLight QA/QC check performed on a data set.  If the column entries are not numeric values it will return a "red" status.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

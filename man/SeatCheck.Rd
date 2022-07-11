@@ -19,7 +19,7 @@ SeatCheck checks to see if Seat entries are correct values needed for analysis.
 SeatCheck is a GreenLight QA/QC check performed on a data set.  If the Seat entries are not LF, RF, LR, or RR, it will return a "red" status.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

@@ -37,7 +37,7 @@ SepciesTransect will summarize spatial and observation information for a range o
 SpeciesTransect is used to provide a full record of a species on an area for a range of years, by transect and strata.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

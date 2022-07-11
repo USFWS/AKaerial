@@ -20,7 +20,7 @@ TransData is designed to take an object from DataSelect and summarize observatio
 combination of year, observer, species, transect, and Obs_Type.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

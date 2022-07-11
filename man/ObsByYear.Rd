@@ -21,7 +21,7 @@ older files that may have been concatenated into a master file, splitting them i
 the files default to the directory "Q:/Waterfowl/Parsed/ACP_" and would need recoding for any other survey.  Individual .csv files are written to the directory.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

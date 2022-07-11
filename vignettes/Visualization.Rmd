@@ -23,7 +23,7 @@ One of the primary purposes of AKaerial is to provide report-quality figures and
   2. __Table generation__ - [ReportTable](../help/ReportTable) will create an .html table of historic estimate objects in AKaerial ([ACPHistoric](../help/ACPHistoric), [CRDHistoric](../help/CRDHistoric), [YKDHistoric](../help/YKDHistoric), [YKDVHistoric](../help/YKDVHistoric), and [YKGHistoric](../help/YKGHistoric)).  
 
 
-```{r tabs, echo = TRUE, message=FALSE, warning = FALSE, fig.width = 6, fig.asp=.8}
+```{r tabs, echo = TRUE, message=FALSE, warning = FALSE, fig.width = 6, fig.asp=.8, eval=FALSE}
 library(AKaerial)
 
 
@@ -48,7 +48,9 @@ ReportTable(data=CRDHistoric$combined,
 ```
 
 
+
   3. __Figure generation__ - [ReportFigure](../help/ReportFigure) will create a ggplot line graph of historic estimate objects in AKaerial ([ACPHistoric](../help/ACPHistoric), [CRDHistoric](../help/CRDHistoric), [YKDHistoric](../help/YKDHistoric), [YKDVHistoric](../help/YKDVHistoric), and [YKGHistoric](../help/YKGHistoric)). 
+
 
 
 

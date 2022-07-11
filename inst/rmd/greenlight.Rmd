@@ -7,14 +7,16 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(plyr)
+library(tidyverse)
+library(leaflet)
+library(tmap)
 ```
 
 ## Introduction
 
-This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (BPOP).
+This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (WBPHS).
 
-All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/cfrost3/AKaerial>.
+All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the USFWS Alaska Region MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/USFWS/AKaerial>.
 
 
 You have chosen the file:
@@ -52,9 +54,24 @@ Status - RED
 
 ## Spatial
 
-There are no spatial checks provided here.  Spatial checks will be unique to the analysis.
+There are no spatial checks provided here, instead please review the plot of transect-level observations below for accuracy.
+
+```{r mapping}
+ 
+
+ tm <- tmap::tm_shape(basemap) + tmap::tm_polygons(col = "STRATNAME", alpha = 0.5) +
+    tmap::tm_shape(sf.lines, name="Flown Track") + tmap::tm_lines() +
+    tmap::tm_text("Transect", size=2) +
+    tmap::tm_shape(sf.obs, name="Bird Obs") + tmap::tm_dots(col="Day") +
+    tmap::tm_basemap(server = "Esri.WorldGrayCanvas") +
+    tmap::tm_scale_bar()
 
 
+leaf = tmap::tmap_leaflet(tm)
+
+leaf
+
+```
 
 ## Swans
 
@@ -125,8 +142,7 @@ Status - RED
 `r if(length(test.seat$bad[,1]) == 0) {"\\end{comment}"}`
 
 ## Species Codes
-The current list of acceptable species codes can be found at:
-<https://github.com/cfrost3/AKaerial/tree/master/data/AKAerialSpeciesAOUCodes.csv>
+The current list of acceptable species codes can be found in the object [sppntable](../help/sppntable), or for WBPHS, [WBPHSsppntable](../help/WBPHSsppntable).
 
 `r if(s.species != "green") {"\\begin{comment}"}`
 All species codes appear to be recorded correctly, or at least an acceptable substitute is known (for any YELLOW status codes entered).
@@ -135,7 +151,7 @@ Status - GREEN
 `r if(s.species != "green") {"\\end{comment}"}`
 
 `r if(length(test.species$change[,1]) == 0) {"\\begin{comment}"}`
-The following species codes are not acceptable and will be updated:
+The following species codes are not acceptable and will be updated in the QC_Obs file:
 
 ```{r spec_missing}
 kableExtra::kable_styling(kableExtra::kable(table(test.species$change$Species)))
@@ -368,5 +384,29 @@ print(obs_plot)
 print(sp_plot)
 
 print(num_plot)
+
+```
+
+
+## Transect Summary
+
+The following section provides a table of all REPORTED NAVIGATIONAL transects in the data file.  These are NOT checked against the design transects or stratification and should be used ONLY as an extra QA/QC step for the transcriber. Navigational transects are numbered incorrectly according to the design and get changed before any analysis.
+
+```{r transects}
+trans=sort(unique(data$Transect))
+
+trans %>%
+  
+  kableExtra::kable(format="html",
+                    col.names = c("Transect"),
+                    escape = F
+                    ) %>%
+  
+  
+  kableExtra::kable_styling("bordered",
+                            full_width=FALSE,
+                            font_size = 14)  %>%
+
+  kableExtra::scroll_box(height = "250px")
 
 ```

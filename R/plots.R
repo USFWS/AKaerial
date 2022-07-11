@@ -13,7 +13,7 @@
 #' transect number \emph{reported by the pilot or observer.}
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.  Must be in a format
 #' accepted by \code{\link{SplitDesign}}.
@@ -109,7 +109,7 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
     leaflet::addProviderTiles("Esri.WorldImagery")
 
 
-  if(bounds.which>0){
+  if(!is.na(bounds.which) & bounds.which>0){
 
 
     map = map %>%
@@ -138,12 +138,14 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
 #' but with no option to include observations.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.  Must be in a format
 #' accepted by \code{\link{SplitDesign}}.
 #' @param transect.path The path name to the .shp file of lines designating the transect design.
 #' Must be in a format accepted by \code{\link{SplitDesign}}.
+#' @param area The area for the prject represented.  This only matters for the area CRD where there are vertical transects
+#' to be passed to SplitDesign.
 #'
 #' @return None
 #'
@@ -151,15 +153,15 @@ ShowMe=function(strata.path, transect.path, data.path, species="all", bounds=NA,
 #'  ShowMeDesign(strata.path="C:/Habitat.shp", transect.path="My2016Transects.shp")
 #'
 #' @export
-ShowMeDesign=function(strata.path, transect.path){
+ShowMeDesign=function(strata.path, transect.path, area="Not CRD"){
 
 
-  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE)
+  split.design=SplitDesign(strata.file = strata.path, transect.file = transect.path, SegCheck = FALSE, area=area)
 
   #read projected (non-dataframe) strata
   strata.proj=LoadMap(strata.path, type="proj")
 
-  split.design <- sp::spTransform(split.design, "+proj=longlat +ellps=WGS84")
+  split.design <- sp::spTransform(split.design, "+proj=longlat +ellps=WGS84 +datum=NAD83")
   strata.proj <- suppressWarnings(rgeos::gBuffer(strata.proj, byid=TRUE, width=0))
 
 
@@ -179,7 +181,7 @@ ShowMeDesign=function(strata.path, transect.path){
 
     leaflet::addPolylines(data=split.design,
                  color="black",
-                 weight=4,
+                 weight=2,
                  opacity=.9,
                  label=~split.design$OBJECTID,
                  popup = paste("Strata: ", split.design$STRATNAME, "<br>",
@@ -190,7 +192,9 @@ ShowMeDesign=function(strata.path, transect.path){
 
     leaflet::addScaleBar() %>%
 
-    leaflet::addProviderTiles("Esri.WorldImagery")
+    leaflet::addProviderTiles("Esri.WorldImagery") %>%
+
+    addMouseCoordinates()
 
 
   print(map)
@@ -215,7 +219,7 @@ ShowMeDesign=function(strata.path, transect.path){
 #' if they fall outside strata boundaries.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.
 #' @param transect.path The path name to the .shp file of lines designating the transect design.
@@ -336,7 +340,7 @@ ShowMeUncut=function(strata.path, transect.path, data.path="none"){
 #' transect number \emph{reported by the pilot or observer.}, and year of the observation.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param area The area code for dedicated MBM Alaska region surveys.
 #'    Acceptable values include:
@@ -424,6 +428,13 @@ ShowMeYears=function(area, year, species="all"){
 
     }
 
+    if(species[1] == "all"){
+      data=data[data$Species != "START", ]
+      data=data[data$Species != "END", ]
+
+
+    }
+
   }
 
   sp::coordinates(data)=~Lon+Lat
@@ -468,7 +479,7 @@ ShowMeYears=function(area, year, species="all"){
 #' but with no option to include observations.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param strata.path The path name to the .shp file of the stratification.  Must be in a format
 #' accepted by \code{\link{SplitDesign}}.
@@ -607,7 +618,7 @@ factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.pro
 #' entered by the user once the table is created
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The estimates object.  Must be in a format with Year, Species, index, and index variance if not one of
 #' the included package data objects (ACPHistoric, CRDHistoric, YKDHistoric, YKDVHistoric, or YKGHistoric).
@@ -621,13 +632,14 @@ factpal=leaflet::colorFactor(RColorBrewer::brewer.pal(n=length(unique(strata.pro
 #' @param cap The overall table caption.  If nothing entered as an argument, the user will be prompted to enter a caption in the function.
 #' @param new.names The desired column names for the final table.  If these are not specified the user will be prompted to
 #' input within the function.
+#' @param missing Any missing years of data to be displayed as NA
 #'
 #' @return Renders an .html table and also returns it in data frame format
 #'
 #' @examples ReportTable(data=ACPHistoric$combined, species="SPEI", year = c(2007:2019), index = c("total", "total.var"), yr.avg=3, cap="Test table!", new.names=c("Year", "Total Birds", "SE", "3-year Avg", "SE"))
 #'
 #' @export
-ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new.names="none"){
+ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new.names="none", missing=NULL){
 
   library(dplyr)
 
@@ -658,6 +670,21 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
   if("Species" %in% colnames(data)){data = data %>% select(-"Species")}
   if("Observer" %in% colnames(data)){data = data %>% relocate("Observer")}
   if("Year" %in% colnames(data)){data = data %>% relocate("Year")}
+
+
+  if(yr.avg == 0 & length(index) == 2){
+
+    data[,which(colnames(data)==index[2])]=round(sqrt(data[,which(colnames(data)==index[2])]),0)
+
+  }
+
+  if(yr.avg == 0 & length(index) > 2){
+
+    data[,which(colnames(data)==index[2])]=round(sqrt(data[,which(colnames(data)==index[2])]),0)
+    data[,which(colnames(data)==index[4])]=round(sqrt(data[,which(colnames(data)==index[4])]),0)
+
+
+  }
 
   if(yr.avg > 1 & length(index) > 1){
 
@@ -739,29 +766,32 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
   }
 
 
-  #table1 = data %>%
 
+  if(missing){
+    for(i in 1:length(missing)){
+
+      data = data %>%
+        add_row(Year=missing[i], .after = which(data$Year==missing[i]-1))
+    }
+
+  }
+
+data$Year=as.character(data$Year)
 
   data %>%
 
-    kableExtra::kable(format="html",
+
+    kableExtra::kable(format="latex",
+                      format.args = list(big.mark = ","),
           escape = F,
           col.names = new.names,
 
           caption = cap) %>%
 
+    kableExtra::row_spec(0,bold=TRUE) %>%
 
-    kableExtra::kable_styling("bordered",
-                  full_width=FALSE,
-                  font_size = 14)
 
-  #print(table1)
-
-  # data = data.frame(matrix(unlist(data), length(data$Year), byrow=F),stringsAsFactors=FALSE)
-  #
-  # colnames(data)=new.names
-  #
-  # return(data)
+    kableExtra::kable_styling(full_width=FALSE)
 
 }
 
@@ -780,7 +810,7 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 #' entered by the user as the figure is generated.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param data The estimates object.  Must be in a format with Year, Species, index, and index variance if not one of
 #' the included package data objects (ACPHistoric, CRDHistoric, YKDHistoric, YKDVHistoric, or YKGHistoric).
@@ -802,7 +832,7 @@ ReportTable= function(data, species, year, index="none", yr.avg, cap="none", new
 #' @param leg.labels The desired legend labels in the new desired order.  These should be entered as text and separated only by a comma.
 #' @param leg.limits The internal data object references in the new order.  This specifies the mapping of the newly-defined labels and orders.
 #' The easiest way to get these is to look at the FIRST figure generated by the function and enter them as they appear in the legend, only in the
-#' new order.
+#' new order.  They MUST match the original figure names/column names.
 #' @param test.out Should the figure progression output in the plot window?  If FALSE, the object is only returned.
 #'
 #' @return Renders and returns a ggplot figure
@@ -1030,6 +1060,8 @@ ReportFigure= function(data,
     ggplot2::coord_cartesian(xlim=c(min(plot.data$Year),max(plot.data$Year)), ylim=c(0, 1.5*max(plot.data$estimate)))
 
 
+  return(plot.base)
+
   if(test.out==TRUE){print(plot.base)}
 
 
@@ -1078,6 +1110,9 @@ ReportFigure= function(data,
                       values = leg.values,
                       labels = leg.labels,
                       limits = leg.limits) +
+
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = estimate - 1.96 * error, ymax = estimate + 1.96 * error, fill=index),
+                         alpha = 0.2) +
 
     ggplot2::scale_x_continuous(x.label, labels = c(min(sub.frame$Year):max(sub.frame$Year)), breaks = c(min(sub.frame$Year):max(sub.frame$Year))) +
 

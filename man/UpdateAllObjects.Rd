@@ -2,22 +2,24 @@
 % Please edit documentation in R/main.R
 \name{UpdateAllObjects}
 \alias{UpdateAllObjects}
-\title{Update the 4 input .rda objects for streamlined package function}
+\title{Update the 7 .rda objects for streamlined package function}
 \usage{
-UpdateAllObjects(folder.path)
+UpdateAllObjects(input.path, output.path)
 }
 \arguments{
-\item{folder.path}{The path to the R package data folder containing the 4 objects to be updated.}
+\item{input.path}{The path to the folder containing the .csv data to convert to .rda objects.}
+
+\item{output.path}{The path to the R package data folder to hold the updated objects.}
 }
 \value{
-The 4 objects are updated and saved in the data folder of the package.
+The 7 objects are updated and saved in the data folder of the package.
 }
 \description{
-Update the 4 input .rda objects for streamlined package function
+Update the 7 .rda objects for streamlined package function
 }
 \details{
-This function was added to streamline any updates to the 4 package objects that define the core inputs for estimate generation.  The
-4 objects are:
+This function was added to streamline any updates to the 7 package objects that define the core inputs for estimate generation.  The
+7 objects are:
 \itemize{
  \item MasterFileList - A list of each year/area/strata/transect/observer combination for the ACP, CRD, YKD, YKG, and 10-02 surveys and the
  location of all associated clean input files that produce an index estimate.
@@ -26,10 +28,13 @@ This function was added to streamline any updates to the 4 package objects that 
  \item sppntable - A list of the accepted species code, common name, and scientific name of all avian species used in the package.  These are
  separated by project.
  \item WBPHSsppntable - A list of the accepted species code, common name, and scientific name of all avian species used on the WBPHS survey.
+ \item WBPHS_VCF - A list of visibility correction factors (VCFs) by species and stratum for the WBPHS survey.
+ \item WBPHS_PoolSpecies - A list of species and selected associated guilds (eider, grebe, merganser, scoter) for pooling WBPHS estimates.
+ \item WBPHSHistoric - The master table of historic WBPHS estimates.
  }
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

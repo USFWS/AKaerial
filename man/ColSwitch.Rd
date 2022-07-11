@@ -20,7 +20,7 @@ ColSwitch will change yr, mo, da, se, strata, grp, and sppn to Year, Month, Day,
 This function was written to quickly allow an old data file to be formatted for analysis, but probably won't be used in the future.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

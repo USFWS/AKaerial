@@ -53,7 +53,7 @@ navigational numbers to analysis numbering.  Species codes that need specific pr
 for different indices at the row level. The resulting list object is the primary currency for design-based ratio estimator analysis.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

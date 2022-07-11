@@ -37,7 +37,11 @@ $$s^2_{ixy} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )(y_{ij} - \bar y )/(
 
 The resulting population index generally remains an index to an unknown, larger population.  For some species, visibility correction factors (VCFs) are applied to calculate a population estimate.  In these cases, concurrent studies have estimated the proportion of birds that are available to be seen along a transect, but are missed by an observer.  For example, a VCF of 2.0 would indicate that for every bird seen along a transect, another bird is available to be seen, but goes unseen.  
 
-## Preparing the data
+## Single-year vs. multiple-year estimates
+
+AKaerial is designed to streamline the generation of estimates and provide both a single-year approach to generating a table of estimates (detailed below), as well as a multiple-year wrapper, [EstimatesTable](../help/EstimatesTable).  
+
+## Individual year: Preparing the data
 The 4 requirements for an AKaerial estimate are:
 
   1. `area` - the MBM code for the area designation (the same value the data were GreenLighted under).  One important note here is that DataSelect is *not* the appropriate function to prepare Waterfowl Breeding Population and Habitat Survey (WBPHS, BPOP, "North American") data for analysis.  Instead, use [ReadWBPHS](../help/ReadWBPHS).
@@ -81,7 +85,7 @@ The returned object will be a list of 5 elements appropriate for use in [Densiti
   1. `transect` - Observations summarized at the transect level.
 
 
-## Generating estimates
+## Individual year: generating estimates
 Once the list object has been created using [DataSelect](../help/DataSelect), a table of estimates is created by calling [Densities](../help/Densities) with the list object and area as the only arguments.  
 
 ``` {r eval=FALSE}
@@ -98,6 +102,46 @@ The resulting return object is a list with 2 elements:
 ``` {r echo=FALSE}
 print(YKDHistoric$output.table[YKDHistoric$output.table$Year==2019,])
 ```
+
+## Multiple year: Preparing the data
+
+The multiple-year approach requires either a connection to the current USFWS-R7-MBM repository (as of 2022, AKaerial uses the internal airdata/Waterfowl/ directory, but will soon use the R7 Regional Data Repository), or access to a mirrored copy of it on a local drive.  If you choose the mirrored drive option, it will be _much_ easier if the folder structure within matches that of the Waterfowl repository.  
+
+### Checking repository connection
+
+If you have access to the current repository, you only need to check that the drive letter of your network connection matches the drive letter in the object MasterFileList.  It is highly recommended that you work from either the current repository or a mirrored duplicate.  If you choose a mirrored duplicate, or your drive letter does not match the default value ("K:"), it can be changed to your drive easily:
+
+``` {r eval=FALSE}
+MasterFileList$DRIVE = "C:"
+MasterFileList$DRIVE = "C:/MyMirror"
+
+```
+
+If you are working from a mirror with a different folder structure, you will have to overwrite the year-specific values in MasterFileList$STRATA, $TRANS, and $OBS for strata .shp file, transect .shp file, and observation .csv files.  Keep in mind that the functions are designed to combine or exclude observation files automatically in area-, year-, and even seat-specific situations.  If any of this logic needs to be broken for your particular estimates table, then you will have to run individual years (above).  
+
+## Generating the table of estimates
+
+Once you have a connection to your repository established (or have an appropriately overwritten MasterFileList object), you can generate a table using:
+
+``` {r eval=FALSE}
+my.table = EstimatesTable(area = "YKG", year = c(2005, 2021))
+
+```
+
+You can then save your estimates table to a local or network location:
+
+``` {r eval=FALSE}
+my.table = EstimatesTable(area = "YKG", year = c(2005, 2021))
+
+write.csv(my.table$output.table, file="C:/Results/YKG_2005to2021_output.csv", quote=FALSE, row.names = FALSE)
+
+write.csv(my.table$expanded.table, file="C:/Results/YKG_2005to2021_expanded.csv", quote=FALSE, row.names = FALSE)
+
+write.csv(my.table$combined, file="C:/Results/YKG_2005to2021_combined.csv", quote=FALSE, row.names = FALSE)
+
+```
+
+See [EstimatesTable](../help/EstimatesTable) for more information on the resulting object. 
 
 ## References
 

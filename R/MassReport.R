@@ -11,7 +11,7 @@
 #' including or excluding a species in the generated sharable analysis files.
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #' @param folder.path The path name to the folder containing the raw .csv files.
 #'  Either folder.path or area must be specified.
@@ -88,7 +88,7 @@ for (i in 1:length(file.set)){
 #' }
 #'
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
-#' @references \url{https://github.com/cfrost3/AKaerial}
+#' @references \url{https://github.com/USFWS/AKaerial}
 #'
 #'
 

@@ -22,7 +22,7 @@ distance in km
 Calculates the geodesic distance between two points specified by radian latitude/longitude using the Spherical Law of Cosines (slc)
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

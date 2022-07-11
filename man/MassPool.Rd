@@ -22,7 +22,7 @@ W. Butler was the only pilot for the 1986 YKG survey.
 }
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

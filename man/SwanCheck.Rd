@@ -21,7 +21,7 @@ record the swan Obs_Type (single or pair) and then the associated nest as a sepa
 else will result in "yellow" status if the treatment of the data type is known, and "red" if unknown.
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}

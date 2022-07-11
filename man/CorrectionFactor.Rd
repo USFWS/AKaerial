@@ -21,7 +21,7 @@ CorrectionFactor will apply a detection correct to an index estimate.
 CorrectionFactor currently only works for dusky Canada geese (DCGO).
 }
 \references{
-\url{https://github.com/cfrost3/AKaerial}
+\url{https://github.com/USFWS/AKaerial}
 }
 \author{
 Charles Frost, \email{charles_frost@fws.gov}
