@@ -269,6 +269,8 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
 
   ## E Osnas mapping function
 
+  if(area != "WBPHS"){
+
   sf.obs <- data %>% sf::st_as_sf(coords=c("Lon", "Lat"), crs=4326) %>%
     sf::st_transform(crs=3338) %>%
     filter(Code == 1) #remove any non-survey or special observations
@@ -288,7 +290,7 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
 
   sf.obs <- sf.obs %>%  mutate(Day=as.character(Day))
 
-
+}
 
   ## End mapping, plot the object in markdown
 
