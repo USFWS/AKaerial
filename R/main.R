@@ -2189,7 +2189,7 @@ PoolData=function(year, area){
 #' }
 #'
 #' @export
-SpeciesTransect=function(area, year, species, strata.overwrite="none"){
+SpeciesTransect=function(area, year, species, strata.overwrite="none", method="repo"){
 
   entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
 
@@ -2219,22 +2219,27 @@ SpeciesTransect=function(area, year, species, strata.overwrite="none"){
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==1986){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatLF.csv", sep="")
-
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_1986_QCObs_SeatLF.csv", sep="")}
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==1986){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatRF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_1986_QCObs_SeatRF.csv", sep="")}
         now.skip=entries$YEAR[i]
         rep=3
       }
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==1989){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatLF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_1989_QCObs_SeatLF.csv", sep="")}
+
 
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==1989){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatRF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_1989_QCObs_SeatRF.csv", sep="")}
+
         now.skip=entries$YEAR[i]
         rep=3
       }
@@ -2242,11 +2247,15 @@ SpeciesTransect=function(area, year, species, strata.overwrite="none"){
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==1997){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatLF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_1997_QCObs_SeatLF.csv", sep="")}
+
 
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==1997){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatRF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_1997_QCObs_SeatRF.csv", sep="")}
+
         now.skip=entries$YEAR[i]
         rep=3
       }
@@ -2254,11 +2263,15 @@ SpeciesTransect=function(area, year, species, strata.overwrite="none"){
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==2005){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatLF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_2005_QCObs_SeatLF.csv", sep="")}
+
 
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==2005){
         data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatRF.csv", sep="")
+        if(method=="repo"){data.path=paste(entries$DRIVE[i], "/YKG_2005_QCObs_SeatRF.csv", sep="")}
+
         now.skip=entries$YEAR[i]
         rep=3
       }
