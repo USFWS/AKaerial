@@ -14,7 +14,7 @@ library(tmap)
 
 ## Introduction
 
-This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys.  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (WBPHS).
+This document provides a preliminary data quality check for data collected by Region 7 MBM Waterfowl Division aerial surveys using SCRIBE software (starting in 2023).  Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (WBPHS).
 
 All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the USFWS Alaska Region MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/USFWS/AKaerial>.
 
@@ -100,9 +100,9 @@ Status - RED
 `r if(length(test.swan$missing[,1]) == 0) {"\\end{comment}"}`
 
 
-## Obs_Type (Unit) Codes
+## Grouping (Unit/Obs_Type) Codes
 
-The following Obs_Type codes are acceptable- single, pair, open, flkdrake.  Leading or trailing spaces are not acceptable.
+The following Grouping codes are acceptable- single, pair, open, flkdrake.  Leading or trailing spaces are not acceptable.
 
 `r if(s.unit != "green") {"\\begin{comment}"}`
 All Obs_Type codes appear to be recorded correctly.
@@ -248,7 +248,7 @@ Status - RED
 `r if(s.day != "red") {"\\end{comment}"}`
 
 
-## Other numeric values: Wind_Vel, Lat, Lon, Time, Delay, Num
+## Other numeric values: Wind_Vel, Latitude, Longitude, HDOP, Distance, Count, Altitude, Speed, Satellites
 
 Must all be numeric (or NA).
 
@@ -301,60 +301,110 @@ kableExtra::kable_styling(kableExtra::kable(head(data[test.lon$bad, ])))
 Status - RED
 `r if(s.lon != "red") {"\\end{comment}"}`
 
-`r if(s.time != "green") {"\\begin{comment}"}`
-All times appear to be recorded correctly.
+`r if(s.hdop != "green") {"\\begin{comment}"}`
+All HDOP appear to be recorded correctly.
 
 Status - GREEN
-`r if(s.time != "green") {"\\end{comment}"}`
+`r if(s.hdop != "green") {"\\end{comment}"}`
 
-`r if(s.time != "red") {"\\begin{comment}"}`
-There are non-numeric values in Time.  If more than 6, only the first 6 shown.
+`r if(s.hdop != "red") {"\\begin{comment}"}`
+There are non-numeric values in HDOP.  If more than 6, only the first 6 shown.
 
-```{r time}
-kableExtra::kable_styling(kableExtra::kable(head(data[test.time$bad, ]))) 
+```{r hdop}
+kableExtra::kable_styling(kableExtra::kable(head(data[test.hdop$bad, ]))) 
 ```
 
 Status - RED
-`r if(s.time != "red") {"\\end{comment}"}`
+`r if(s.hdop != "red") {"\\end{comment}"}`
 
-`r if(s.delay != "green") {"\\begin{comment}"}`
-All delays appear to be recorded correctly.
+`r if(s.distance != "green") {"\\begin{comment}"}`
+All distances appear to be recorded correctly.
 
 Status - GREEN
-`r if(s.delay != "green") {"\\end{comment}"}`
+`r if(s.distance != "green") {"\\end{comment}"}`
 
-`r if(s.delay != "red") {"\\begin{comment}"}`
-There are non-numeric values in Delay.  If more than 6, only the first 6 shown.
+`r if(s.distance != "red") {"\\begin{comment}"}`
+There are non-numeric values in Distance.  If more than 6, only the first 6 shown.
 
-```{r delay}
-kableExtra::kable_styling(kableExtra::kable(head(data[test.delay$bad, ]))) 
+```{r distance}
+kableExtra::kable_styling(kableExtra::kable(head(data[test.distance$bad, ]))) 
 ```
 
 Status - RED
-`r if(s.delay != "red") {"\\end{comment}"}`
+`r if(s.distance != "red") {"\\end{comment}"}`
 
-`r if(s.num != "green") {"\\begin{comment}"}`
-All group sizes (Num) appear to be recorded correctly.
+`r if(s.count != "green") {"\\begin{comment}"}`
+All group sizes (Count) appear to be recorded correctly.
 
 Status - GREEN
-`r if(s.num != "green") {"\\end{comment}"}`
+`r if(s.count != "green") {"\\end{comment}"}`
 
-`r if(s.num != "red") {"\\begin{comment}"}`
-There are non-numeric values in Num.  If more than 6, only the first 6 shown.
+`r if(s.count != "red") {"\\begin{comment}"}`
+There are non-numeric values in Count.  If more than 6, only the first 6 shown.
  
-```{r num}
-kableExtra::kable_styling(kableExtra::kable(head(data[test.num$bad, ]))) 
+```{r count}
+kableExtra::kable_styling(kableExtra::kable(head(data[test.count$bad, ]))) 
 ```
 
 Status - RED
-`r if(s.num != "red") {"\\end{comment}"}`
+`r if(s.count != "red") {"\\end{comment}"}`
+
+`r if(s.alt != "green") {"\\begin{comment}"}`
+All altitudes appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.alt != "green") {"\\end{comment}"}`
+
+`r if(s.alt != "red") {"\\begin{comment}"}`
+There are non-numeric values in Altitude.  If more than 6, only the first 6 shown.
+ 
+```{r alt}
+kableExtra::kable_styling(kableExtra::kable(head(data[test.alt$bad, ]))) 
+```
+
+Status - RED
+`r if(s.alt != "red") {"\\end{comment}"}`
+
+
+`r if(s.speed != "green") {"\\begin{comment}"}`
+All speeds appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.speed != "green") {"\\end{comment}"}`
+
+`r if(s.speed != "red") {"\\begin{comment}"}`
+There are non-numeric values in Speed.  If more than 6, only the first 6 shown.
+ 
+```{r speed}
+kableExtra::kable_styling(kableExtra::kable(head(data[test.speed$bad, ]))) 
+```
+
+Status - RED
+`r if(s.speed != "red") {"\\end{comment}"}`
+
+
+`r if(s.sat != "green") {"\\begin{comment}"}`
+All # Satellite values appear to be recorded correctly.
+
+Status - GREEN
+`r if(s.sat != "green") {"\\end{comment}"}`
+
+`r if(s.sat != "red") {"\\begin{comment}"}`
+There are non-numeric values in # Satellites.  If more than 6, only the first 6 shown.
+ 
+```{r sat}
+kableExtra::kable_styling(kableExtra::kable(head(data[test.sat$bad, ]))) 
+```
+
+Status - RED
+`r if(s.sat != "red") {"\\end{comment}"}`
 
 
 ## Visualization
 
 ```{r plots}
 
-obs_plot= ggplot2::ggplot(data, ggplot2::aes(Obs_Type)) +
+obs_plot= ggplot2::ggplot(data, ggplot2::aes(Grouping)) +
   ggplot2::geom_bar(fill = "#0073C2FF") 
 
 
@@ -362,7 +412,7 @@ sp_plot= ggplot2::ggplot(data, ggplot2::aes(Species)) +
   ggplot2::geom_bar(fill = "#0073C2FF") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
-num_plot= ggplot2::ggplot(data, ggplot2::aes(Num)) +
+num_plot= ggplot2::ggplot(data, ggplot2::aes(Count)) +
   ggplot2::geom_bar(fill = "#0073C2FF") 
 
 print(obs_plot)

@@ -233,7 +233,7 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
   if(test.oneobserver==TRUE){s.oneobserver="green"}else{s.oneobserver="red"}
 
 
-  #Numeric tests- Year, Month, Day, Wind_Vel, Lat, Lon, Time, Delay, Num, Code
+  #Numeric tests- Year, Month, Day, Wind_Vel, Lat, Lon, Time, Delay, Num
 
   test.year=ShouldBeNumeric(data$Year)
   if(test.year$fail==TRUE){s.year="red"}else{s.year="green"}
@@ -262,8 +262,8 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
   test.num=ShouldBeNumeric(data$Num)
   if(test.num$fail==TRUE){s.num="red"}else{s.num="green"}
 
-  test.code=ShouldBeNumeric(data$Code)
-  if(test.code$fail==TRUE){s.code="red"}else{s.code="green"}
+  # test.code=ShouldBeNumeric(data$Code)
+  # if(test.code$fail==TRUE){s.code="red"}else{s.code="green"}
 
 
 
@@ -302,10 +302,10 @@ GreenLight=function(path.name, area, report=TRUE, raw2analysis=FALSE, archive.di
  rmarkdown::render(rmd.path, output_dir=dirname(path.name), output_file=paste(basename(tools::file_path_sans_ext(path.name)), "_QAQC_", Sys.Date(), ".html", sep=''))
  }
 
-  if(any("red" %in% c(s.code, s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))){
+  if(any("red" %in% c(s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))){
     can.fix=FALSE
     print("can't fix")
-    print(c(s.code, s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))}
+    print(c(s.num, s.delay, s.time, s.lon, s.lat, s.wind, s.day, s.month, s.year, s.oneobserver, s.species, s.colmatch, s.unit))}
 
   if(can.fix==TRUE & raw2analysis==TRUE){
 

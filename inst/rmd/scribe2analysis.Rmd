@@ -1,0 +1,113 @@
+---
+title: "AKaerial Analysis File Summary"
+author: "Chuck Frost"
+email: "charles_frost@fws.gov"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(plyr)
+```
+
+## Introduction
+
+This document provides a log file of changes made to raw SCRIBE observer data collected by Region 7 MBM Waterfowl Division aerial surveys in the creation of a file suitable for standard ratio estimation in the package **AKaerial**.  Historical data must meet quality checks against the current data dictionary for R7 MBM aerial surveys.
+
+Currently supported surveys include the Arctic Coastal Plain (ACP), Yukon-Kuskokwim Delta duck (YKD) and goose (YKG), Copper River Dusky (CRD), and North American Waterfowl Breeding Population (WBPHS).
+
+All data checks are currently using assumptions for data fields as expected to be written into protocols and summarized and analyzed using the R7MBM survey analysis R package **AKaerial**.  For information and current version, see <https://github.com/USFWS/AKaerial>.
+
+
+You have chosen the file:
+```{r file}
+
+print(path.name)
+
+```
+
+For the area:
+
+```{r area}
+
+print(area)
+
+```
+
+`r if(!("Swan" %in% fix)) {"\\begin{comment}"}`
+## Swans
+
+Swan nests should only be recorded if a swan is also present (active).  Correct notation is recording the nest as open, 1 and the associated swan on a separate entry as single or pair, 1.
+
+There were `r length(test.swan$bad[,1])` swan nests not recorded as open, 1 that were changed to open, 1.
+
+There were `r length(test.swan$missing[,1])` nests without associated swan records.  Identical records were created for each nest as either pair, 1 (when the nest was entered as pair, 1) or single, 1 (when the nest was entered as single, 1).
+
+
+`r if(!("Swan" %in% fix)) {"\\end{comment}"}`
+
+
+`r if(!("Obs_Type" %in% fix)) {"\\begin{comment}"}`
+
+## Grouping (Unit, Obs_Type) Codes
+
+The following Grouping codes are acceptable- single, pair, open, flkdrake.  Leading or trailing spaces are not acceptable.  From the inception of most surveys through 2014, we noticed a tendency of some observers to incorrectly record all Grouping codes as either open or NA.  In these cases, a correction is applied to the raw Grouping codes to reflect the correct treatment of Obs_Type in the data.  This file was flagged as needing a Grouping correction.  The correction is as follows:
+
+If Count = 1; Grouping = single
+If Count = 2; Grouping = pair, Count = 1
+If Count >= 3; Grouping = open
+If the record is a swan nest; Grouping = open, Count = 1
+
+Any flocked drakes were recorded on multiple lines sharing the same Lon, Lat as open, 1. For monomorphic species, open with Count >= 3 indicates a flock. 
+
+`r if(!("Grouping" %in% fix)) {"\\end{comment}"}`
+
+
+`r if(!("Grouping" %in% fix)) {"\\begin{comment}"}`
+
+## Seat Codes
+
+Seat codes must be either LF, RF, LR, or RR, and are case-sensitive.  The seat codes in the raw file were input incorrectly and were corrected for this version.
+
+`r if(!("Seat" %in% fix)) {"\\end{comment}"}`
+
+`r if(!("Observer" %in% fix)) {"\\begin{comment}"}`
+
+## Observers
+
+The observer initials must be uppercase.  Observer initials in the raw file were input incorrectly and were corrected for this version.
+
+`r if(!("Observer" %in% fix)) {"\\end{comment}"}`
+
+`r if(!("Species" %in% fix)) {"\\begin{comment}"}`
+
+## Species Codes
+The current list of acceptable species codes can be found in the object [sppntable](../help/sppntable), or for the WBPHS survey, [WBPHSsppntable](../help/WBPHSsppntable).
+
+
+The following species codes are not acceptable and were updated from the raw observations to the QC_Obs file:
+
+```{r spec_missing}
+kableExtra::kable_styling(kableExtra::kable(table(test.species$change$Species)))
+```
+
+Any species code marked as XXXX in the QAQC column of the species file is considered to be outside the design of the survey and not pertinent to the project.  These observations were removed from the raw file before this version was finalized.  Any observations in this category in the raw data should be considered anecdotal and not collected in any scientific manner.  These observations were not collected consistently by observer, year, survey, day, or species.  
+
+`r if(!("Species" %in% fix)) {"\\end{comment}"}`
+
+
+
+In addition to the above changes, beginning in 2023 pilots and observers use the SCRIBE system to transcribe observations.  The SCRIBE data is then archived as RawObs files per observer, but the QCObs file that is created is altered to conform to historic data standards.  To accomplish this, the following changes are made:
+
+Columns HDOP, # Satellites, and Distance are deleted.
+Values in Time are changed to NA since they are no longer "seconds since midnight."
+Column Delay is added with values set to NA.
+DistanceBin is changed to Distance.
+Latitude is changed to Lat.
+Longitude is changed to Lon. 
+Audio File is changed to Filename.
+Course is changed to Flight_Dir.
+Grouping is changed to Obs_Type.
+Count is changed to Num.  
+A_G Name is changed to A_G_Name.
