@@ -47,12 +47,12 @@ StrataSummarySF=function(strata.file, id="STRATNAME"){
   })
   ls = Reduce(c, ls)
 
-  ls=st_sf(ls)
+  ls=sf::st_sf(ls)
 
   ls$lineid=c(1:length(ls[[1]]))
 
 
-  new.ls=st_intersection(map, ls)
+  new.ls=sf::st_intersection(map, ls)
 
   possible = new.ls %>%
     dplyr::group_by(new.ls[[id]]) %>%
@@ -62,10 +62,10 @@ StrataSummarySF=function(strata.file, id="STRATNAME"){
 
   areasummary = data.frame("strata"=areas$strata, "layer.area"=areas$STRATAREA)
 
-  areasummary = left_join(areasummary,
+  areasummary = dplyr::left_join(areasummary,
               possible %>% dplyr::select(strata, M),
               by = "strata") %>%
-    select(strata, layer.area, M)
+    dplyr::select(strata, layer.area, M)
 
   units::set_units(areasummary$layer.area, km^2)
 

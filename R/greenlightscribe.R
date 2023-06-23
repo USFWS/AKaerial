@@ -585,11 +585,12 @@ CommonFixScribe=function(data, fix, area){
 #'
 #' @param folder The folder path containing the files.
 #' @param string The character string common to the files to be combined.
+#' @param addWBPHS TRUE/FALSE to add columns to convert HQ format to AK format
 #'
 #' @return No return value, but output is a new combined csv file within the folder.
 #'
 #' @export
-ScribeMerge=function(folder, string){
+ScribeMerge=function(folder, string, addWBPHS=FALSE){
 
   current.dir = getwd()
 
@@ -603,6 +604,17 @@ ScribeMerge=function(folder, string){
     ))
 
   year = files$Year[1]
+
+  if(addWBPHS==TRUE){
+    files$Behavior=NA
+    files$DistanceBin=NA
+    files$Code=1
+    files$Notes=NA
+  }
+
+  files$Observer=toupper(files$Observer)
+  files$Seat=toupper(files$Seat)
+
 
   readr::write_csv(files, file=paste(area, "_", year, "_RawObs_", string, ".csv", sep=""))
 
