@@ -76,6 +76,7 @@ StrataSummarySF=function(strata.file, id="STRATNAME"){
 
   }
 
+
  return(areasummary)
 
 }
