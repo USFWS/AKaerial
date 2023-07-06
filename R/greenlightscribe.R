@@ -610,6 +610,9 @@ ScribeMerge=function(folder, string, addWBPHS=FALSE){
     files$DistanceBin=NA
     files$Code=1
     files$Notes=NA
+    files$Sky=NA
+    files$Wind_Dir=NA
+    files$Wind_Vel=NA
   }
 
   files$Observer=toupper(files$Observer)

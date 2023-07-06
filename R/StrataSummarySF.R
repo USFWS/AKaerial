@@ -18,7 +18,7 @@
 StrataSummarySF=function(strata.file, id="STRATNAME"){
 
   map = sf::st_read(dsn=strata.file, quiet=TRUE) %>%
-    sf::st_transform("+proj=longlat +ellps=WGS84 +datum=WGS84")
+    sf::st_transform(4269)
 
 
   areas = map %>%
@@ -43,7 +43,7 @@ StrataSummarySF=function(strata.file, id="STRATNAME"){
   {
     v <- as.numeric(x[c(1,3,2,4)])
     m <- matrix(v, nrow = 2)
-    return(sf::st_sfc(sf::st_linestring(m), crs = 4326))
+    return(sf::st_sfc(sf::st_linestring(m), crs = 4269))
   })
   ls = Reduce(c, ls)
 

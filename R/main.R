@@ -400,7 +400,7 @@ LoadMap <- function(map.file, type="df") {
 
 
 
-  maptools::gpclibPermit()
+  #maptools::gpclibPermit()
   strata <- rgdal::readOGR(map.file, layer=tools::file_path_sans_ext(basename(map.file)), verbose=FALSE)
 
   strata.proj <- sp::spTransform(strata, "+proj=longlat +ellps=WGS84 +datum=WGS84")
@@ -1780,15 +1780,10 @@ CorrectionFactor=function(estimates, species){
 #' @export
 FixTavs=function(selected.data){
 
-
-  selected.data$flight$Strata=as.character(selected.data$flight$Strata)
-  Lows=unique(selected.data$flight$PartOf[selected.data$flight$Strata=="Low"])
-
-
-  selected.data$obs$Species[selected.data$obs$Species == "CCGO" & selected.data$obs$ctran %in% Lows]="TAVS"
+  selected.data$obs$Species[selected.data$obs$Species == "CCGO" & selected.data$obs$Stratum == "Low"]="TAVS"
+  selected.data$obs$Species[selected.data$obs$Species == "CCGO" & selected.data$obs$Stratum == "8"]="TAVS"
 
 
-    #full.data$Species[full.data$Stratum=="Low" & full.data$Species=="CCGO"]="TAVS"
 
   selected.data$obs$Species[selected.data$obs$Lat>=63 & selected.data$obs$Species=="CCGO"]="TAVS"
 
@@ -1942,7 +1937,7 @@ TrimToStrata=function(full.data, strata.path){
 #' }
 #'
 #' @export
-EstimatesTable=function(area, year, sample="full", n=0, seed=0){
+EstimatesTable=function(area, year, sample="full", n=0, seed=0, method="process", strata.id="STRATNAME", retain="liberal"){
 
   entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR %in% year,]
 
@@ -1957,84 +1952,84 @@ EstimatesTable=function(area, year, sample="full", n=0, seed=0){
     if(entries$COMBINE[i]==1){
 
       if(area=="YKD" || area=="YKDV" || area=="KIG"){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKD_2001_QCObs_Pooled.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKD_2001_QCObs_Pooled.csv", sep="")
         now.skip=entries$YEAR[i]
       }
 
       if(area=="ACP" & rep==1){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/ACP_2010_QCObs_SeatLF.csv", sep="")
 
       }
 
       if(area=="ACP" & rep==2){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/ACP_2010_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==1986){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_1986_QCObs_SeatLF.csv", sep="")
 
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==1986){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_1986_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==1989){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_1989_QCObs_SeatLF.csv", sep="")
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==1989){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_1989_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
 
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==1997){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_1997_QCObs_SeatLF.csv", sep="")
 
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==1997){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_1997_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
 
 
       if(area=="YKG" & rep==1 & entries$YEAR[i]==2005){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_2005_QCObs_SeatLF.csv", sep="")
 
       }
 
       if(area=="YKG" & rep==2 & entries$YEAR[i]==2005){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/YKG_2005_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
 
 
       if(area=="CRD" & rep==1 & entries$YEAR[i]==1988){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/CRD_1988_QCObs_SeatLF.csv", sep="")
 
       }
 
       if(area=="CRD" & rep==2 & entries$YEAR[i]==1988){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/CRD_1988_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
       if(area=="CRD" & rep==1 & entries$YEAR[i]==1998){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatLF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/CRD_1998_QCObs_SeatLF.csv", sep="")
 
       }
 
       if(area=="CRD" & rep==2 & entries$YEAR[i]==1998){
-        data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatRF.csv", sep="")
+        data.path=paste(entries$DRIVE[i], "/final_data/CRD_1998_QCObs_SeatRF.csv", sep="")
         now.skip=entries$YEAR[i]
         rep=3
       }
@@ -2049,13 +2044,21 @@ EstimatesTable=function(area, year, sample="full", n=0, seed=0){
 
     transect.path=paste(entries$DRIVE[i], entries$TRANS[i], sep="")
 
+    layer.path=entries$LAYER[i]
+
     if(!file.exists(data.path)){next}
     if(!file.exists(strata.path)){next}
     if(!file.exists(transect.path)){next}
 
     print(data.path)
 
-    data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+    if(method == "process"){
+      data=DataProcess(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path,
+                       strata.id=strata.id, transect.layer=layer.path, retain=retain)
+    }
+    if(method == "select"){
+      data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+    }
 
     if(sample != "full"){
 
@@ -2064,8 +2067,8 @@ EstimatesTable=function(area, year, sample="full", n=0, seed=0){
     }
 
 
-
-    est=Densities(data, area=entries$AREA[i])
+    if(method == "process"){est=TidyDensities(data, area=entries$AREA[i])}
+    if(method == "select"){est=Densities(data, area=entries$AREA[i])}
 
     if(i==1){output.table=est$estimates
              expanded.table=est$counts.final}
