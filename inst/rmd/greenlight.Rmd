@@ -58,7 +58,7 @@ There are no spatial checks provided here, instead please review the plot of tra
 
 ```{r mapping}
  
-
+if(area != "WBPHS"){
  tm <- tmap::tm_shape(basemap) + tmap::tm_polygons(col = "STRATNAME", alpha = 0.5) +
     tmap::tm_shape(sf.lines, name="Flown Track") + tmap::tm_lines() +
     tmap::tm_text("Transect", size=2) +
@@ -70,6 +70,7 @@ There are no spatial checks provided here, instead please review the plot of tra
 leaf = tmap::tmap_leaflet(tm)
 
 leaf
+}
 
 ```
 
@@ -247,7 +248,7 @@ Status - RED
 `r if(s.day != "red") {"\\end{comment}"}`
 
 
-## Other numeric values: Wind_Vel, Lat, Lon, Time, Delay, Num, Code
+## Other numeric values: Wind_Vel, Lat, Lon, Time, Delay, Num
 
 Must all be numeric (or NA).
 
@@ -348,21 +349,6 @@ kableExtra::kable_styling(kableExtra::kable(head(data[test.num$bad, ])))
 Status - RED
 `r if(s.num != "red") {"\\end{comment}"}`
 
-`r if(s.code != "green") {"\\begin{comment}"}`
-All data codes appear to be recorded correctly.
-
-Status - GREEN
-`r if(s.code != "green") {"\\end{comment}"}`
-
-`r if(s.code != "red") {"\\begin{comment}"}`
-There are non-numeric values in Code.  If more than 6, only the first 6 shown.
-
-```{r code}
-kableExtra::kable_styling(kableExtra::kable(head(data[test.code$bad, ]))) 
-```
-
-Status - RED
-`r if(s.code != "red") {"\\end{comment}"}`
 
 ## Visualization
 

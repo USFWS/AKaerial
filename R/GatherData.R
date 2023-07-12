@@ -22,18 +22,25 @@
 #'  GatherData(area="YKD", drive="T:")
 #'
 #' @export
-GatherData=function(area = "none", drive = "K:", output.folder = "none"){
+GatherData=function(area = "none", drive = "K:", output.folder = "none", method="repo"){
 
   MasterFileList$DRIVE = drive
 
   if(output.folder=="none"){output.folder=getwd()}
 
-  if(area %in% c("YKD", "YKG")){
+  if(area == "YKD"){
     year.panel = data.frame(
-      year = c(1999:2019,2021),
-      panel = c(rep(c("A","B","C","D"),5),"A", "B")
+      year = c(1988:2019,2021,2022),
+      panel = c(1988:1998, rep(c("A","B","C","D"),5),"A", "B", "C")
       )
     }
+
+  if(area == "YKG"){
+    year.panel = data.frame(
+      year = c(1985:2019,2021,2022),
+      panel = c(1985:1998, rep(c("A","B","C","D"),5),"A", "B", "C")
+    )
+  }
 
 
   if(area == "CRD"){
@@ -51,105 +58,11 @@ GatherData=function(area = "none", drive = "K:", output.folder = "none"){
   for (i in 1:length(entries[,1])){
 
 
-    # if(entries$YEAR[i]==now.skip){next}
-    #
-    # if(entries$COMBINE[i]==1){
-    #
-    #   if(area=="YKD" || area=="YKDV" || area=="KIG"){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKD_2001_QCObs_Pooled.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #   }
-    #
-    #   if(area=="ACP" & rep==1){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatLF.csv", sep="")
-    #
-    #   }
-    #
-    #   if(area=="ACP" & rep==2){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/ACP_Survey/Data/ACP_2010_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #
-    #   if(area=="YKG" & rep==1 & entries$YEAR[i]==1986){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatLF.csv", sep="")
-    #
-    #   }
-    #
-    #   if(area=="YKG" & rep==2 & entries$YEAR[i]==1986){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1986_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #
-    #   if(area=="YKG" & rep==1 & entries$YEAR[i]==1989){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatLF.csv", sep="")
-    #   }
-    #
-    #   if(area=="YKG" & rep==2 & entries$YEAR[i]==1989){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1989_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #
-    #
-    #   if(area=="YKG" & rep==1 & entries$YEAR[i]==1997){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatLF.csv", sep="")
-    #
-    #   }
-    #
-    #   if(area=="YKG" & rep==2 & entries$YEAR[i]==1997){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_1997_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #
-    #
-    #   if(area=="YKG" & rep==1 & entries$YEAR[i]==2005){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatLF.csv", sep="")
-    #
-    #   }
-    #
-    #   if(area=="YKG" & rep==2 & entries$YEAR[i]==2005){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Data/YKG_2005_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #
-    #
-    #   if(area=="CRD" & rep==1 & entries$YEAR[i]==1988){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatLF.csv", sep="")
-    #
-    #   }
-    #
-    #   if(area=="CRD" & rep==2 & entries$YEAR[i]==1988){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1988_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #   if(area=="CRD" & rep==1 & entries$YEAR[i]==1998){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatLF.csv", sep="")
-    #
-    #   }
-    #
-    #   if(area=="CRD" & rep==2 & entries$YEAR[i]==1998){
-    #     data.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Data/CRD_1998_QCObs_SeatRF.csv", sep="")
-    #     now.skip=entries$YEAR[i]
-    #     rep=3
-    #   }
-    #
-    #   if(rep==1){rep=2}
-    #   if(rep==3){rep=1}
-    # }
-
-    # if(entries$COMBINE[i]!=1){data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")}
-
-    #strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
-
     data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")
 
     if(area %in% c("YKG", "YKD")){
     strata.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Design_Files/Design_Strata/YK_DesignStrata.shp", sep="")
+    if(method=="repo"){strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")}
     }
 
     if(area %in% c("CRD")){

@@ -18,23 +18,23 @@
 #' @author Charles Frost, \email{charles_frost@@fws.gov}
 #' @references \url{https://github.com/USFWS/AKaerial}
 #'
-#' @param tavs.year range of years for the Taverner's geese composite table, defaults to 1985-2021
-#' @param pw.year range of years for the Pacific white-fronted goose composite table, defaults to 1985-2021
-#' @param tusw.year range of years for the western tundra swan composite table, defaults to 1985-2021
-#' @param lesser.year range of years for the lesser Canada goose composite table, defaults to 1964-2021
-#' @param mcw.year range of years for the mid-continent white-fronted goose composite table, defaults to 1964-2021
-#' @param trsw.year range of years for the Pacific coast trumpeter swan composite table, defaults to 1964-2021
+#' @param tavs.year range of years for the Taverner's geese composite table, defaults to 1985-2022
+#' @param pw.year range of years for the Pacific white-fronted goose composite table, defaults to 1985-2022
+#' @param tusw.year range of years for the western tundra swan composite table, defaults to 1985-2022
+#' @param lesser.year range of years for the lesser Canada goose composite table, defaults to 1964-2022
+#' @param mcw.year range of years for the mid-continent white-fronted goose composite table, defaults to 1964-2022
+#' @param trsw.year range of years for the Pacific coast trumpeter swan composite table, defaults to 1964-2022
 #' @param versioning TRUE/FALSE should the time stamp of the data tables used be included with the composite table?
 #'
 #' @return Six .csv files are written to the current working directory (1 for each species) and optionally a .csv of the current version of the data files used
 #'
 #' @export
-CompositeIndices = function(tavs.year = c(1985:2021),
-                            pw.year = c(1985:2021),
-                            tusw.year = c(1985:2021),
-                            lesser.year = c(1964:2021),
-                            mcw.year = c(1964:2021),
-                            trsw.year = c(1964:2021),
+CompositeIndices = function(tavs.year = c(1985:2022),
+                            pw.year = c(1985:2022),
+                            tusw.year = c(1985:2022),
+                            lesser.year = c(1964:2022),
+                            mcw.year = c(1964:2022),
+                            trsw.year = c(1964:2022),
                             versioning=FALSE){
 
 
