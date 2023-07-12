@@ -16,10 +16,10 @@
 #' @return data frame of observations with modified Strata column
 #'
 #' @export
-AssignStrata=function(full.data, strata.file, strata.id, retain="liberal"){
+AssignStrata=function(full.data, strata.file, strata.id, retain="liberal", area){
 
   data.sf = sf::st_as_sf(full.data, coords=c("Lon", "Lat")) %>%
-    st_set_crs(4326)
+    sf::st_set_crs(4326)
 
   analysis.strata = sf::st_read(dsn=strata.file, quiet=TRUE)
 
@@ -30,7 +30,8 @@ AssignStrata=function(full.data, strata.file, strata.id, retain="liberal"){
   out.list=sapply(sf::st_intersects(data.sf, analysis.strata), function(x){length(x)==0})
 
   out.of.area = data.sf[out.list,]
-  out.of.area$Notes = "Retained"
+  if(nrow(out.of.area)>0) {out.of.area$Notes = "Retained"}
+
 
   for(i in seq_len(nrow(out.of.area))){
 
@@ -38,6 +39,8 @@ AssignStrata=function(full.data, strata.file, strata.id, retain="liberal"){
       sf::st_nearest_feature(out.of.area[i,], analysis.strata),strata.id]))
 
     }
+
+  start.end = out.of.area %>% filter(Species %in% c("START", "END"))
 
   in.list=sapply(sf::st_intersects(data.sf, analysis.strata), function(x){length(x)!=0})
 
@@ -60,11 +63,19 @@ AssignStrata=function(full.data, strata.file, strata.id, retain="liberal"){
     dplyr::mutate(Lon= sf::st_coordinates(.)[,1],
                   Lat= sf::st_coordinates(.)[,2])
 
+  start.end= start.end %>%
+    dplyr::mutate(Lon= sf::st_coordinates(.)[,1],
+                  Lat= sf::st_coordinates(.)[,2])
+
   in.area$Notes = as.character(in.area$Notes)
   out.of.area$Notes = as.character(out.of.area$Notes)
+  start.end$Notes = as.character(start.end$Notes)
 
- if(retain=="liberal") {final.data=dplyr::bind_rows(in.area, out.of.area)}
- if(retain=="strict") {final.data=in.area}
+ if(retain=="liberal" & nrow(out.of.area)>0) {final.data=dplyr::bind_rows(in.area, out.of.area, start.end)}
+ if(retain=="liberal" & nrow(out.of.area)==0) {final.data=dplyr::bind_rows(in.area, start.end)}
+  if(retain=="strict") {final.data=dplyr::bind_rows(in.area, start.end)}
+
+  if(area=="CRD"){final.data= dplyr::bind_rows(in.area, start.end)}
 
   return(final.data)
 

@@ -54,13 +54,17 @@ DataProcess <- function(area,
 
   if(area=="YKDV" || area=="KIG"){area="YKD"}
 
+  if(area=="ACP"){threshold=5}
+
   data=read.csv(data.path, header=TRUE, stringsAsFactors = FALSE)
 
-  data=data[data$Code==1,]
+  data$Code=as.character(data$Code)
+
+  data=data[data$Code=="1",]
 
   data$Obs_Type[data$Obs_Type=="open" & data$Num==1 & data$Species!="SWANN"]="single"
 
-  data=AssignStrata(full.data=data, strata.id=strata.id, strata.file=strata.path, retain=retain)
+  data=AssignStrata(full.data=data, strata.id=strata.id, strata.file=strata.path, retain=retain, area=area)
 
   design.trans = sf::st_read(transect.path, layer=transect.layer, quiet=TRUE)
 
@@ -70,17 +74,17 @@ DataProcess <- function(area,
 
   data$DesignTransect=NA
 
-  if((area == "YKG") & (data$Year[1] < 1999)){
+  if(area %in% c("CRD", "ACP") | (area == "YKG" & data$Year[1] < 1999)){
       data=AssignTransect(full.data=data, transect.path=transect.path, transect.layer=transect.layer, trans.id=trans.id)
       data$DesignTransect=data$closest}
 
-  if((area != "YKG") | (data$Year[1] >= 1999)){
+  if(!(area %in% c("CRD", "ACP")) & ((area != "YKG") | (data$Year[1] >= 1999))){
 
     for(i in 1:length(data$DesignTransect)){
 
      if(data$Transect[i] %in% unique(unlist(sf::st_drop_geometry(design.trans[,"Transect"])))){
 
-    data$DesignTransect[i]=unlist(sf::st_drop_geometry(design.trans[design.trans$Transect==data$Transect[i],trans.id]))
+    data$DesignTransect[i]=unlist(sf::st_drop_geometry(design.trans[design.trans$Transect==data$Transect[i],trans.id]))[1]
             }
 
     if(!(data$Transect[i] %in% unique(unlist(sf::st_drop_geometry(design.trans[,"Transect"]))))){
@@ -116,16 +120,19 @@ DataProcess <- function(area,
   flight = flight %>%
     dplyr::filter(ctran %in% flown.list)
 
-  data=SpeciesByProject(full.data=data, area=area)
+  data = data %>%
+    dplyr::mutate(Lon= sf::st_coordinates(.)[,1],
+                  Lat= sf::st_coordinates(.)[,2]) %>%
+    sf::st_drop_geometry(data)
+
+  data=data %>% tidyr::complete(Year, Seat, Observer, Species, ctran, fill=list(Num=0, Code="1", Obs_Type="open"))
+
 
   data=AdjustCounts(data)
 
   data=AddClass(data)
 
-  data = data %>%
-    dplyr::mutate(Lon= sf::st_coordinates(.)[,1],
-                  Lat= sf::st_coordinates(.)[,2]) %>%
-    sf::st_drop_geometry(data)
+
 
   strata=StrataSummarySF(strata.file=strata.path, id=strata.id)
 
@@ -139,6 +146,7 @@ DataProcess <- function(area,
 
   data$transect=transect.summary
 
+  data$obs=SpeciesByProject(full.data=data$obs, area=area)
 
   return(data)
 

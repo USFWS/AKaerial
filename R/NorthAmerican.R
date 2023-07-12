@@ -226,7 +226,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
   for (i in 1:length(flight$Stratum)){
 
-    if(flight$Stratum[i]==99 && flight$Year >= 1999){
+    if(flight$Stratum[i]==99 & flight$Year[i] >= 1999){
 
       if(flight$Transect[i]==12){flight$SampledArea[i]=22}
       if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
@@ -243,7 +243,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     #2015 had 2 segments on transect 12 that were not sampled
 
-    if(flight$Stratum[i]==99 && flight$Year == 2015){
+    if(flight$Stratum[i]==99 & flight$Year[i] == 2015){
 
       if(flight$Transect[i]==12){flight$SampledArea[i]=18}
       if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
@@ -260,7 +260,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     #2008 sampled areas different
 
-    if(flight$Stratum[i]==99 && flight$Year == 2008){
+    if(flight$Stratum[i]==99 & flight$Year[i] == 2008){
 
       if(flight$Transect[i]==12){flight$SampledArea[i]=22}
       if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}
@@ -278,7 +278,7 @@ SummaryWBPHS=function(full.data, strip.width=0.25){
 
     #2017 sampled areas different
 
-    if(flight$Stratum[i]==99 && flight$Year == 2017){
+    if(flight$Stratum[i]==99 & flight$Year[i] == 2017){
 
       if(flight$Transect[i]==12){flight$SampledArea[i]=16}
       if(flight$Transect[i]==13){flight$SampledArea[i]=20.763}

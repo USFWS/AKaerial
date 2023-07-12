@@ -19,7 +19,7 @@
 AssignTransect=function(full.data, transect.path, trans.id, transect.layer){
 
   data.sf = sf::st_as_sf(full.data, coords=c("Lon", "Lat")) %>%
-    st_set_crs(4326)
+    sf::st_set_crs(4326)
 
   design.trans = sf::st_read(transect.path, layer=transect.layer, quiet=TRUE)
 

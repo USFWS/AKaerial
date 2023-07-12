@@ -24,7 +24,7 @@ DistanceToDesign=function(full.data, design.trans, trans.id){
 
   data.sf=sf::st_transform(data.sf, 4269)
 
-  sub=design.trans %>% dplyr::select(trans.id)
+  sub=design.trans %>% dplyr::select(all_of(trans.id))
 
   for(i in seq_len(nrow(data.sf))){
 
