@@ -32,11 +32,11 @@ TransSummarySF=function(transect.file,
 
 
 
-  newlines=st_intersection(design.trans, analysis.strata)
+  newlines=sf::st_intersection(design.trans, analysis.strata)
 
   tsum= newlines %>%
-    group_by(get(strata.id), get(trans.id)) %>%
-    summarise(LENGTH=units::set_units(st_length(st_union(.)), km))
+    dplyr::group_by(get(strata.id), get(trans.id)) %>%
+    dplyr::summarise(LENGTH=units::set_units(st_length(st_union(.)), km))
 
   tsum$LENGTH=units::set_units(st_length(tsum), km)
 
