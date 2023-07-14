@@ -21,6 +21,3 @@ A list containing population estimates of 'indicated breeding birds', the 'index
 \description{
 Title
 }
-\details{
-
-}

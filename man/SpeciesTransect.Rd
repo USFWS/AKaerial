@@ -4,7 +4,13 @@
 \alias{SpeciesTransect}
 \title{Provide transect-level summaries for a given species}
 \usage{
-SpeciesTransect(area, year, species, strata.overwrite = "none")
+SpeciesTransect(
+  area,
+  year,
+  species,
+  strata.overwrite = "none",
+  method = "repo"
+)
 }
 \arguments{
 \item{area}{The area code for dedicated MBM Alaska region surveys.

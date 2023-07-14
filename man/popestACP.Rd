@@ -21,6 +21,3 @@ A list containing population estimate of 'indicated breeding birds', the 'index"
 \description{
 A function to calculate variance of ACP population estimates
 }
-\details{
-
-}
