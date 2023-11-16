@@ -60,6 +60,8 @@ And the development version from [GitHub](https://github.com/) with:
 devtools::install_github("USFWS/AKaerial", ref = "development", build_vignettes = TRUE)
 ```
 
+Or from the included tar.gz release archive.
+
 Then explore the vignettes with:
 
 ``` r
