@@ -21,8 +21,8 @@ Currently there are 5 indices that are created: \enumerate{
 \item itotal - Indicated total.  Singles doubled, pairs doubled, opens added, flkdrake 1-4 doubled, flkdrake 5+ added.
 \item ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
 \item total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
-\item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
-\item flock - Flocks.  Singles removed, pairs removed, opens added, flkdrake added.
+\item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake 1-4 added.
+\item flock - Flocks.  Singles removed, pairs removed, opens added, flkdrake 5+ added.
 }
 }
 \references{
