@@ -2086,6 +2086,10 @@ EstimatesTable=function(area, year, sample="full", n=0, seed=0, method="process"
   combined=CombineEstimates(output.table)
   combined$area=area
 
+  output.table = output.table %>% filter(!(Species %in% c("START", "END")))
+  expanded.table = expanded.table %>% filter(!(Species %in% c("START", "END")))
+  combined = combined %>% filter(!(Species %in% c("START", "END")))
+
   return(list(output.table=output.table, expanded.table=expanded.table, combined=combined))
 
 

@@ -722,45 +722,45 @@ CombineEstimatesByStrata=function(estimates){
 WBPHStidy = function(adj, flight){
 
   trans.f = flight %>%
-    group_by(Year, Stratum, Transect) %>%
-    summarise(SampledArea = sum(SampledArea))
+    dplyr::group_by(Year, Stratum, Transect) %>%
+    dplyr::summarise(SampledArea = sum(SampledArea))
 
   trans.adj = adj %>%
-    group_by(Year, Stratum, Transect, Species) %>%
-    filter(!(Species %in% c("START", "END", "NoBirdsSeen"))) %>%
-    summarise(total = sum(total), itotal = sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+    dplyr::group_by(Year, Stratum, Transect, Species) %>%
+    dplyr::filter(!(Species %in% c("START", "END", "NoBirdsSeen"))) %>%
+    dplyr::summarise(total = sum(total), itotal = sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
   trans.merge = merge(trans.adj, trans.f) %>%
     complete(Year,  nesting(Stratum, Transect), Species, fill=list(total=0, itotal=0, ibb=0, sing1pair2=0, flock=0)) %>%
-    group_by(Stratum, Transect) %>%
+    dplyr::group_by(Stratum, Transect) %>%
     fill(SampledArea, .direction=c("updown"))
 
   eider = trans.merge %>%
     filter(Species %in% c("COEI", "STEI", "KIEI", "SPEI", "UNEI")) %>%
-    group_by(Year, Stratum, Transect, SampledArea) %>%
-    summarise(Species="Eider", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+    dplyr::group_by(Year, Stratum, Transect, SampledArea) %>%
+    dplyr::summarise(Species="Eider", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
   merganser = trans.merge %>%
     filter(Species %in% c("COME", "RBME", "UNME")) %>%
-    group_by(Year, Stratum, Transect, SampledArea) %>%
-    summarise(Species="Merganser", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+    dplyr::group_by(Year, Stratum, Transect, SampledArea) %>%
+    dplyr::summarise(Species="Merganser", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
   scoter = trans.merge %>%
     filter(Species %in% c("SCOT", "WWSC", "SUSC", "BLSC")) %>%
-    group_by(Year, Stratum, Transect, SampledArea) %>%
-    summarise(Species="Scoter", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+    dplyr::group_by(Year, Stratum, Transect, SampledArea) %>%
+    dplyr::summarise(Species="Scoter", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
   grebe = trans.merge %>%
     filter(Species %in% c("HOGR", "RNGR", "UNGR")) %>%
-    group_by(Year, Stratum, Transect, SampledArea) %>%
-    summarise(Species="Grebe", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
+    dplyr::group_by(Year, Stratum, Transect, SampledArea) %>%
+    dplyr::summarise(Species="Grebe", total=sum(total), itotal=sum(itotal), ibb=sum(ibb), sing1pair2=sum(sing1pair2), flock=sum(flock))
 
 
   trans.merge = rbind(trans.merge, eider, merganser, scoter, grebe)
 
   by.stratum = trans.merge %>%
-    group_by(Year, Stratum, Species) %>%
-    summarise(total.density = sum(total)/sum(SampledArea),
+    dplyr::group_by(Year, Stratum, Species) %>%
+    dplyr::summarise(total.density = sum(total)/sum(SampledArea),
               itotal.density = sum(itotal)/sum(SampledArea),
               ibb.density = sum(ibb)/sum(SampledArea),
               sing1pair2.density = sum(sing1pair2)/sum(SampledArea),
@@ -798,7 +798,7 @@ WBPHStidy = function(adj, flight){
   vcf = WBPHS_VCF %>%
     select(SPECIES, STRATUM, VCF, VCF_SE) %>%
     mutate(VCF.var = VCF_SE^2) %>%
-    rename(Species=SPECIES, Stratum = STRATUM)
+    dplyr::rename(Species=SPECIES, Stratum = STRATUM)
 
   estimates = merge(estimates, vcf, all.x=TRUE)
 
