@@ -56,32 +56,24 @@ TransectSample <- function(data.select, sample, n, plot="on", seed=0){
 
     plot.data=sf::st_as_sf(data.select$design)
 
-    data.select$design@data$sort.by = data.select$design@data$mid.Lat
-
-    for (i in 1:length(data.select$design@data$STRATNAME)){
-    if(data.select$design@data$STRATNAME[i] %in% c("Egg Island", "Egg", "egg")){
-
-      data.select$design@data$sort.by[i] = data.select$design@data$mid.Lon[i]
-    }
-    }
-
-
-    trans = data.select$design@data %>%
-      dplyr::filter(len > 0.01) %>%
-      dplyr::distinct(., SPLIT, STRATNAME, .keep_all=TRUE) %>%
-      dplyr::filter(len > 0.01) %>%
-      dplyr::group_by(STRATNAME) %>%
-      dplyr::arrange(sort.by, .by_group = TRUE) %>%
+    resample=data.frame("keep"=unique(data.select$design$OBJECTID)) %>%
+      dplyr::arrange(keep) %>%
       dplyr::filter(dplyr::row_number() %% n == seed)
 
+    trans = data.select$design %>%
+      dplyr::filter(OBJECTID %in% resample$keep) %>%
+      dplyr::filter(units::drop_units(LENGTH) > 0.01)
 
-    data.select$design = data.select$design[data.select$design$SPLIT %in% trans$SPLIT,]
 
-    data.select$obs = data.select$obs %>% dplyr::filter(ctran %in% trans$SPLIT)
+    #data.select$design = data.select$design[data.select$design$SPLIT %in% trans$SPLIT,]
 
-    data.select$flight = data.select$flight %>% dplyr::filter(PartOf %in% trans$SPLIT)
+    data.select$design = trans
 
-    data.select$transect = data.select$transect %>% dplyr::filter(ctran %in% trans$SPLIT)
+    data.select$obs = data.select$obs %>% dplyr::filter(ctran %in% data.select$design$ctran)
+
+    data.select$flight = data.select$flight %>% dplyr::filter(ctran %in% data.select$design$ctran)
+
+    data.select$transect = data.select$transect %>% dplyr::filter(ctran %in% data.select$design$ctran)
 
 
 

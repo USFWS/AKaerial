@@ -540,8 +540,8 @@ if(strata=="all"){
 #' \item itotal - Indicated total.  Singles doubled, pairs doubled, opens added, flkdrake 1-4 doubled, flkdrake 5+ added.
 #' \item ibb - Indicated breeding birds.  Singles doubled, pairs doubled, opens removed, flkdrake 1-4 doubled, flkdrake 5+ removed.
 #' \item total - Total birds.  Singles added, pairs doubled, opens added, flkdrake added.
-#' \item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake removed.
-#' \item flock - Flocks.  Singles removed, pairs removed, opens added, flkdrake added.
+#' \item sing1pair2 - Singles and pairs.  Singles added, pairs doubled, opens removed, flkdrake 1-4 added.
+#' \item flock - Flocks.  Singles removed, pairs removed, opens added, flkdrake 5+ added.
 #' }
 #'
 #'
@@ -596,12 +596,14 @@ AdjustCounts <- function(full.data){
     }
 
     #Flocked drakes are doubled for 1-4 seen for indicated bb/totals.  Reference would be useful.
+    #Added 1-4 flkdrake to sing1pair2 in 2024, removed them from flock index.
+
     else if(full.data$Obs_Type[i]=="flkdrake" & full.data$Num[i]<5){
       full.data$itotal[i]=2*full.data$Num[i]
       full.data$total[i]=full.data$Num[i]
       full.data$ibb[i]=2*full.data$Num[i]
-      full.data$sing1pair2[i]=0
-      full.data$flock[i]=full.data$Num[i]
+      full.data$sing1pair2[i]=full.data$Num[i]
+      full.data$flock[i]=0
 
     }
 

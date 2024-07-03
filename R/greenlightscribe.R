@@ -615,8 +615,15 @@ ScribeMerge=function(folder, string, addWBPHS=FALSE){
     files$Wind_Vel=NA
   }
 
+  if(!("Sky" %in% colnames(files))){
+    files$Sky=NA
+    files$Wind_Dir=NA
+    files$Wind_Vel=NA
+  }
+
   files$Observer=toupper(files$Observer)
   files$Seat=toupper(files$Seat)
+
 
 
   readr::write_csv(files, file=paste(area, "_", year, "_RawObs_", string, ".csv", sep=""))
