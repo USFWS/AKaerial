@@ -2899,6 +2899,8 @@ UpdateAllObjects=function(input.path, output.path){
 AppendYear = function(area, year){
 
   update=EstimatesTable(area=area, year=year)
+  update$expanded.table$sha=system("git rev-parse HEAD", intern=TRUE)
+
 
   if(area=="ACP"){
     ACPHistoric$output.table=rbind(ACPHistoric$output.table, update$output.table)
