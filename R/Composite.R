@@ -29,12 +29,12 @@
 #' @return Six .csv files are written to the current working directory (1 for each species) and optionally a .csv of the current version of the data files used
 #'
 #' @export
-CompositeIndices = function(tavs.year = c(1985:2023),
-                            pw.year = c(1985:2023),
-                            tusw.year = c(1985:2023),
-                            lesser.year = c(1964:2023),
-                            mcw.year = c(1964:2023),
-                            trsw.year = c(1964:2023),
+CompositeIndices = function(tavs.year = c(1985:2024),
+                            pw.year = c(1985:2024),
+                            tusw.year = c(1985:2024),
+                            lesser.year = c(1964:2024),
+                            mcw.year = c(1964:2024),
+                            trsw.year = c(1964:2024),
                             versioning=FALSE){
 
 

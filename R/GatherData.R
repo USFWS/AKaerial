@@ -30,23 +30,29 @@ GatherData=function(area = "none", drive = "K:", output.folder = "none", method=
 
   if(area == "YKD"){
     year.panel = data.frame(
-      year = c(1988:2019,2021,2022),
-      panel = c(1988:1998, rep(c("A","B","C","D"),5),"A", "B", "C")
+      year = c(1988:2019,2021:2024),
+      panel = c(1988:1998, rep(c("A","B","C","D"),6),"A")
       )
     }
 
   if(area == "YKG"){
     year.panel = data.frame(
-      year = c(1985:2019,2021,2022),
-      panel = c(1985:1998, rep(c("A","B","C","D"),5),"A", "B", "C")
+      year = c(1985:2019,2021:2024),
+      panel = c(1985:1998, rep(c("A","B","C","D"),6),"A")
     )
   }
 
+  if(area == "ACP"){
+    year.panel = data.frame(
+      year = c(2007:2019,2022:2024),
+      panel = c(2007:9, rep(c("A","B","C","D"),6),"A")
+    )
+  }
 
   if(area == "CRD"){
     year.panel = data.frame(
-      year = c(1986:2012, 2014:2019),
-      panel = c("A", "B", "C","D","E","F","G","H","I",rep("J", 18), rep("K", 6))
+      year = c(1986:2012, 2014:2019, 2021:2024),
+      panel = c("A", "B", "C","D","E","F","G","H","I",rep("J", 18), rep("K", 10))
     )
   }
 
@@ -60,14 +66,16 @@ GatherData=function(area = "none", drive = "K:", output.folder = "none", method=
 
     data.path=paste(entries$DRIVE[i], entries$OBS[i], sep="")
 
-    if(area %in% c("YKG", "YKD")){
-    strata.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Design_Files/Design_Strata/YK_DesignStrata.shp", sep="")
-    if(method=="repo"){strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")}
-    }
+    # if(area %in% c("YKG", "YKD")){
+    # strata.path=paste(entries$DRIVE[i], "/Waterfowl/YKD_Coastal/Design_Files/Design_Strata/YK_DesignStrata.shp", sep="")
+    # if(method=="repo"){strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")}
+    # }
+    #
+    # if(area %in% c("CRD")){
+    #   strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
+    # }
 
-    if(area %in% c("CRD")){
-      strata.path=paste(entries$DRIVE[i], "/Waterfowl/CRD_Survey/Design_Files/Design_Strata/CRD_2018_DesignStrata.shp", sep="")
-    }
+    strata.path=paste(entries$DRIVE[i], entries$STRATA[i], sep="")
 
     transect.path=paste(entries$DRIVE[i], entries$TRANS[i], sep="")
 
@@ -77,31 +85,37 @@ GatherData=function(area = "none", drive = "K:", output.folder = "none", method=
 
     print(data.path)
 
-    data=DataSelect(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path)
+    layer.path = entries$LAYER[i]
 
-    data$design@data$UNIQUE=paste(data$design@data$OBJECTID, data$design@data$STRATNAME, data$design@data$SPLIT, sep="")
+    data=DataProcess(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path,
+                    transect.layer=layer.path)
+
+    #data$design$UNIQUE=paste(data$design$OBJECTID, data$design$STRATNAME, data$design$SPLIT, sep="")
+
+    data$obs = data$obs %>% filter(!(is.na(Month)))
 
     data$obs$Panel=year.panel$panel[year.panel$year == data$obs$Year[1]]
 
-    data$obs$Julian=as.numeric(format(as.Date(paste(data$obs$Year, data$obs$Month, data$obs$Day, sep="-")), "%j"))
+    #data$obs$Julian=as.numeric(format(as.Date(paste(data$obs$Year, data$obs$Month, data$obs$Day, sep="-")), "%j"))
 
-    for(j in 1:length(data$transect$Year)){
-
-      data$transect$Seat[j]=as.character(data$flight$Seat[data$flight$PartOf==data$transect$ctran[j]])
-
-      data$transect$Unique[j]=paste(data$design@data$UNIQUE[data$design@data$STRATNAME==data$transect$strata[j] &
-                                                              data$design@data$SPLIT==data$transect$ctran[j]][1], year.panel$panel[year.panel$year==data$transect$Year[j]], sep="")
-      data$transect$Trans_Lat[j]=data$design@data$mid.Lat[data$design@data$STRATNAME==data$transect$strata[j] &
-                                                            data$design@data$SPLIT==data$transect$ctran[j]][1]
-
-      data$transect$Mean_Obs_Lat[j]=mean(data$obs$Lat[data$obs$ctran==data$transect$ctran[j]], na.rm = TRUE)
-
-      data$transect$Mean_Julian[j]=mean(data$obs$Julian[data$obs$ctran==data$transect$ctran[j]], na.rm = TRUE)
-
-    }
+    # for(j in 1:length(data$transect$Year)){
+    #
+    #   data$transect$Seat[j]=as.character(data$flight$Seat[data$flight$PartOf==data$transect$ctran[j]])
+    #
+    #   data$transect$Unique[j]=paste(data$design$UNIQUE[data$design$STRATNAME==data$transect$strata[j] &
+    #                                                           data$design$SPLIT==data$transect$ctran[j]][1], year.panel$panel[year.panel$year==data$transect$Year[j]], sep="")
+    #   data$transect$Trans_Lat[j]=data$design$mid.Lat[data$design$STRATNAME==data$transect$strata[j] &
+    #                                                         data$design$SPLIT==data$transect$ctran[j]][1]
+    #
+    #   data$transect$Mean_Obs_Lat[j]=mean(data$obs$Lat[data$obs$ctran==data$transect$ctran[j]], na.rm = TRUE)
+    #
+    #   data$transect$Mean_Julian[j]=mean(data$obs$Julian[data$obs$ctran==data$transect$ctran[j]], na.rm = TRUE)
+    #
+    # }
 
 
     data$transect$project=area
+    data$flight = data$flight %>% select(-Shape)
 
     if(i==1){
       write.table(data$transect, paste(output.folder, "/", area, "transect.csv", sep=""), quote=FALSE, row.names=FALSE, sep=",")
