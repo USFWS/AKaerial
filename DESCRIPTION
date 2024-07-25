@@ -1,7 +1,7 @@
 Package: AKaerial
 Type: Package
 Title: Analysis of Alaska Region Aerial Survey Data
-Version: 1.2.2024
+Version: 1.3.2024
 Imports: tidyverse, dplyr, ggplot2, ggspatial, kableExtra, leaflet, leafem, lwgeom, mapproj, outliers, plyr, raster, RColorBrewer, rmarkdown, smoothr, tidyr, tools, zoo
 Depends: tidyr, magrittr, dplyr, sf
 Author: Charles Frost
