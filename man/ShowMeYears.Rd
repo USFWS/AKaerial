@@ -11,9 +11,7 @@ ShowMeYears(area, year, species = "all")
   Acceptable values include:
 \itemize{
 \item YKD - Yukon Kuskokwim Delta MBM duck stratification
-\item YKDV - Yukon Kuskokwim Delta VCF study duck stratification
 \item YKG - Yukon Kuskokwim Delta MBM goose stratification
-\item KIG - Kigigak Island only
 \item ACP - Arctic Coastal Plain
 \item CRD - Copper River Delta
 }}

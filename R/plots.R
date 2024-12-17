@@ -1021,10 +1021,10 @@ ReportFigure= function(area,
     ggtitle(title) +
     scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
     scale_y_continuous(label=scales::comma, name=y.title, expand = c(0, 0)) +
-    geom_point(data=data1, aes(Year, index, shape=Species), color="black", fill="black") +
+    geom_point(data=data1, aes(Year, index), color="black", fill="black") +
     geom_point(data=data1, aes(Year, index)) +
 
-    geom_pointrange(aes(x=Year, y=index, ymin=index-1.96*se, ymax=index+1.96*se, shape=Species),data = data1)
+    geom_pointrange(aes(x=Year, y=index, ymin=index-1.96*se, ymax=index+1.96*se),data = data1)
   }
 
 
@@ -1056,10 +1056,13 @@ ReportFigure= function(area,
       ggtitle(title) +
       scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
       scale_y_continuous(label=scales::comma, name=y.title, expand = c(0, 0)) +
-      geom_point(data=data3, aes(Year, index, shape=Species, color=Index), position=position_dodge(.7)) +
-      geom_pointrange(aes(x=Year, y=index, ymin=index-1.96*se, ymax=index+1.96*se, shape=Species, color=Index),position=position_dodge(.7), data = data3)
+      geom_point(data=data3, aes(Year, index, color=Index), position=position_dodge(.7)) +
+      geom_pointrange(aes(x=Year, y=index, ymin=index-1.96*se, ymax=index+1.96*se, color=Index),position=position_dodge(.7), data = data3)
   }
 
+ plot1=plot1 +
+   theme_bw() +
+   theme(legend.position = c(0.8,0.8))
 
 
   print(plot1)
