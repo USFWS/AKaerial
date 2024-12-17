@@ -5,12 +5,12 @@
 \title{Compile index estimates for Pacific Flyway data book}
 \usage{
 CompositeIndices(
-  tavs.year = c(1985:2023),
-  pw.year = c(1985:2023),
-  tusw.year = c(1985:2023),
-  lesser.year = c(1964:2023),
-  mcw.year = c(1964:2023),
-  trsw.year = c(1964:2023),
+  tavs.year = c(1985:2024),
+  pw.year = c(1985:2024),
+  tusw.year = c(1985:2024),
+  lesser.year = c(1964:2024),
+  mcw.year = c(1964:2024),
+  trsw.year = c(1964:2024),
   versioning = FALSE
 )
 }

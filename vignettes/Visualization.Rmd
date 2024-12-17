@@ -57,32 +57,17 @@ ReportTable(data=CRDHistoric$combined,
 ```{r figs, echo = TRUE, message=FALSE, warning = FALSE, fig.width = 6, fig.asp=.8}
 library(AKaerial)
 
-
-ReportFigure(data=YKGHistoric$combined, 
-             species="EMGO", 
-             index=c("total", "total.var", "itotal", "itotal.var", "ibb", "ibb.var"),
-             year=c(2007:2019), 
-             title="Emperor goose population indices from the \nYukon-Kuskokwim Delta, 2007-2019", 
-             x.label = "Year", 
-             y.label="Index Estimate", 
-             leg.values = c(3,2,1), 
-             leg.labels = c("Total", "Indicated Total", "Indicated Breeding"), 
-             leg.limits = c("total", "itotal", "ibb"),
-             test.out = FALSE)
+ReportFigure(area="ACP",
+             species=c("MALL", "SPEI"),
+             index="ibb",
+             title="Indicated breeding birds on the Arctic Coastal Plain")
 
 
-ReportFigure(data=ACPHistoric$combined, 
-             species="SPEI", 
-             index=c("itotal", "itotal.var"),
-             year=c(2007:2019),
-             yr.avg=3,
-             title="Indicated total spectacled eiders (and 3-year average) on the \nArctic Coastal Plain, 2007-2019", 
-             x.label = "Year", 
-             y.label="Indicated Total", 
-             leg.values = c(2,1), 
-             leg.labels = c("Indicated Total", "3-year Avg"), 
-             leg.limits = c("itotal", "avg1"),
-             test.out = FALSE)
+ReportFigure(area="YKG",
+             species="EMGO",
+             index="ibb",
+             index2="itotal",
+             title="Indicated breeding and total Emperor Geese on the YK Delta")
 
 
 
