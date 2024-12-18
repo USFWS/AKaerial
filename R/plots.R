@@ -832,7 +832,7 @@ ReportFigure= function(area,
                        type="combined",
                        index,
                        index2="none",
-                       title="none",
+                       title="",
                        x.title="Year",
                        y.title="Population Index"
                        ){
@@ -1024,7 +1024,7 @@ ReportFigure= function(area,
     geom_point(data=data1, aes(Year, index), color="black", fill="black") +
     geom_point(data=data1, aes(Year, index)) +
 
-    geom_pointrange(aes(x=Year, y=index, ymin=index-1.96*se, ymax=index+1.96*se),data = data1)
+    geom_pointrange(aes(x=Year, y=index, ymin=pmax(0, index-1.96*se), ymax=index+1.96*se),data = data1)
   }
 
 
@@ -1033,7 +1033,7 @@ ReportFigure= function(area,
     if(index=="total"){data1=data %>% select(Year, Species, Observer, total, total.se) %>% mutate(Index="Total")}
     if(index=="itotal"){data1=data %>% select(Year, Species, Observer, itotal, itotal.se) %>% mutate(Index="Indicated Total")}
     if(index=="ibb"){data1=data %>% select(Year, Species, Observer, ibb, ibb.se) %>% mutate(Index="Indicated Breeding")}
-    if(index=="sing1pair2"){data1=data %>% select(Year, Species, Observer, sing1pair2, sing1pair2.se) %>% mutate(Index="Singles and Pairs")}
+    if(index=="sing1pair2"){data1=data %>% select(Year, Species, Observer, sing1pair2, sing1pair2.se) %>% mutate(Index="Breeding Birds")}
     if(index=="flock"){data1=data %>% select(Year, Species, Observer, flock, flock.se) %>% mutate(Index="Flocked Birds")}
 
 
@@ -1041,7 +1041,7 @@ ReportFigure= function(area,
     if(index2=="total"){data2=data %>% select(Year, Species, Observer, total, total.se) %>% mutate(Index="Total")}
     if(index2=="itotal"){data2=data %>% select(Year, Species, Observer, itotal, itotal.se) %>% mutate(Index="Indicated Total")}
     if(index2=="ibb"){data2=data %>% select(Year, Species, Observer, ibb, ibb.se) %>% mutate(Index="Indicated Breeding")}
-    if(index2=="sing1pair2"){data2=data %>% select(Year, Species, Observer, sing1pair2, sing1pair2.se) %>% mutate(Index="Singles and Pairs")}
+    if(index2=="sing1pair2"){data2=data %>% select(Year, Species, Observer, sing1pair2, sing1pair2.se) %>% mutate(Index="Breeding Birds")}
     if(index2=="flock"){data2=data %>% select(Year, Species, Observer, flock, flock.se) %>% mutate(Index="Flocked Birds")}
 
     colnames(data1)[4] = "index"
@@ -1056,13 +1056,14 @@ ReportFigure= function(area,
       ggtitle(title) +
       scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
       scale_y_continuous(label=scales::comma, name=y.title, expand = c(0, 0)) +
-      geom_point(data=data3, aes(Year, index, color=Index), position=position_dodge(.7)) +
-      geom_pointrange(aes(x=Year, y=index, ymin=index-1.96*se, ymax=index+1.96*se, color=Index),position=position_dodge(.7), data = data3)
+      geom_point(data=data3, aes(Year, index, color=forcats::fct_inorder(Index)), position=position_dodge(.3)) +
+      geom_pointrange(aes(x=Year, y=index, ymin=pmax(0, index-1.96*se), ymax=index+1.96*se, color=forcats::fct_inorder(Index)),position=position_dodge(.3), data = data3) +
+      scale_color_discrete(type=c("black", "darkgray"))
   }
 
  plot1=plot1 +
    theme_bw() +
-   theme(legend.position = c(0.8,0.8))
+   theme(legend.position = "top", legend.title=element_blank())
 
 
   print(plot1)

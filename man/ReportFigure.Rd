@@ -11,7 +11,7 @@ ReportFigure(
   type = "combined",
   index,
   index2 = "none",
-  title = "none",
+  title = "",
   x.title = "Year",
   y.title = "Population Index"
 )
