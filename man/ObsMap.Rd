@@ -9,7 +9,7 @@ ObsMap(
   strata,
   transect,
   data,
-  year,
+  year = 0,
   observer = "both",
   species = "all",
   type = "static"
