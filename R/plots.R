@@ -1061,6 +1061,7 @@ ReportFigure= function(area,
       scale_color_discrete(type=c("black", "darkgray"))
   }
 
+
  plot1=plot1 +
    theme_bw() +
    theme(legend.position = "top", legend.title=element_blank())
