@@ -11,7 +11,8 @@ ObsMap(
   data,
   year,
   observer = "both",
-  species = "all"
+  species = "all",
+  type = "static"
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ and when combined with year, also chooses the transect layer and data files.}
 \item{observer}{The observer initials to be displayed.}
 
 \item{species}{The species code(s) to be displayed.}
+
+\item{type}{Static (default) or dynamic map.}
 }
 \value{
 Map object
