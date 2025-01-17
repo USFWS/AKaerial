@@ -63,14 +63,11 @@ if(area=="CRD"){
   strata = read_sf("//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data/source_data/CRD_DesignStrata.gpkg")
   transects=read_sf("//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data/source_data/CRD_DesignTrans.gpkg", layer=entries$LAYER[1])
   root="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data"
-  if(length(entries$OBS) == 2){
-    obs=rbind(
-      read.csv(paste(root, entries$OBS[1], sep="")),
-      read.csv(paste(root, entries$OBS[2], sep=""))
-    )
-  }
-  if(length(entries$OBS) == 1){
-    obs=read.csv(paste(root, entries$OBS[1], sep=""))
+  for(k in 1:length(entries$OBS)){
+    obs = read.csv(paste(root, entries$OBS[k], sep=""))
+    if(k==1){full.obs=obs}
+    if(k!=1){full.obs=rbind(full.obs, obs)}
+
   }
   }
 
@@ -78,14 +75,11 @@ if(area=="YKD"){
   strata = read_sf("//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_001_YKD_Aerial_Survey/data/source_data/YKG_AnalysisStrata.gpkg")
   transects=read_sf("//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_001_YKD_Aerial_Survey/data/source_data/YKD_DesignTrans.gpkg", layer=entries$LAYER[1])
   root="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_001_YKD_Aerial_Survey/data"
-  if(length(entries$OBS) == 2){
-    obs=rbind(
-      read.csv(paste(root, entries$OBS[1], sep="")),
-      read.csv(paste(root, entries$OBS[2], sep=""))
-    )
-  }
-  if(length(entries$OBS) == 1){
-    obs=read.csv(paste(root, entries$OBS[1], sep=""))
+  for(k in 1:length(entries$OBS)){
+    obs = read.csv(paste(root, entries$OBS[k], sep=""))
+    if(k==1){full.obs=obs}
+    if(k!=1){full.obs=rbind(full.obs, obs)}
+
   }
   }
 
@@ -99,7 +93,7 @@ st_crs(full.obs) = 4269
 
 if(type=="static"){
 m = ggplot2::ggplot() +
-  ggplot2::geom_sf(data=strata, ggplot2::aes(fill=STRATNAME)) +
+  ggplot2::geom_sf(data=strata, ggplot2::aes(fill=STRATNAME), alpha=.5) +
   ggplot2::geom_sf(data = transects) +
   ggplot2::geom_sf(data = full.obs) +
   ggplot2::labs(fill = "Stratum") +
