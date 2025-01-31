@@ -834,7 +834,8 @@ ReportFigure= function(area,
                        index2="none",
                        title="",
                        x.title="Year",
-                       y.title="Population Index"
+                       y.title="Population Index",
+                       trend = FALSE
                        ){
 
 
@@ -1016,16 +1017,27 @@ ReportFigure= function(area,
   colnames(data1)[4] = "index"
   colnames(data1)[5] = "se"
 
-
+  if( is.null(trend) ){
   plot1 = ggplot(data=data1, (aes(x=Year, y=index))) +
     ggtitle(title) +
     scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
     scale_y_continuous(label=scales::comma, name=y.title, expand = c(0.1, 0)) +
     geom_point(data=data1, aes(Year, index), color="black", fill="black") +
     geom_point(data=data1, aes(Year, index)) +
-
     geom_pointrange(aes(x=Year, y=index, ymin=pmax(0, index-1.96*se), ymax=index+1.96*se),data = data1)
+  }else{
+    plot1 = ggplot(data=data1, (aes(x=Year, y=index))) +
+      ggtitle(title) +
+      scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
+      scale_y_continuous(label=scales::comma, name=y.title, expand = c(0.1, 0)) +
+      geom_point(data=data1, aes(Year, index), color="black", fill="black") +
+      geom_point(data=data1, aes(Year, index)) +
+      geom_ribbon(data = trend, aes(x=Year, ymin=max(0,lower), ymax=upper, fill = "lightgray")) +
+      geom_line(data = trend, aes(x=Year, y=mean, col="black")) +
+      geom_pointrange(aes(x=Year, y=index, ymin=pmax(0, index-1.96*se), ymax=index+1.96*se),data = data1)
+
   }
+    }
 
 
   if(index2 != "none"){
@@ -1051,7 +1063,7 @@ ReportFigure= function(area,
 
 
     data3 = rbind(data1, data2)
-
+    if( is.null(trend) ){
     plot1 = ggplot(data=data3, (aes(x=Year, y=index))) +
       ggtitle(title) +
       scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
@@ -1059,6 +1071,17 @@ ReportFigure= function(area,
       geom_point(data=data3, aes(Year, index, color=forcats::fct_inorder(Index)), position=position_dodge(.3)) +
       geom_pointrange(aes(x=Year, y=index, ymin=pmax(0, index-1.96*se), ymax=index+1.96*se, color=forcats::fct_inorder(Index)),position=position_dodge(.3), data = data3) +
       scale_color_discrete(type=c("black", "darkgray"))
+    }else{
+      plot1 = ggplot(data=data3, (aes(x=Year, y=index))) +
+        ggtitle(title) +
+        scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
+        scale_y_continuous(label=scales::comma, name=y.title, expand = c(0.1, 0)) +
+        geom_point(data=data3, aes(Year, index, color=forcats::fct_inorder(Index)), position=position_dodge(.3)) +
+        geom_ribbon(data = trend, aes(x=Year, ymin=max(0,lower), ymax=upper, fill = "lightgray")) +
+        geom_line(data = trend, aes(x=Year, y=mean, col="black")) +
+        geom_pointrange(aes(x=Year, y=index, ymin=pmax(0, index-1.96*se), ymax=index+1.96*se, color=forcats::fct_inorder(Index)),position=position_dodge(.3), data = data3) +
+        scale_color_discrete(type=c("black", "darkgray"))
+    }
   }
 
 
