@@ -90,9 +90,10 @@ m = ggplot2::ggplot() +
   ggplot2::geom_sf(data = transects) +
   ggplot2::geom_sf(data = full.obs) +
   ggplot2::labs(fill = "Stratum") +
-  ggplot2::theme(legend.position="top", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                 panel.background = element_blank(),
-                 panel.border = element_rect(colour = "black", fill=NA, linewidth=1))
+  ggplot2::theme(legend.position="top", panel.grid.major = ggplot2::element_blank(),
+                 panel.grid.minor = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_blank(),
+                 panel.border = ggplot2::element_rect(colour = "black", fill=NA, linewidth=1))
 
 
 
