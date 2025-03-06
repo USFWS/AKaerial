@@ -12,7 +12,8 @@ ObsMap(
   year = 0,
   observer = "both",
   species = "all",
-  type = "static"
+  type = "static",
+  mirror = "NULL"
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ and when combined with year, also chooses the transect layer and data files.}
 \item{species}{The species code(s) to be displayed.}
 
 \item{type}{Static (default) or dynamic map.}
+
+\item{mirror}{Optional mirror location for offline observation and spatial data}
 }
 \value{
 Map object
