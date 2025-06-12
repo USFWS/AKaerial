@@ -59,12 +59,12 @@ There are no spatial checks provided here, instead please review the plot of tra
 ```{r mapping}
  
 if(area != "WBPHS"){
- tm <- tmap::tm_shape(basemap) + tmap::tm_polygons(col = "STRATNAME", alpha = 0.5) +
+ tm <- tmap::tm_shape(basemap) + tmap::tm_polygons(col = "STRATNAME", fill_alpha = 0.5) +
     tmap::tm_shape(sf.lines, name="Flown Track") + tmap::tm_lines() +
     tmap::tm_text("Transect", size=2) +
     tmap::tm_shape(sf.obs, name="Bird Obs") + tmap::tm_dots(col="Day") +
     tmap::tm_basemap(server = "Esri.WorldGrayCanvas") +
-    tmap::tm_scale_bar()
+    tmap::tm_scalebar()
 
 
 leaf = tmap::tmap_leaflet(tm)
