@@ -102,7 +102,7 @@ TidyDensities=function(data, area, output=FALSE) {
 
   data$strata=merge(data$strata, reps2, by="strata")
 
-  strata.level=merge(strata.level, data$strata %>% dplyr::select(strata, m), by="strata")
+  strata.level=merge(strata.level, data$strata %>% dplyr::select(strata, Observer, m), by=c("strata", "Observer"))
 
 
   #See equation 12.9, p. 249 in "Analysis and Management of Animal Populations"

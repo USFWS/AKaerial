@@ -1,6 +1,3 @@
-
-
-
 #' Gather all data for a project and add unique design panel information
 #'
 #' GatherData will compile all data for a project over its history, add transect panel information (if available), and a unique transect identifier
