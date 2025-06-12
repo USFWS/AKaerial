@@ -258,9 +258,11 @@ GreenLightScribe=function(path.name, area, report=TRUE, scribe2analysis=FALSE, a
     purrr::map(points2line) %>%
     purrr::map_dfr(rbind)
 
-  if(area=="ACP"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_008_ACP_Aerial_Survey/data/design_files/Design_Strata/ACP_DesignStrata.gpkg"}
+  sf.lines = sf.lines[!(is.na(sf.lines$Transect)),]
+
+  if(area=="ACP"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_008_ACP_Aerial_Survey/data/source_data/ACP_DesignStrata.gpkg"}
   if(area %in% c("YKD", "YKG", "YKDV")){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_001_YKD_Aerial_Survey/data/source_data/YKD_DesignStrata.gpkg"}
-  if(area=="CRD"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data/CRD_DesignStrata.gpkg"}
+  if(area=="CRD"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data/source_data/CRD_DesignStrata.gpkg"}
 
   basemap <- sf::st_read(dsn=basemap) %>%
     sf::st_transform(crs=3338)
@@ -623,6 +625,16 @@ ScribeMerge=function(folder, string, addWBPHS=FALSE){
 
   files$Observer=toupper(files$Observer)
   files$Seat=toupper(files$Seat)
+
+  ## Changes for 2025
+  colnames(files)[colnames(files)=="Lat"]="Latitude"
+  colnames(files)[colnames(files)=="Lon"]="Longitude"
+  colnames(files)[colnames(files)=="Obs_Type"]="Grouping"
+  colnames(files)[colnames(files)=="Num"]="Count"
+  colnames(files)[colnames(files)=="Flight_Dir"]="Course"
+  colnames(files)[colnames(files)=="Filename"]="Audio.File"
+
+  files=files %>% select(-Line, -Delay)
 
 
 
