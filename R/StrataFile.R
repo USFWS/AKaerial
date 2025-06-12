@@ -24,19 +24,23 @@ if(method=="create"){
 
 ykd.design = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YKD_DesignStrata.gpkg"
 ykd = StrataSummarySF(strata.file=ykd.design, id="STRATNAME")
-ykd$survey = "YKD"
+ykd$Survey = "YKD"
 
 acp.design = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/ACP/data/source_data/ACP_DesignStrata.gpkg"
 acp = StrataSummarySF(strata.file=acp.design, id="STRATNAME")
-acp$survey = "ACP"
+acp$Survey = "ACP"
 
 crd.design = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/CRD/data/source_data/CRD_DesignStrata.gpkg"
 crd = StrataSummarySF(strata.file=crd.design, id="STRATNAME")
-crd$survey = "CRD"
+crd$Survey = "CRD"
 
 }
 
-MasterStrata = rbind(acp, ykd, crd)
+ykg = ykd
+
+ykg$Survey = "YKG"
+
+MasterStrata = rbind(acp, ykd, ykg, crd)
 
 MasterStrata$layer.area = units::drop_units(MasterStrata$layer.area)
 
