@@ -1,7 +1,7 @@
 Package: AKaerial
 Type: Package
 Title: Analysis of Alaska Region Aerial Survey Data
-Version: 2.2.2024
+Version: 3.0.2025
 Imports: tidyverse, dplyr, forcats, ggplot2, ggspatial, kableExtra, leaflet, leafem, lwgeom, mapproj, outliers, plyr, raster, RColorBrewer, rmarkdown, smoothr, tidyr, tools, zoo
 Depends: tidyr, magrittr, dplyr, sf
 Author: Charles Frost
@@ -9,7 +9,7 @@ Maintainer: Charles Frost <charles_frost@fws.gov>
 Description: Basic functions for QA/QC processes, data manipulation, analysis, and visualization of aerial survey data collected by R7 USFWS MBM. 
 License: None
 LazyData: TRUE
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests: 
     knitr
 VignetteBuilder: knitr

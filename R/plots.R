@@ -1017,7 +1017,7 @@ ReportFigure= function(area,
   colnames(data1)[4] = "index"
   colnames(data1)[5] = "se"
 
-  if( is.null(trend) ){
+  if(trend==FALSE ){
   plot1 = ggplot(data=data1, (aes(x=Year, y=index))) +
     ggtitle(title) +
     scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +
@@ -1063,7 +1063,7 @@ ReportFigure= function(area,
 
 
     data3 = rbind(data1, data2)
-    if( is.null(trend) ){
+    if( trend==FALSE ){
     plot1 = ggplot(data=data3, (aes(x=Year, y=index))) +
       ggtitle(title) +
       scale_x_continuous(name=x.title, limits=c(min(data$Year-1), max(data$Year+1)), breaks=seq(min(data$Year),max(data$Year),5), expand = c(0, 0)) +

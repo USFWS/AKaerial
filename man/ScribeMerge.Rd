@@ -4,7 +4,7 @@
 \alias{ScribeMerge}
 \title{Merge the daily SCRIBE files into a single project record for an observer}
 \usage{
-ScribeMerge(folder, string, addWBPHS = FALSE)
+ScribeMerge(folder, string, addWBPHS = FALSE, new2old = FALSE)
 }
 \arguments{
 \item{folder}{The folder path containing the files.}
@@ -12,6 +12,8 @@ ScribeMerge(folder, string, addWBPHS = FALSE)
 \item{string}{The character string common to the files to be combined.}
 
 \item{addWBPHS}{TRUE/FALSE to add columns to convert HQ format to AK format}
+
+\item{new2old}{TRUE/FALSE is this the new (2025) Scribe format}
 }
 \value{
 No return value, but output is a new combined csv file within the folder.

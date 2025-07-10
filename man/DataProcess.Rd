@@ -8,6 +8,7 @@ DataProcess(
   area,
   data.path = NA,
   strata.path = NA,
+  strata.layer = NA,
   transect.path = NA,
   threshold = 0.5,
   strata.id = "STRATNAME",

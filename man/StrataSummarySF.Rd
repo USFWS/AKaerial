@@ -4,7 +4,7 @@
 \alias{StrataSummarySF}
 \title{Summarize design strata for analysis using sf package}
 \usage{
-StrataSummarySF(strata.file, id = "STRATNAME")
+StrataSummarySF(strata.file, id = "STRATNAME", this.layer = NA)
 }
 \arguments{
 \item{strata.file}{The path to the design stratification file}
