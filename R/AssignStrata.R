@@ -16,14 +16,17 @@
 #' @return data frame of observations with modified Strata column
 #'
 #' @export
-AssignStrata=function(full.data, strata.file, strata.id, retain="liberal", area){
+AssignStrata=function(full.data, strata.file, strata.id, strata.layer, retain="liberal", area){
 
   data.sf = sf::st_as_sf(full.data, coords=c("Lon", "Lat")) %>%
     sf::st_set_crs(4326)
 
-  analysis.strata = sf::st_read(dsn=strata.file, quiet=TRUE)
-
-  analysis.strata=sf::st_transform(analysis.strata, 4269)
+  if(!(is.na(strata.layer))){
+    analysis.strata = sf::st_read(dsn=strata.file, layer=strata.layer, quiet=TRUE) %>%
+      sf::st_transform(4269)}
+  if((is.na(strata.layer))){
+    analysis.strata = sf::st_read(dsn=strata.file, quiet=TRUE) %>%
+      sf::st_transform(4269)}
 
   data.sf=sf::st_transform(data.sf, 4269)
 
@@ -75,7 +78,7 @@ AssignStrata=function(full.data, strata.file, strata.id, retain="liberal", area)
  if(retain=="liberal" & nrow(out.of.area)==0) {final.data=dplyr::bind_rows(in.area, start.end)}
   if(retain=="strict") {final.data=dplyr::bind_rows(in.area, start.end)}
 
-  if(area=="CRD"){final.data= dplyr::bind_rows(in.area, start.end)}
+  if(area != "ACP"){final.data= dplyr::bind_rows(in.area, start.end)}
 
   return(final.data)
 

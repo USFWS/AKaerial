@@ -36,32 +36,39 @@ ObsFile <- function(
 
       if(area == "YKD"){
         year.panel = data.frame(
-          year = c(1988:2019,2021:2024),
-          panel = c(1988:1998, rep(c("A","B","C","D"),6),"A"))
-          year.panel=year.panel %>% filter(year != 2011)
-        strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YKD_DesignStrata.gpkg"
+          year = c(1988:2019,2021:2025),
+          panel = c(1985, 1989, 1989, 1989, 1989,
+                    1993, 1993, 1993, 1993, 1993,
+                    1998, rep(c("D","A","B","C"),6),"D", "A")
+        )
+        year.panel=year.panel %>% filter(year != 2011)
       }
 
       if(area == "YKG"){
         year.panel = data.frame(
-          year = c(1985:2019,2021:2024),
-          panel = c(1985:1998, rep(c("A","B","C","D"),6),"A")
+          year = c(1985:2019,2021:2025),
+          panel = c(1985, 1985, 1985, 1985,
+                    1989, 1989, 1989, 1989,
+                    1993, 1993, 1993, 1993, 1993,
+                    1998, rep(c("D","A","B","C"),6),"D", "A")
         )
-        strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YKD_DesignStrata.gpkg"
 
       }
 
       if(area == "ACP"){
         year.panel = data.frame(
-          year = c(2007:2019,2022:2024),
-          panel = c(2007:2009, rep(c("A","B","C","D"),3),"A")
+          year = c(2007:2019,2022:2025),
+          panel = c(rep(c("D","A","B","C"),4),"D")
         )
       }
 
       if(area == "CRD"){
         year.panel = data.frame(
-          year = c(1986:2012, 2014:2019, 2021:2024),
-          panel = c("A", "B", "C","D","E","F","G","H","I",rep("J", 18), rep("K", 10))
+          year = c(1986:2012, 2014:2019, 2021:2025),
+          panel = c(1986, 1987,
+                    1988, 1988, 1988, 1988, 1988, 1988, 1988,
+                    1995,
+                    rep(1996, 17), rep("A", 11))
         )
       }
 
@@ -70,7 +77,9 @@ ObsFile <- function(
 
         entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR == year.panel$year[t],]
 
-        if(!(area %in% c("YKD", "YKG"))){strata.path=paste(entries$DRIVE[1], entries$STRATA[1], sep="")}
+        strata.path=paste(entries$DRIVE[1], entries$STRATA[1], sep="")
+
+        strata.layer=entries$STRATA_LAYER[1]
 
         transect.path=paste(entries$DRIVE[1], entries$TRANS[1], sep="")
 
@@ -184,7 +193,7 @@ ObsFile <- function(
 
 
       data=DataProcess(area=entries$AREA[i], data.path=data.path, transect.path=transect.path, strata.path=strata.path,
-                       strata.id="STRATNAME", transect.layer=layer.path, retain="liberal")
+                       strata.id="STRATNAME", strata.layer=strata.layer, transect.layer=layer.path, retain="liberal")
 
       print(paste(data$obs$Year[1], area, data$obs$Observer[1], sep=" "))
 

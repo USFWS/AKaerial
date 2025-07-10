@@ -32,32 +32,38 @@ TransectFile <- function(method="create",
 
   if(area == "YKD"){
     year.panel = data.frame(
-      year = c(1988:2019,2021:2024),
-      panel = c(1988:1998, rep(c("A","B","C","D"),6),"A")
+      year = c(1988:2019,2021:2025),
+      panel = c(1985, 1989, 1989, 1989, 1989,
+                1993, 1993, 1993, 1993, 1993,
+                1998, rep(c("D","A","B","C"),6),"D", "A")
     )
-  strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YKD_DesignStrata.gpkg"
+    year.panel=year.panel %>% filter(year != 2011)
   }
 
   if(area == "YKG"){
     year.panel = data.frame(
-      year = c(1985:2019,2021:2024),
-      panel = c(1985:1998, rep(c("A","B","C","D"),6),"A")
+      year = c(1985:2019,2021:2025),
+      panel = c(1985, 1985, 1985, 1985,
+                1989, 1989, 1989, 1989,
+                1993, 1993, 1993, 1993, 1993,
+                1998, rep(c("D","A","B","C"),6),"D", "A")
     )
-    strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YKD_DesignStrata.gpkg"
-
   }
 
   if(area == "ACP"){
     year.panel = data.frame(
-      year = c(2007:2019,2022:2024),
-      panel = c(2007:2009, rep(c("A","B","C","D"),3),"A")
+      year = c(2007:2019,2022:2025),
+      panel = c(rep(c("D","A","B","C"),4),"D")
     )
   }
 
   if(area == "CRD"){
     year.panel = data.frame(
-      year = c(1986:2012, 2014:2019, 2021:2024),
-      panel = c("A", "B", "C","D","E","F","G","H","I",rep("J", 18), rep("K", 10))
+      year = c(1986:2012, 2014:2019, 2021:2025),
+      panel = c(1986, 1987,
+                1988, 1988, 1988, 1988, 1988, 1988, 1988,
+                1995,
+                rep(1996, 17), rep("A", 11))
     )
   }
 
@@ -69,7 +75,8 @@ TransectFile <- function(method="create",
 
     entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR == year.panel$year[i],]
 
-    if(!(area %in% c("YKD", "YKG"))){strata.path=paste(entries$DRIVE[1], entries$STRATA[1], sep="")}
+    strata.path=paste(entries$DRIVE[1], entries$STRATA[1], sep="")
+    strata.layer=entries$STRATA_LAYER[1]
 
     transect.path=paste(entries$DRIVE[1], entries$TRANS[1], sep="")
 
@@ -82,6 +89,7 @@ TransectFile <- function(method="create",
     design=TransSummarySF(transect.file=transect.path,
                           transect.layer=layer.path,
                           strata.file=strata.path,
+                          strata.layer=strata.layer,
                           strata.id="STRATNAME",
                           trans.id="OBJECTID")
 
@@ -95,7 +103,7 @@ TransectFile <- function(method="create",
 
 }
 
-  MasterTransect = full_file %>% sf::st_drop_geometry() %>% select(-Shape, -geom)
+  MasterTransect = full_file %>% sf::st_drop_geometry() %>% select(-Shape)
 
   MasterTransect$SampledArea = units::drop_units(MasterTransect$SampledArea)
 

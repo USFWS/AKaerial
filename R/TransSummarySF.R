@@ -10,6 +10,7 @@
 #' @param transect.file The path to the design stratification file
 #' @param transect.layer The name of the design transect layer in the geopackage
 #' @param strata.file The path to the analysis stratification layer
+#' @param strata.layer The strata gpkg layer
 #' @param trans.id The identifier of the correct transect numbering
 #' @param strata.id The identifier of the stratification layer
 #' @param current The identifier of the current navigational transect
@@ -20,6 +21,7 @@
 TransSummarySF=function(transect.file,
                         transect.layer,
                         strata.file,
+                        strata.layer,
                         trans.id="OBJECTID",
                         strata.id="STRATNAME",
                         current="Transect"){
@@ -27,8 +29,12 @@ TransSummarySF=function(transect.file,
   design.trans = sf::st_read(transect.file, layer=transect.layer, quiet=TRUE) %>%
     sf::st_transform(4269)
 
-  analysis.strata = sf::st_read(dsn=strata.file, quiet=TRUE) %>%
-    sf::st_transform(4269)
+  if(!(is.na(strata.layer))){
+  analysis.strata = sf::st_read(dsn=strata.file, layer=strata.layer, quiet=TRUE) %>%
+    sf::st_transform(4269)}
+  if((is.na(strata.layer))){
+    analysis.strata = sf::st_read(dsn=strata.file, quiet=TRUE) %>%
+      sf::st_transform(4269)}
 
 
 
@@ -50,6 +56,8 @@ TransSummarySF=function(transect.file,
   for(i in 1:length(tsum$SampledArea)){
   tsum$ctran[i] = paste(tsum[i,trans.id], tsum[i,strata.id], sep=" ")
   }
+
+  if("geom" %in% colnames(tsum)){colnames(tsum)[colnames(tsum)=="geom"]="Shape"}
 
   return(tsum)
 }

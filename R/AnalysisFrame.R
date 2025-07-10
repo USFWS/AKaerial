@@ -20,7 +20,7 @@ AnalysisFrame=function(survey, year){
   obs=MasterObs %>% filter(Survey == survey & Year == year)
   flight=MasterEffort %>% filter(Survey == survey & Year == year)
   transect=MasterSummary %>% filter(Survey %in% survey & Year == year)
-  strata=MasterStrata %>% filter(Survey == survey)
+  strata=MasterStrata %>% filter(Survey == survey & Year == year)
   design=MasterTransect %>% filter(Survey == survey & Year == year)
 
   data=list(obs=obs,
