@@ -15,10 +15,15 @@
 #' @return data frame summary of stratification
 #'
 #' @export
-StrataSummarySF=function(strata.file, id="STRATNAME"){
+StrataSummarySF=function(strata.file, id="STRATNAME", this.layer=NA){
 
-  map = sf::st_read(dsn=strata.file, quiet=TRUE) %>%
-    sf::st_transform(4269)
+  if(!(is.na(this.layer))){
+  map = sf::st_read(dsn=strata.file, layer=this.layer, quiet=TRUE) %>%
+    sf::st_transform(4269)}
+
+  if(is.na(this.layer)){
+    map = sf::st_read(dsn=strata.file, quiet=TRUE) %>%
+      sf::st_transform(4269)}
 
 
   areas = map %>%

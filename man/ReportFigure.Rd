@@ -13,7 +13,8 @@ ReportFigure(
   index2 = "none",
   title = "",
   x.title = "Year",
-  y.title = "Population Index"
+  y.title = "Population Index",
+  trend = FALSE
 )
 }
 \arguments{

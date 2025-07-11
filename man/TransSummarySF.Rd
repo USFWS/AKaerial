@@ -8,6 +8,7 @@ TransSummarySF(
   transect.file,
   transect.layer,
   strata.file,
+  strata.layer,
   trans.id = "OBJECTID",
   strata.id = "STRATNAME",
   current = "Transect"
@@ -19,6 +20,8 @@ TransSummarySF(
 \item{transect.layer}{The name of the design transect layer in the geopackage}
 
 \item{strata.file}{The path to the analysis stratification layer}
+
+\item{strata.layer}{The strata gpkg layer}
 
 \item{trans.id}{The identifier of the correct transect numbering}
 

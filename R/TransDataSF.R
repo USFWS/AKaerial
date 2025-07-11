@@ -15,6 +15,9 @@
 #' @export
 TransDataSF=function(selected.data, strata.id){
 
+  selected.data$obs$Obs_Type[selected.data$obs$Obs_Type=="flkdrake" & selected.data$obs$Num<5] = "flkdrake4"
+  selected.data$obs$Obs_Type[selected.data$obs$Obs_Type=="flkdrake" & selected.data$obs$Num>4] = "flkdrake5"
+
   transect.level= selected.data$obs %>%
     dplyr::group_by(Year, Observer, Species, Obs_Type, ctran) %>%
     dplyr::summarise(

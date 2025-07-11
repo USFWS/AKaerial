@@ -44,6 +44,7 @@
 DataProcess <- function(area,
                         data.path=NA,
                         strata.path=NA,
+                        strata.layer=NA,
                         transect.path=NA,
                         threshold=.5,
                         strata.id="STRATNAME",
@@ -64,7 +65,7 @@ DataProcess <- function(area,
 
   data$Obs_Type[data$Obs_Type=="open" & data$Num==1 & data$Species!="SWANN"]="single"
 
-  data=AssignStrata(full.data=data, strata.id=strata.id, strata.file=strata.path, retain=retain, area=area)
+  data=AssignStrata(full.data=data, strata.id=strata.id, strata.file=strata.path, strata.layer=strata.layer, retain=retain, area=area)
 
   design.trans = sf::st_read(transect.path, layer=transect.layer, quiet=TRUE)
 
@@ -103,6 +104,7 @@ DataProcess <- function(area,
   design=TransSummarySF(transect.file=transect.path,
                         transect.layer=transect.layer,
                         strata.file=strata.path,
+                        strata.layer=strata.layer,
                         strata.id=strata.id,
                         trans.id=trans.id)
 
@@ -134,7 +136,7 @@ DataProcess <- function(area,
 
 
 
-  strata=StrataSummarySF(strata.file=strata.path, id=strata.id)
+  strata=StrataSummarySF(strata.file=strata.path, this.layer=strata.layer, id=strata.id)
 
   data=list("obs"=data, "flight"=flight, "design"=design, "strata"=strata)
 

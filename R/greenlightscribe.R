@@ -258,9 +258,11 @@ GreenLightScribe=function(path.name, area, report=TRUE, scribe2analysis=FALSE, a
     purrr::map(points2line) %>%
     purrr::map_dfr(rbind)
 
-  if(area=="ACP"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_008_ACP_Aerial_Survey/data/design_files/Design_Strata/ACP_DesignStrata.gpkg"}
+  sf.lines = sf.lines[!(is.na(sf.lines$Transect)),]
+
+  if(area=="ACP"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_008_ACP_Aerial_Survey/data/source_data/ACP_DesignStrata.gpkg"}
   if(area %in% c("YKD", "YKG", "YKDV")){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_001_YKD_Aerial_Survey/data/source_data/YKD_DesignStrata.gpkg"}
-  if(area=="CRD"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data/CRD_DesignStrata.gpkg"}
+  if(area=="CRD"){basemap="//ifw7ro-file.fws.doi.net/datamgt/mbm/mbmwa_005_CRD_Aerial_Survey/data/source_data/CRD_DesignStrata.gpkg"}
 
   basemap <- sf::st_read(dsn=basemap) %>%
     sf::st_transform(crs=3338)
@@ -586,11 +588,12 @@ CommonFixScribe=function(data, fix, area){
 #' @param folder The folder path containing the files.
 #' @param string The character string common to the files to be combined.
 #' @param addWBPHS TRUE/FALSE to add columns to convert HQ format to AK format
+#' @param new2old TRUE/FALSE is this the new (2025) Scribe format
 #'
 #' @return No return value, but output is a new combined csv file within the folder.
 #'
 #' @export
-ScribeMerge=function(folder, string, addWBPHS=FALSE){
+ScribeMerge=function(folder, string, addWBPHS=FALSE, new2old=FALSE){
 
   current.dir = getwd()
 
@@ -603,7 +606,34 @@ ScribeMerge=function(folder, string, addWBPHS=FALSE){
       Code = readr::col_character()), na = c("", "NA", "na", "N/A", "Not Found")
     ))
 
-  year = files$Year[1]
+
+  if(new2old==TRUE){
+    colnames(files)[colnames(files)=="survey_year"]="Year"
+    colnames(files)[colnames(files)=="survey_month"]="Month"
+    colnames(files)[colnames(files)=="survey_day"]="Day"
+    colnames(files)[colnames(files)=="seat"]="Seat"
+    colnames(files)[colnames(files)=="observer"]="Observer"
+    colnames(files)[colnames(files)=="stratum"]="Stratum"
+    colnames(files)[colnames(files)=="transect"]="Transect"
+    colnames(files)[colnames(files)=="segment"]="Segment"
+    colnames(files)[colnames(files)=="air_ground"]="A_G.Name"
+    colnames(files)[colnames(files)=="voice_filename"]="Audio.File"
+    colnames(files)[colnames(files)=="flight_direction"]="Course"
+    colnames(files)[colnames(files)=="time"]="Time"
+    colnames(files)[colnames(files)=="latitude"]="Latitude"
+    colnames(files)[colnames(files)=="longitude"]="Longitude"
+    colnames(files)[colnames(files)=="species"]="Species"
+    colnames(files)[colnames(files)=="number_counted"]="Count"
+    colnames(files)[colnames(files)=="social_group"]="Grouping"
+    colnames(files)[colnames(files)=="distance"]="Distance"
+    colnames(files)[colnames(files)=="altitude"]="Altitude"
+    colnames(files)[colnames(files)=="speed"]="Speed"
+    colnames(files)[colnames(files)=="num_satellite"]="X..Satellites"
+    colnames(files)[colnames(files)=="HDOP_Q"]="HDOP"
+
+    files = files %>% select(-Line)
+  }
+
 
   if(addWBPHS==TRUE){
     files$Behavior=NA
@@ -615,6 +645,8 @@ ScribeMerge=function(folder, string, addWBPHS=FALSE){
     files$Wind_Vel=NA
   }
 
+  year = files$Year[1]
+
   if(!("Sky" %in% colnames(files))){
     files$Sky=NA
     files$Wind_Dir=NA
@@ -624,6 +656,17 @@ ScribeMerge=function(folder, string, addWBPHS=FALSE){
   files$Observer=toupper(files$Observer)
   files$Seat=toupper(files$Seat)
 
+  ## Changes for 2025
+  if("Lat" %in% colnames(files)){
+  colnames(files)[colnames(files)=="Lat"]="Latitude"
+  colnames(files)[colnames(files)=="Lon"]="Longitude"
+  colnames(files)[colnames(files)=="Obs_Type"]="Grouping"
+  colnames(files)[colnames(files)=="Num"]="Count"
+  colnames(files)[colnames(files)=="Flight_Dir"]="Course"
+  colnames(files)[colnames(files)=="Filename"]="Audio.File"
+
+  files=files %>% select(-Line, -Delay)
+  }
 
 
   readr::write_csv(files, file=paste(area, "_", year, "_RawObs_", string, ".csv", sep=""))

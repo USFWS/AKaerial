@@ -4,7 +4,14 @@
 \alias{AssignStrata}
 \title{Assign strata ID to data for analysis using sf package}
 \usage{
-AssignStrata(full.data, strata.file, strata.id, retain = "liberal", area)
+AssignStrata(
+  full.data,
+  strata.file,
+  strata.id,
+  strata.layer,
+  retain = "liberal",
+  area
+)
 }
 \arguments{
 \item{full.data}{The data set of georeferenced observations}
