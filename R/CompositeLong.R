@@ -28,12 +28,12 @@
 #' @return Long data frame of composite indices
 #'
 #' @export
-CompositeLong = function(tavs.year = c(1985:2024),
-                            pw.year = c(1985:2024),
-                            tusw.year = c(1985:2024),
-                            lesser.year = c(1964:2024),
-                            mcw.year = c(1964:2024),
-                            trsw.year = c(1964:2024),
+CompositeLong = function(tavs.year = c(1985:2025),
+                            pw.year = c(1985:2025),
+                            tusw.year = c(1985:2025),
+                            lesser.year = c(1964:2025),
+                            mcw.year = c(1964:2025),
+                            trsw.year = c(1964:2025),
                             versioning=FALSE){
 
 
