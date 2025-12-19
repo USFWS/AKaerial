@@ -120,11 +120,11 @@ TidyDensities=function(data, area, output=FALSE) {
 
   var.est = strata.level %>%
     dplyr::group_by(Year, Observer, Species) %>%
-    dplyr::summarise(var.N = sum(var.N),
-                     var.Ni = sum(var.Ni),
-                     var.Nib = sum(var.Nib),
-                     var.Nsing1pair2 = sum(var.Nsing1pair2),
-                     var.Nflock = sum(var.Nflock),
+    dplyr::summarise(var.N = sum(var.N, na.rm=TRUE),
+                     var.Ni = sum(var.Ni, na.rm=TRUE),
+                     var.Nib = sum(var.Nib, na.rm=TRUE),
+                     var.Nsing1pair2 = sum(var.Nsing1pair2, na.rm=TRUE),
+                     var.Nflock = sum(var.Nflock, na.rm=TRUE),
                      SE = sqrt(var.N),
                      SE.i = sqrt(var.Ni),
                      SE.ibb = sqrt(var.Nib),
