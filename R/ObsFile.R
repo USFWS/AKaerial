@@ -2,7 +2,7 @@
 #'
 #' ObsFile will summarize all observation information into a csv file
 #'
-#' ObsFile will take a spatial layers with study area stratification polygons and
+#' ObsFile will take a spatial layer with study area stratification polygons and
 #' transect lengths and summarize the observations into a csv file.  The file can either be created entirely or appended
 #' to for a single year addition.  The file is intended to be an input into the estimate-generating
 #' functions in AKaerial.

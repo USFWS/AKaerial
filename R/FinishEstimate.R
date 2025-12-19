@@ -14,6 +14,13 @@
 #' @export
 FinishEstimate=function(output.table, expanded.table, combined){
 
+
+  if(combined$area[1]=="YKDV"){
+    years=unique(MasterObs$Year[MasterObs$Survey=="YKDV"])
+
+    sp.list=c("SPEI")
+    }
+
   if(combined$area[1]=="YKD"){
     years=unique(MasterObs$Year[MasterObs$Survey=="YKD"])
 
