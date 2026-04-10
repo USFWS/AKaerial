@@ -110,6 +110,8 @@ full.obs = st_as_sf(full.obs, coords = c("Lon","Lat"))
 
 strata = strata %>% filter(!(STRATNAME %in% c("Nonhabitat", "Mountains", "Water")))
 
+transects= st_transform(transects, 4269)
+
 transects=suppressWarnings(sf::st_intersection(transects, strata))
 
 st_crs(full.obs) = 4269
@@ -146,11 +148,11 @@ m = ggplot2::ggplot() +
 if(type=="dynamic"){
 
   tmap::tmap_mode(mode=c("view"))
-  m <- tmap::tm_shape(strata) + tmap::tm_polygons(col = "STRATNAME", alpha = 0.5, title="Stratum") +
+  m <- tmap::tm_shape(strata) + tmap::tm_polygons(fill = "STRATNAME", fill_alpha = 0.5, fill.legend = tmap::tm_legend("Stratum")) +
     tmap::tm_shape(transects) + tmap::tm_lines() +
     tmap::tm_shape(full.obs) + tmap::tm_dots() +
     tmap::tm_basemap(server = "Esri.WorldGrayCanvas") +
-    tmap::tm_scale_bar()
+    tmap::tm_scalebar()
 
 
 
