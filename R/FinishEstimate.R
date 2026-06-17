@@ -143,13 +143,16 @@ FinishEstimate=function(output.table, expanded.table, combined){
 
   combined = tidyr::complete(combined, Year, Species) %>%
     filter(Species %in% sp.list) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   combined[is.na(combined)]=0
 
   output.table = tidyr::complete(output.table, nesting(Year, Observer), Species) %>%
     filter(Species %in% sp.list) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown")) %>%
+    filter(!(is.na(Observer)))
 
 
   output.table[is.na(output.table)]=0
@@ -188,25 +191,31 @@ FinishEstimate=function(output.table, expanded.table, combined){
                                          flock,
                                          flock.var,
                                          flock.se,
-                                         area)
+                                         area,
+                                         sha)
 
 
   expanded.table = tidyr::complete(expanded.table, nesting(Year, Observer, strata), Species) %>%
     filter(Species %in% sp.list) %>%
     fill(area, total.area, total.area.var, .direction=c("updown")) %>%
-    fill(M, m, prop.m, .direction=c("updown"))
+    fill(M, m, prop.m, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown")) %>%
+    filter(!(is.na(Observer)))
 
 
   expanded.table[is.na(expanded.table)]=0
 
   expanded.table=expanded.table %>% complete(Year=min(expanded.table$Year):max(expanded.table$Year), strata, Species) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   output.table=output.table %>% complete(Year=min(output.table$Year):max(output.table$Year), Species) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   combined=combined %>% complete(Year=min(combined$Year):max(combined$Year), Species) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   ##BEGIN PROJECT-YEAR-SPECIFIC NA
 

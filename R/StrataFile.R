@@ -18,7 +18,8 @@
 #' @export
 StrataFile <- function(
                         method = "create",
-                        append.to = NULL){
+                        append.to = NULL,
+                        append.year = NULL){
 
 if(method=="create"){
 
@@ -34,10 +35,10 @@ if(method=="create"){
 
     if(area == "YKD"){
       year.panel = data.frame(
-        year = c(1988:2019,2021:2025),
+        year = c(1988:2019,2021:2026),
         panel = c(1985, 1989, 1989, 1989, 1989,
                   1993, 1993, 1993, 1993, 1993,
-                  1998, rep(c("D","A","B","C"),6),"D", "A")
+                  1998, rep(c("D","A","B","C"),6),"D", "A", "B")
       )
       year.panel=year.panel %>% filter(year != 2011)
       strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YK_Strata.gpkg"
@@ -45,11 +46,11 @@ if(method=="create"){
 
     if(area == "YKG"){
       year.panel = data.frame(
-        year = c(1985:2019,2021:2025),
+        year = c(1985:2019,2021:2026),
         panel = c(1985, 1985, 1985, 1985,
                   1989, 1989, 1989, 1989,
                   1993, 1993, 1993, 1993, 1993,
-                  1998, rep(c("D","A","B","C"),6),"D", "A")
+                  1998, rep(c("D","A","B","C"),6),"D", "A", "B")
       )
       strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YK_Strata.gpkg"
 
@@ -57,8 +58,8 @@ if(method=="create"){
 
     if(area == "ACP"){
       year.panel = data.frame(
-        year = c(2007:2019,2022:2025),
-        panel = c(rep(c("D","A","B","C"),4),"D")
+        year = c(2007:2019,2022:2026),
+        panel = c(rep(c("D","A","B","C"),4),"D", "A")
       )
       strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/ACP/data/source_data/ACP_DesignStrata.gpkg"
 
@@ -66,12 +67,13 @@ if(method=="create"){
 
     if(area == "CRD"){
       year.panel = data.frame(
-        year = c(1986:2012, 2014:2019, 2021:2025),
+        year = c(1986:2012, 2014:2019, 2021:2026),
         panel = c(1986, 1987,
                   1988, 1988, 1988, 1988, 1988, 1988, 1988,
                   1995,
-                  rep(1996, 17), rep("A", 11))
+                  rep(1996, 17), rep("A", 12))
       )
+
       strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/CRD/data/source_data/CRD_DesignStrata.gpkg"
 
     }
@@ -107,6 +109,109 @@ write.csv(MasterStrata, "C:/Users/cfrost/OneDrive - DOI/Documents/Data Held for 
 save(MasterStrata, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/MasterStrata.rda")
 
 }
+
+
+  if(method=="append"){
+
+    full_file=c()
+
+    for(j in 1:4){
+
+      if(j==1){area="YKD"}
+      if(j==2){area="YKG"}
+      if(j==3){area="ACP"}
+      if(j==4){area="CRD"}
+
+
+      if(area == "YKD"){
+        year.panel = data.frame(
+          year = c(1988:2019,2021:2026),
+          panel = c(1985, 1989, 1989, 1989, 1989,
+                    1993, 1993, 1993, 1993, 1993,
+                    1998, rep(c("D","A","B","C"),6),"D", "A", "B")
+        )
+        year.panel=year.panel %>% filter(year != 2011)
+        strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YK_Strata.gpkg"
+      }
+
+      if(area == "YKG"){
+        year.panel = data.frame(
+          year = c(1985:2019,2021:2026),
+          panel = c(1985, 1985, 1985, 1985,
+                    1989, 1989, 1989, 1989,
+                    1993, 1993, 1993, 1993, 1993,
+                    1998, rep(c("D","A","B","C"),6),"D", "A", "B")
+        )
+        strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/YKD/data/source_data/YK_Strata.gpkg"
+
+      }
+
+      if(area == "ACP"){
+        year.panel = data.frame(
+          year = c(2007:2019,2022:2026),
+          panel = c(rep(c("D","A","B","C"),4),"D", "A")
+        )
+        strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/ACP/data/source_data/ACP_DesignStrata.gpkg"
+
+      }
+
+      if(area == "CRD"){
+        year.panel = data.frame(
+          year = c(1986:2012, 2014:2019, 2021:2026),
+          panel = c(1986, 1987,
+                    1988, 1988, 1988, 1988, 1988, 1988, 1988,
+                    1995,
+                    rep(1996, 17), rep("A", 12))
+        )
+
+        strata.path = "C:/Users/cfrost/OneDrive - DOI/Waterfowl/CRD/data/source_data/CRD_DesignStrata.gpkg"
+
+      }
+
+      year.panel = year.panel %>% filter(year==append.year)
+
+      for (i in 1:length(year.panel$year)){
+
+
+        print(paste(area, " ", year.panel$year[i]))
+
+        entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR == year.panel$year[i],]
+
+        layer = entries$STRATA_LAYER[1]
+
+        info = StrataSummarySF(strata.file=strata.path, id="STRATNAME", this.layer=layer)
+
+        info$Survey=area
+
+        info$Year = year.panel$year[i]
+
+
+
+        full_file=rbind(full_file, info)
+
+
+      }
+
+    }
+
+
+    full_file$layer.area = units::drop_units(full_file$layer.area)
+
+    colnames(full_file)[1]="Stratum"
+
+    MasterStrata = rbind(MasterStrata, full_file)
+
+
+    write.csv(MasterStrata, "C:/Users/cfrost/OneDrive - DOI/Documents/Data Held for AKaerial/MasterStrata.csv", quote = FALSE, row.names = FALSE)
+
+    save(MasterStrata, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/MasterStrata.rda")
+
+  }
+
+
+
+
+
 
 }
 
