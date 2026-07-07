@@ -4,7 +4,13 @@
 \alias{TransectFile}
 \title{Create or append to a csv file with study area transect panel information}
 \usage{
-TransectFile(method = "create", output.folder = "none", append.to = NULL)
+TransectFile(
+  method = "create",
+  output.folder = "none",
+  append.to = NULL,
+  append.year = NULL,
+  append.area = NULL
+)
 }
 \arguments{
 \item{method}{"create" or "append"}

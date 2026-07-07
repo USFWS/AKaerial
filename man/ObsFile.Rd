@@ -4,7 +4,12 @@
 \alias{ObsFile}
 \title{Create or append to a master csv file of observations}
 \usage{
-ObsFile(method = "create", append.to = NULL)
+ObsFile(
+  method = "create",
+  append.to = NULL,
+  append.year = NULL,
+  append.area = NULL
+)
 }
 \arguments{
 \item{method}{"create" or "append"}
