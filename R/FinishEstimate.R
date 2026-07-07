@@ -225,16 +225,19 @@ FinishEstimate=function(output.table, expanded.table, combined){
     combined[combined$Year==1986 & combined$Species %in% c("SACR", "SNGO"), 3:17]=NA
     combined[combined$Year %in% c(1987:1999) & combined$Species == "SNGO", 3:17]=NA
     combined[combined$Year >= 2019 & combined$Species == "SWANN", 3:17]=NA
+    combined[combined$Year == 2020, 3:17]=NA
 
     output.table[output.table$Year==1985 & output.table$Species %in% c("BRAN", "SACR", "SNGO"), 4:18]=NA
     output.table[output.table$Year==1986 & output.table$Species %in% c("SACR", "SNGO"), 4:18]=NA
     output.table[output.table$Year %in% c(1987:1999) & output.table$Species == "SNGO", 4:18]=NA
     output.table[output.table$Year >= 2019 & output.table$Species == "SWANN", 4:18]=NA
+    output.table[output.table$Year == 2020, 3:17]=NA
 
     expanded.table[expanded.table$Year==1985 & expanded.table$Species %in% c("BRAN", "SACR", "SNGO"), 5:40]=NA
     expanded.table[expanded.table$Year==1986 & expanded.table$Species %in% c("SACR", "SNGO"), 5:40]=NA
     expanded.table[expanded.table$Year %in% c(1987:1999) & expanded.table$Species == "SNGO", 5:40]=NA
     expanded.table[expanded.table$Year >= 2019 & expanded.table$Species == "SWANN", 5:40]=NA
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
 
 
   }
@@ -247,6 +250,7 @@ FinishEstimate=function(output.table, expanded.table, combined){
     combined[combined$Year==1992 & combined$Species %in% c("JAEG", "GOEA", "BAEA"), 3:17]=NA
     combined[combined$Year >= 1993 & combined$Year < 2023 & combined$Species %in% c("GOEA", "BAEA"), 3:17]=NA
     combined[combined$Year >= 2017 & combined$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU"), 3:17]=NA
+    combined[combined$Year == 2020, 3:17]=NA
 
     output.table[output.table$Year==1988 & output.table$Species %in% c("COLO", "PALO", "RTLO", "UNLO", "RNGR", "HOGR", "UNGR", "JAEG", "ARTE", "GLGU", "MEGU", "SAGU", "CORA", "SEOW", "SNOW", "GOEA", "BAEA"), 4:18]=NA
     output.table[output.table$Year==1989 & output.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU", "SEOW", "SNOW", "GOEA", "BAEA"), 4:18]=NA
@@ -254,6 +258,7 @@ FinishEstimate=function(output.table, expanded.table, combined){
     output.table[output.table$Year==1992 & output.table$Species %in% c("JAEG", "GOEA", "BAEA"), 4:18]=NA
     output.table[output.table$Year >= 1993 & output.table$Year < 2023 & output.table$Species %in% c("GOEA", "BAEA"), 4:18]=NA
     output.table[output.table$Year >= 2017 & output.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU"), 4:18]=NA
+    output.table[output.table$Year == 2020, 3:17]=NA
 
     expanded.table[expanded.table$Year==1988 & expanded.table$Species %in% c("COLO", "PALO", "RTLO", "UNLO", "RNGR", "HOGR", "UNGR", "JAEG", "ARTE", "GLGU", "MEGU", "SAGU", "CORA", "SEOW", "SNOW", "GOEA", "BAEA"), 5:40]=NA
     expanded.table[expanded.table$Year==1989 & expanded.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU", "SEOW", "SNOW", "GOEA", "BAEA"), 5:40]=NA
@@ -261,9 +266,36 @@ FinishEstimate=function(output.table, expanded.table, combined){
     expanded.table[expanded.table$Year==1992 & expanded.table$Species %in% c("JAEG", "GOEA", "BAEA"), 5:40]=NA
     expanded.table[expanded.table$Year >= 1993 & expanded.table$Year < 2023 & expanded.table$Species %in% c("GOEA", "BAEA"), 5:40]=NA
     expanded.table[expanded.table$Year >= 2017 & expanded.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU"), 5:40]=NA
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
 
 
   }
+
+  if(combined$area[1]=="CRD"){
+
+    combined[combined$Year == 2020, 3:17]=NA
+
+    output.table[output.table$Year == 2020, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
+  }
+
+  if(combined$area[1]=="ACP"){
+
+    combined[combined$Year == 2020, 3:17]=NA
+
+    output.table[output.table$Year == 2020, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
+
+    combined[combined$Year == 2021, 3:17]=NA
+
+    output.table[output.table$Year == 2021, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2021, 3:17]=NA
+  }
+
+
 
   return(list(output.table=output.table, expanded.table=expanded.table, combined=combined))
 
