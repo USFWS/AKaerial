@@ -278,6 +278,12 @@ FinishEstimate=function(output.table, expanded.table, combined){
     output.table[output.table$Year == 2020, 3:17]=NA
 
     expanded.table[expanded.table$Year == 2020, 3:17]=NA
+
+    combined[combined$Year == 2013, 3:17]=NA
+
+    output.table[output.table$Year == 2013, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2013, 3:17]=NA
   }
 
   if(combined$area[1]=="ACP"){
