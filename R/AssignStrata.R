@@ -18,6 +18,8 @@
 #' @export
 AssignStrata=function(full.data, strata.file, strata.id, strata.layer, retain="liberal", area){
 
+  full.data=full.data %>% drop_na(Lat)
+
   data.sf = sf::st_as_sf(full.data, coords=c("Lon", "Lat")) %>%
     sf::st_set_crs(4326)
 

@@ -143,13 +143,16 @@ FinishEstimate=function(output.table, expanded.table, combined){
 
   combined = tidyr::complete(combined, Year, Species) %>%
     filter(Species %in% sp.list) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   combined[is.na(combined)]=0
 
   output.table = tidyr::complete(output.table, nesting(Year, Observer), Species) %>%
     filter(Species %in% sp.list) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown")) %>%
+    filter(!(is.na(Observer)))
 
 
   output.table[is.na(output.table)]=0
@@ -188,25 +191,31 @@ FinishEstimate=function(output.table, expanded.table, combined){
                                          flock,
                                          flock.var,
                                          flock.se,
-                                         area)
+                                         area,
+                                         sha)
 
 
   expanded.table = tidyr::complete(expanded.table, nesting(Year, Observer, strata), Species) %>%
     filter(Species %in% sp.list) %>%
     fill(area, total.area, total.area.var, .direction=c("updown")) %>%
-    fill(M, m, prop.m, .direction=c("updown"))
+    fill(M, m, prop.m, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown")) %>%
+    filter(!(is.na(Observer)))
 
 
   expanded.table[is.na(expanded.table)]=0
 
   expanded.table=expanded.table %>% complete(Year=min(expanded.table$Year):max(expanded.table$Year), strata, Species) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   output.table=output.table %>% complete(Year=min(output.table$Year):max(output.table$Year), Species) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   combined=combined %>% complete(Year=min(combined$Year):max(combined$Year), Species) %>%
-    fill(area, .direction=c("updown"))
+    fill(area, .direction=c("updown")) %>%
+    fill(sha, .direction=c("updown"))
 
   ##BEGIN PROJECT-YEAR-SPECIFIC NA
 
@@ -216,16 +225,19 @@ FinishEstimate=function(output.table, expanded.table, combined){
     combined[combined$Year==1986 & combined$Species %in% c("SACR", "SNGO"), 3:17]=NA
     combined[combined$Year %in% c(1987:1999) & combined$Species == "SNGO", 3:17]=NA
     combined[combined$Year >= 2019 & combined$Species == "SWANN", 3:17]=NA
+    combined[combined$Year == 2020, 3:17]=NA
 
     output.table[output.table$Year==1985 & output.table$Species %in% c("BRAN", "SACR", "SNGO"), 4:18]=NA
     output.table[output.table$Year==1986 & output.table$Species %in% c("SACR", "SNGO"), 4:18]=NA
     output.table[output.table$Year %in% c(1987:1999) & output.table$Species == "SNGO", 4:18]=NA
     output.table[output.table$Year >= 2019 & output.table$Species == "SWANN", 4:18]=NA
+    output.table[output.table$Year == 2020, 3:17]=NA
 
     expanded.table[expanded.table$Year==1985 & expanded.table$Species %in% c("BRAN", "SACR", "SNGO"), 5:40]=NA
     expanded.table[expanded.table$Year==1986 & expanded.table$Species %in% c("SACR", "SNGO"), 5:40]=NA
     expanded.table[expanded.table$Year %in% c(1987:1999) & expanded.table$Species == "SNGO", 5:40]=NA
     expanded.table[expanded.table$Year >= 2019 & expanded.table$Species == "SWANN", 5:40]=NA
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
 
 
   }
@@ -238,6 +250,7 @@ FinishEstimate=function(output.table, expanded.table, combined){
     combined[combined$Year==1992 & combined$Species %in% c("JAEG", "GOEA", "BAEA"), 3:17]=NA
     combined[combined$Year >= 1993 & combined$Year < 2023 & combined$Species %in% c("GOEA", "BAEA"), 3:17]=NA
     combined[combined$Year >= 2017 & combined$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU"), 3:17]=NA
+    combined[combined$Year == 2020, 3:17]=NA
 
     output.table[output.table$Year==1988 & output.table$Species %in% c("COLO", "PALO", "RTLO", "UNLO", "RNGR", "HOGR", "UNGR", "JAEG", "ARTE", "GLGU", "MEGU", "SAGU", "CORA", "SEOW", "SNOW", "GOEA", "BAEA"), 4:18]=NA
     output.table[output.table$Year==1989 & output.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU", "SEOW", "SNOW", "GOEA", "BAEA"), 4:18]=NA
@@ -245,6 +258,7 @@ FinishEstimate=function(output.table, expanded.table, combined){
     output.table[output.table$Year==1992 & output.table$Species %in% c("JAEG", "GOEA", "BAEA"), 4:18]=NA
     output.table[output.table$Year >= 1993 & output.table$Year < 2023 & output.table$Species %in% c("GOEA", "BAEA"), 4:18]=NA
     output.table[output.table$Year >= 2017 & output.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU"), 4:18]=NA
+    output.table[output.table$Year == 2020, 3:17]=NA
 
     expanded.table[expanded.table$Year==1988 & expanded.table$Species %in% c("COLO", "PALO", "RTLO", "UNLO", "RNGR", "HOGR", "UNGR", "JAEG", "ARTE", "GLGU", "MEGU", "SAGU", "CORA", "SEOW", "SNOW", "GOEA", "BAEA"), 5:40]=NA
     expanded.table[expanded.table$Year==1989 & expanded.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU", "SEOW", "SNOW", "GOEA", "BAEA"), 5:40]=NA
@@ -252,9 +266,42 @@ FinishEstimate=function(output.table, expanded.table, combined){
     expanded.table[expanded.table$Year==1992 & expanded.table$Species %in% c("JAEG", "GOEA", "BAEA"), 5:40]=NA
     expanded.table[expanded.table$Year >= 1993 & expanded.table$Year < 2023 & expanded.table$Species %in% c("GOEA", "BAEA"), 5:40]=NA
     expanded.table[expanded.table$Year >= 2017 & expanded.table$Species %in% c("ARTE", "GLGU", "MEGU", "SAGU"), 5:40]=NA
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
 
 
   }
+
+  if(combined$area[1]=="CRD"){
+
+    combined[combined$Year == 2020, 3:17]=NA
+
+    output.table[output.table$Year == 2020, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
+
+    combined[combined$Year == 2013, 3:17]=NA
+
+    output.table[output.table$Year == 2013, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2013, 3:17]=NA
+  }
+
+  if(combined$area[1]=="ACP"){
+
+    combined[combined$Year == 2020, 3:17]=NA
+
+    output.table[output.table$Year == 2020, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2020, 3:17]=NA
+
+    combined[combined$Year == 2021, 3:17]=NA
+
+    output.table[output.table$Year == 2021, 3:17]=NA
+
+    expanded.table[expanded.table$Year == 2021, 3:17]=NA
+  }
+
+
 
   return(list(output.table=output.table, expanded.table=expanded.table, combined=combined))
 

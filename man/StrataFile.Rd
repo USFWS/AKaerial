@@ -4,7 +4,7 @@
 \alias{StrataFile}
 \title{Create or append to a csv file with study area stratum information}
 \usage{
-StrataFile(method = "create", append.to = NULL)
+StrataFile(method = "create", append.to = NULL, append.year = NULL)
 }
 \arguments{
 \item{method}{"create" or "append"}

@@ -37,6 +37,7 @@ TidyDensities=function(data, area, output=FALSE) {
   #Suppress spatial warnings inside function call
   #options(warn=-1)
 
+  colnames(data$strata)[1]="strata"
 
   if(area=="YKDV"){area="YKD"}
 

@@ -18,9 +18,13 @@
 #' @export
 TransectFile <- function(method="create",
                          output.folder="none",
-                         append.to=NULL){
+                         append.to=NULL,
+                         append.year=NULL,
+                         append.area=NULL){
 
   full_file=c()
+
+if(method=="create"){
 
   for(j in 1:4){
 
@@ -115,6 +119,116 @@ TransectFile <- function(method="create",
   write.csv(MasterTransect, "C:/Users/cfrost/OneDrive - DOI/Documents/Data Held for AKaerial/MasterTransect.csv", quote = FALSE, row.names = FALSE)
 
   save(MasterTransect, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/MasterTransect.rda")
+
+} #end create
+
+  if(method=="append"){
+
+    area=append.area
+
+    if(area == "YKD"){
+      year.panel = data.frame(
+        year = c(1988:2019,2021:2026),
+        panel = c(1985, 1989, 1989, 1989, 1989,
+                  1993, 1993, 1993, 1993, 1993,
+                  1998, rep(c("D","A","B","C"),6),"D", "A", "B")
+      )
+      year.panel=year.panel %>% filter(year != 2011)
+    }
+
+    if(area == "YKG"){
+      year.panel = data.frame(
+        year = c(1985:2019,2021:2026),
+        panel = c(1985, 1985, 1985, 1985,
+                  1989, 1989, 1989, 1989,
+                  1993, 1993, 1993, 1993, 1993,
+                  1998, rep(c("D","A","B","C"),6),"D", "A", "B")
+      )
+
+    }
+
+    if(area == "ACP"){
+      year.panel = data.frame(
+        year = c(2007:2019,2022:2026),
+        panel = c(rep(c("D","A","B","C"),4),"D", "A")
+      )
+    }
+
+    if(area == "CRD"){
+      year.panel = data.frame(
+        year = c(1986:2012, 2014:2019, 2021:2026),
+        panel = c(1986, 1987,
+                  1988, 1988, 1988, 1988, 1988, 1988, 1988,
+                  1995,
+                  rep(1996, 17), rep("A", 12))
+      )
+
+    }
+
+
+
+    year.panel = year.panel %>% filter(year==append.year)
+
+
+    for (i in 1:length(year.panel$year)){
+
+
+      print(paste(area, " ", year.panel$year[i]))
+
+      entries=MasterFileList[MasterFileList$AREA==area & MasterFileList$YEAR == year.panel$year[i],]
+
+      strata.path=paste(entries$DRIVE[1], entries$STRATA[1], sep="")
+      strata.layer=entries$STRATA_LAYER[1]
+
+      transect.path=paste(entries$DRIVE[1], entries$TRANS[1], sep="")
+
+      if(!file.exists(strata.path)){next}
+      if(!file.exists(transect.path)){next}
+
+      layer.path = entries$LAYER[1]
+
+
+      design=TransSummarySF(transect.file=transect.path,
+                            transect.layer=layer.path,
+                            strata.file=strata.path,
+                            strata.layer=strata.layer,
+                            strata.id="STRATNAME",
+                            trans.id="OBJECTID")
+
+      design$survey=entries$AREA[1]
+      design$year=entries$YEAR[1]
+      design$panel=year.panel$panel[i]
+
+      full_file=rbind(full_file, design)
+
+    }
+
+
+ full_file = full_file %>% sf::st_drop_geometry() %>% select(-Shape)
+
+  full_file$SampledArea = units::drop_units(full_file$SampledArea)
+
+  full_file$LENGTH = units::drop_units(full_file$LENGTH)
+
+  colnames(full_file)= c("Strata", "Transect", "Length",
+                              "SampledArea", "ctran", "Survey", "Year", "Panel" )
+
+  MasterTransect = rbind(MasterTransect, full_file)
+
+  write.csv(MasterTransect, "C:/Users/cfrost/OneDrive - DOI/Documents/Data Held for AKaerial/MasterTransect.csv", quote = FALSE, row.names = FALSE)
+
+  save(MasterTransect, file="C:/Users/cfrost/OneDrive - DOI/Documents/AKaerial/data/MasterTransect.rda")
+
+
+
+
+
+
+
+
+  }
+
+
 
 }
 
