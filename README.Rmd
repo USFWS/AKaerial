@@ -34,15 +34,15 @@ AKaerial is under constant development. It will have occasional bugs and other i
 You can install the released version of AKaerial from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("USFWS/AKaerial", ref = "master", build_vignettes = TRUE)
+# install.packages("pak")
+pak::pkg_install("USFWS/AKaerial")
 ```
 
 And the development version from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("USFWS/AKaerial", ref = "development", build_vignettes = TRUE)
+# install.packages("pak")
+pak::pkg_install("USFWS/AKaerial@development")
 ```
 Or from the included tar.gz release archive. 
 
