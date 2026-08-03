@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# AKaerial
+# AKaerial <img width=150px src="man/figures/AKaerial_hex.png" align="right" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -24,13 +24,14 @@ estimate-generating processes.
 
 The most likely use of AKaerial would be to take advantage of the
 historic tables of estimates for projects on the Arctic Coastal Plain
-(ACPHistoric, 2007-2023), Copper River Delta (CRDHistoric, 1986-2023),
-Yukon-Kuskokwim River Delta for ducks (YKDHistoric, 1988-2023) and geese
-(YKGHistoric, 1985-2023), and Waterfowl Breeding Population and Habitat
-Survey (WBPHSHistoric, 1957-2023). AKaerial includes figure-, table-,
-and map-generating functions that are designed to visualize data, design
-files, and estimates as a quality control step as well as for the
-production of reports, presentations, and manuscripts.
+(ACPHistoric, 2007-present), Copper River Delta (CRDHistoric,
+1986-present), Yukon-Kuskokwim River Delta for ducks (YKDHistoric,
+1988-present) and geese (YKGHistoric, 1985-present), and Waterfowl
+Breeding Population and Habitat Survey (WBPHSHistoric, 1957-present).
+AKaerial includes figure-, table-, and map-generating functions that are
+designed to visualize data, design files, and estimates as a quality
+control step as well as for the production of reports, presentations,
+and manuscripts.
 
 AKaerial also includes functions (GreenLight, GreenLightScribe) that
 provide a rigorous and documented quality control process. This results
@@ -49,15 +50,15 @@ You can install the released version of AKaerial from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("USFWS/AKaerial", ref = "master", build_vignettes = TRUE)
+# install.packages("pak")
+pak::pkg_install("USFWS/AKaerial")
 ```
 
 And the development version from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("USFWS/AKaerial", ref = "development", build_vignettes = TRUE)
+# install.packages("pak")
+pak::pkg_install("USFWS/AKaerial@development")
 ```
 
 Or from the included tar.gz release archive.
@@ -83,5 +84,6 @@ product or activity by FWS or the United States Government.
 
 ## License
 
-This project is licensed under the terms of the Creative Commons Zero
-v1.0 Universal license.
+![](https://i.creativecommons.org/l/zero/1.0/88x31.png) This work is
+licensed under a [Creative Commons Zero Universal v1.0
+License](https://creativecommons.org/publicdomain/zero/1.0/).
